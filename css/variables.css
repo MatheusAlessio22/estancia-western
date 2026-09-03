@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Estância Western — Design Tokens
+   Paleta oficial extraída de assets/logos/disposicao-de-cores.pdf
+   ========================================================================== */
+
+:root {
+  /* Cores da marca (oficiais) */
+  --cor-marrom-couro: #5f3a2a;
+  --cor-marrom-couro-escuro: #402714;
+  --cor-bege-areia: #f4e4d7;
+  --cor-bege-claro: #fbf3ec;
+  --cor-preto: #1c1c1c;
+  --cor-branco: #fff;
+
+  /* Acentos (placeholder — aguardando validação do cliente) */
+  --cor-verde-musgo: #556b2f;
+  --cor-laranja-queimado: #b5502e;
+
+  /* Feedback */
+  --cor-sucesso: #2e5c2e;
+  --cor-erro: #b3261e;
+  --cor-aviso: #b5502e;
+
+  /* Papéis semânticos */
+  --cor-fundo: var(--cor-bege-claro);
+  --cor-fundo-alt: var(--cor-bege-areia);
+  --cor-fundo-escuro: var(--cor-preto);
+  --cor-texto: var(--cor-preto);
+  --cor-texto-claro: var(--cor-bege-areia);
+  --cor-texto-suave: #6b5c52;
+  --cor-borda: #e4d3c3;
+  --cor-primaria: var(--cor-marrom-couro);
+  --cor-primaria-hover: var(--cor-marrom-couro-escuro);
+
+  /* Tipografia */
+  --fonte-titulo: "Barlow Condensed", -apple-system, sans-serif;
+  --fonte-destaque: "Outfit", sans-serif;
+  --fonte-corpo:
+    "Plus Jakarta Sans", -apple-system, blinkmacsystemfont, sans-serif;
+  --texto-xs: 0.75rem;
+  --texto-sm: 0.875rem;
+  --texto-base: 1rem;
+  --texto-md: 1.125rem;
+  --texto-lg: 1.5rem;
+  --texto-xl: 2rem;
+  --texto-2xl: 2.75rem;
+  --texto-3xl: 3.5rem;
+
+  /* Espaçamento (escala 4px) */
+  --espaco-1: 0.25rem;
+  --espaco-2: 0.5rem;
+  --espaco-3: 0.75rem;
+  --espaco-4: 1rem;
+  --espaco-5: 1.5rem;
+  --espaco-6: 2rem;
+  --espaco-8: 3rem;
+  --espaco-10: 4rem;
+  --espaco-12: 6rem;
+
+  /* Layout */
+  --largura-container: 1280px;
+  --raio-borda: 4px;
+  --raio-borda-lg: 8px;
+  --sombra-card: 0 2px 8px rgb(28 28 28 / 8%);
+  --sombra-elevada: 0 8px 24px rgb(28 28 28 / 16%);
+  --transicao-rapida: 150ms ease;
+  --transicao-padrao: 250ms ease;
+
+  /* Motion — durações e curvas (ver docs/interacoes-produto.md) */
+  --motion-duracao-rapida: 150ms;
+  --motion-duracao-padrao: 220ms;
+  --motion-duracao-lenta: 320ms;
+  --motion-entrada: cubic-bezier(0, 0, 0.2, 1); /* ease-out — para elementos que entram/aparecem */
+  --motion-estado: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out — para troca de estado (hover, seleção) */
+
+  /* Foco e interação */
+  --sombra-foco: 0 0 0 3px rgb(95 58 42 / 35%);
+  --escala-hover: 1.03;
+  --escala-active: 0.97;
+
+  /* Índices de camada */
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+}

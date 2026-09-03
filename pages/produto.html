@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-titulo-pagina>Produto — Estância Western</title>
+  <meta name="description" content="Confira os detalhes deste produto da Estância Western: fotos, medidas, cores e tamanhos disponíveis.">
+  <link rel="icon" type="image/svg+xml" href="/assets/logos/favicon-placeholder.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <script type="application/ld+json" data-schema-produto>{}</script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+
+  <div id="site-header"></div>
+
+  <main id="conteudo-principal">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <a data-breadcrumb-categoria href="/pages/categoria.html">Categoria</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page" data-breadcrumb-produto>Produto</span>
+      </nav>
+
+      <div class="produto-layout" data-produto-conteudo hidden>
+        <div class="produto-galeria">
+          <div class="produto-galeria__principal" data-galeria-principal-container>
+            <img data-galeria-principal src="/assets/images/produtos/placeholder-produto.svg" alt="" width="480" height="600">
+          </div>
+          <div class="produto-galeria__thumbs" data-galeria-thumbs></div>
+        </div>
+
+        <div class="produto-info">
+          <span class="produto-info__categoria" data-produto-categoria></span>
+          <h1 data-produto-nome></h1>
+
+          <div class="produto-info__avaliacao">
+            <div class="estrelas" aria-hidden="true">
+              <svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+            </div>
+            <a href="#avaliacoes">4.8 (32 avaliações)</a>
+            <span class="tag-exemplo" title="Nota e avaliações de exemplo — serão substituídas por dados reais quando a loja tiver um integrador de avaliações confiável.">Exemplo</span>
+          </div>
+
+          <div class="produto-info__preco">
+            <span class="produto-info__preco-de" data-produto-preco-de hidden></span>
+            <span class="produto-info__preco-por" data-produto-preco></span>
+          </div>
+          <p class="produto-info__parcelas" data-produto-parcelas></p>
+
+          <div class="produto-selecao" data-bloco-cores>
+            <div class="produto-selecao__titulo"><span data-titulo-cor>Escolha uma cor</span></div>
+            <div class="seletor-cores" data-seletor-cores aria-describedby="erro-cor"></div>
+            <p class="campo-erro" id="erro-cor" data-erro-cor hidden></p>
+            <p class="sr-only" role="status" aria-live="polite" data-status-cor></p>
+          </div>
+
+          <div class="produto-selecao">
+            <div class="produto-selecao__titulo">
+              <span id="label-tamanho">Escolha seu tamanho</span>
+              <button type="button" class="botao-link foco-visivel" data-abrir-guia-medidas>Guia de medidas</button>
+            </div>
+            <div class="seletor-tamanhos" data-seletor-tamanhos role="group" aria-labelledby="label-tamanho" aria-describedby="erro-tamanho"></div>
+            <p class="campo-erro" id="erro-tamanho" data-erro-tamanho hidden></p>
+            <p class="sr-only" role="status" aria-live="polite" data-status-tamanho></p>
+          </div>
+
+          <div class="produto-quantidade">
+            <span style="font-size:var(--texto-sm);font-weight:600;">Quantidade</span>
+            <div class="produto-quantidade__controle">
+              <button type="button" data-qtd-menos aria-label="Diminuir quantidade">−</button>
+              <input type="text" value="1" readonly data-qtd-valor aria-label="Quantidade">
+              <button type="button" data-qtd-mais aria-label="Aumentar quantidade">+</button>
+            </div>
+          </div>
+
+          <div class="produto-acoes">
+            <button type="button" class="btn btn--primario btn--bloco" data-adicionar-carrinho>Adicionar ao Carrinho</button>
+            <button type="button" class="btn-icone" style="border:1px solid var(--cor-borda);" aria-label="Favoritar">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21l8.84-8.61a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+
+          <ul class="produto-info__beneficios">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Frete grátis para compras acima de R$ 299</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Troca grátis em até 30 dias</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg> Compra 100% segura</li>
+          </ul>
+        </div>
+      </div>
+
+      <p data-produto-nao-encontrado hidden style="text-align:center;padding-block:var(--espaco-10);">
+        Produto não encontrado. <a href="/index.html" style="text-decoration:underline;color:var(--cor-primaria);">Voltar para a home</a>.
+      </p>
+
+      <div data-produto-detalhes hidden>
+        <!-- Desktop: abas (>=700px, ver .produto-detalhes-abas no CSS) -->
+        <div class="produto-detalhes-abas">
+          <div class="abas" role="tablist" aria-label="Informações do produto" data-abas>
+            <button type="button" class="is-ativo foco-visivel" id="tab-descricao" data-aba="descricao" role="tab" aria-selected="true" aria-controls="descricao" tabindex="0">Descrição</button>
+            <button type="button" class="foco-visivel" id="tab-composicao" data-aba="composicao" role="tab" aria-selected="false" aria-controls="composicao" tabindex="-1">Composição e cuidados</button>
+            <button type="button" class="foco-visivel" id="tab-medidas" data-aba="medidas" role="tab" aria-selected="false" aria-controls="medidas" tabindex="-1">Guia de medidas</button>
+            <button type="button" class="foco-visivel" id="tab-trocas" data-aba="trocas" role="tab" aria-selected="false" aria-controls="trocas" tabindex="-1">Trocas e devoluções</button>
+            <button type="button" class="foco-visivel" id="tab-avaliacoes" data-aba="avaliacoes" role="tab" aria-selected="false" aria-controls="avaliacoes" tabindex="-1">Avaliações</button>
+          </div>
+
+          <div class="aba-painel" id="descricao" data-painel="descricao" role="tabpanel" aria-labelledby="tab-descricao" tabindex="0">
+            <p data-produto-descricao></p>
+          </div>
+
+          <div class="aba-painel" id="composicao" data-painel="composicao" role="tabpanel" aria-labelledby="tab-composicao" tabindex="0" hidden>
+            <p>Composição: 98% algodão, 2% elastano.</p>
+            <p style="margin-top:var(--espaco-3);">Cuidados: lavar à mão ou em ciclo delicado, não usar alvejante, secar à sombra.</p>
+            <span class="tag-exemplo" title="Composição e instruções de cuidado de exemplo — serão substituídas pela ficha técnica real de cada produto." style="margin-top:var(--espaco-3);display:inline-flex;">Composição de exemplo</span>
+          </div>
+
+          <div class="aba-painel" id="medidas" data-painel="medidas" role="tabpanel" aria-labelledby="tab-medidas" tabindex="0" hidden>
+            <p>Encontre o caimento ideal para você. Consulte as medidas da peça antes de finalizar sua escolha.</p>
+            <span class="tag-exemplo" title="Tabela de medidas de exemplo — será substituída pela ficha técnica real de cada produto." style="margin-block:var(--espaco-3);display:inline-flex;">Medidas de exemplo</span>
+            <table class="tabela-medidas">
+              <thead>
+                <tr><th>Tamanho</th><th>Busto (cm)</th><th>Cintura (cm)</th><th>Quadril (cm)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>P</td><td>88</td><td>68</td><td>94</td></tr>
+                <tr><td>M</td><td>92</td><td>72</td><td>98</td></tr>
+                <tr><td>G</td><td>96</td><td>76</td><td>102</td></tr>
+                <tr><td>GG</td><td>100</td><td>80</td><td>106</td></tr>
+              </tbody>
+            </table>
+            <p style="margin-top:var(--espaco-4);">Em caso de dúvida, fale com a nossa equipe pelo WhatsApp.</p>
+          </div>
+
+          <div class="aba-painel" id="trocas" data-painel="trocas" role="tabpanel" aria-labelledby="tab-trocas" tabindex="0" hidden>
+            <p>Trocas grátis em até 30 dias após o recebimento, para produtos sem uso e com etiquetas originais.</p>
+            <p style="margin-top:var(--espaco-3);"><a href="/pages/politicas.html#trocas" style="text-decoration:underline;color:var(--cor-primaria);">Consulte a política completa de trocas e devoluções</a>.</p>
+          </div>
+
+          <div class="aba-painel" id="avaliacoes" data-painel="avaliacoes" role="tabpanel" aria-labelledby="tab-avaliacoes" tabindex="0" hidden>
+          <span class="tag-exemplo" title="Avaliações de exemplo — serão substituídas por avaliações reais e verificadas de clientes." style="margin-bottom:var(--espaco-3);display:inline-flex;">Avaliações de exemplo</span>
+          <div class="avaliacao-item">
+            <div class="avaliacao-item__topo">
+              <span class="avaliacao-item__autor">Ana Clara M.</span>
+              <span class="avaliacao-item__data">12/07/2026</span>
+            </div>
+            <div class="estrelas" aria-hidden="true">
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+            </div>
+            <p style="margin-top:var(--espaco-2);">Tecido de ótima qualidade, caimento perfeito. Recomendo!</p>
+          </div>
+          <div class="avaliacao-item">
+            <div class="avaliacao-item__topo">
+              <span class="avaliacao-item__autor">Ricardo T.</span>
+              <span class="avaliacao-item__data">03/06/2026</span>
+            </div>
+            <div class="estrelas" aria-hidden="true">
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+            </div>
+            <p style="margin-top:var(--espaco-2);">Muito bom, só achei que veio um pouco maior que o esperado.</p>
+          </div>
+          </div>
+        </div>
+
+        <!-- Mobile: acordeão nativo (<700px, ver .produto-detalhes-acordeao no CSS) -->
+        <div class="produto-detalhes-acordeao">
+          <details class="acordeao-item" open>
+            <summary class="foco-visivel">Descrição</summary>
+            <div class="acordeao-item__corpo">
+              <p data-produto-descricao-acordeao></p>
+            </div>
+          </details>
+
+          <details class="acordeao-item">
+            <summary class="foco-visivel">Composição e cuidados</summary>
+            <div class="acordeao-item__corpo">
+              <p>Composição: 98% algodão, 2% elastano.</p>
+              <p style="margin-top:var(--espaco-3);">Cuidados: lavar à mão ou em ciclo delicado, não usar alvejante, secar à sombra.</p>
+              <span class="tag-exemplo" title="Composição e instruções de cuidado de exemplo — serão substituídas pela ficha técnica real de cada produto." style="margin-top:var(--espaco-3);display:inline-flex;">Composição de exemplo</span>
+            </div>
+          </details>
+
+          <details class="acordeao-item" data-acordeao-medidas>
+            <summary class="foco-visivel">Guia de medidas</summary>
+            <div class="acordeao-item__corpo">
+              <p>Encontre o caimento ideal para você. Consulte as medidas da peça antes de finalizar sua escolha.</p>
+              <span class="tag-exemplo" title="Tabela de medidas de exemplo — será substituída pela ficha técnica real de cada produto." style="margin-block:var(--espaco-3);display:inline-flex;">Medidas de exemplo</span>
+              <table class="tabela-medidas">
+                <thead>
+                  <tr><th>Tamanho</th><th>Busto (cm)</th><th>Cintura (cm)</th><th>Quadril (cm)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>P</td><td>88</td><td>68</td><td>94</td></tr>
+                  <tr><td>M</td><td>92</td><td>72</td><td>98</td></tr>
+                  <tr><td>G</td><td>96</td><td>76</td><td>102</td></tr>
+                  <tr><td>GG</td><td>100</td><td>80</td><td>106</td></tr>
+                </tbody>
+              </table>
+              <p style="margin-top:var(--espaco-4);">Em caso de dúvida, fale com a nossa equipe pelo WhatsApp.</p>
+            </div>
+          </details>
+
+          <details class="acordeao-item" data-acordeao-trocas>
+            <summary class="foco-visivel">Trocas e devoluções</summary>
+            <div class="acordeao-item__corpo">
+              <p>Trocas grátis em até 30 dias após o recebimento, para produtos sem uso e com etiquetas originais.</p>
+              <p style="margin-top:var(--espaco-3);"><a href="/pages/politicas.html#trocas" style="text-decoration:underline;color:var(--cor-primaria);">Consulte a política completa de trocas e devoluções</a>.</p>
+            </div>
+          </details>
+
+          <details class="acordeao-item">
+            <summary class="foco-visivel">Avaliações</summary>
+            <div class="acordeao-item__corpo">
+              <span class="tag-exemplo" title="Avaliações de exemplo — serão substituídas por avaliações reais e verificadas de clientes." style="margin-bottom:var(--espaco-3);display:inline-flex;">Avaliações de exemplo</span>
+              <div class="avaliacao-item">
+                <div class="avaliacao-item__topo">
+                  <span class="avaliacao-item__autor">Ana Clara M.</span>
+                  <span class="avaliacao-item__data">12/07/2026</span>
+                </div>
+                <div class="estrelas" aria-hidden="true">
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                </div>
+                <p style="margin-top:var(--espaco-2);">Tecido de ótima qualidade, caimento perfeito. Recomendo!</p>
+              </div>
+              <div class="avaliacao-item">
+                <div class="avaliacao-item__topo">
+                  <span class="avaliacao-item__autor">Ricardo T.</span>
+                  <span class="avaliacao-item__data">03/06/2026</span>
+                </div>
+                <div class="estrelas" aria-hidden="true">
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+                </div>
+                <p style="margin-top:var(--espaco-2);">Muito bom, só achei que veio um pouco maior que o esperado.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <section data-produto-relacionados-secao hidden style="padding-block:var(--espaco-8) var(--espaco-10);">
+        <div class="secao-cabecalho">
+          <span class="eyebrow">Você também pode gostar</span>
+          <h2>Produtos Relacionados</h2>
+        </div>
+        <div class="grid grid-produtos" data-produto-relacionados></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/partials.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/carrinho-drawer.js"></script>
+  <script src="/js/main.js"></script>
+  <script src="/js/produto-variacoes.js"></script>
+  <script src="/js/produto-galeria.js"></script>
+  <script>injetarParciais('');</script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const produto = id ? buscarProdutoPorId(id) : null;
+
+      if (!produto) {
+        document.querySelector('[data-produto-nao-encontrado]').hidden = false;
+        return;
+      }
+
+      let corSelecionada = produto.cores[0] || null;
+      let tamanhoSelecionado = null;
+      let quantidade = 1;
+
+      document.title = `${produto.nome} — Estância Western`;
+      document.querySelector('[data-produto-conteudo]').hidden = false;
+      document.querySelector('[data-produto-detalhes]').hidden = false;
+
+      const categoriaNome = nomeCategoria(produto.categoria);
+      document.querySelector('[data-produto-categoria]').textContent = categoriaNome;
+      document.querySelector('[data-produto-nome]').textContent = produto.nome;
+      document.querySelector('[data-produto-preco]').textContent = formatarPreco(produto.preco);
+      document.querySelector('[data-produto-parcelas]').textContent = produto.parcelas;
+      const textoDescricao = `${produto.nome} desenvolvida com materiais de alta qualidade, unindo o estilo tradicional country ao conforto do dia a dia. Peça essencial para quem vive e respira a cultura do campo.`;
+      document.querySelector('[data-produto-descricao]').textContent = textoDescricao;
+      document.querySelector('[data-produto-descricao-acordeao]').textContent = textoDescricao;
+
+      const breadcrumbCategoria = document.querySelector('[data-breadcrumb-categoria]');
+      breadcrumbCategoria.textContent = categoriaNome;
+      breadcrumbCategoria.href = `/pages/categoria.html?cat=${produto.categoria}`;
+      document.querySelector('[data-breadcrumb-produto]').textContent = produto.nome;
+
+      if (produto.precoDe) {
+        const precoDeEl = document.querySelector('[data-produto-preco-de]');
+        precoDeEl.textContent = formatarPreco(produto.precoDe);
+        precoDeEl.hidden = false;
+      }
+
+      // Galeria (componente em js/produto-galeria.js)
+      renderizarGaleria(produto);
+
+      // Cores (componente em js/produto-variacoes.js)
+      const controleCor = renderizarSeletorCor(produto, {
+        aoSelecionar: (cor) => {
+          corSelecionada = cor;
+        },
+      });
+
+      // Tamanhos (componente em js/produto-variacoes.js)
+      const controleTamanho = renderizarSeletorTamanho(produto, {
+        aoSelecionar: (tamanho) => {
+          tamanhoSelecionado = tamanho;
+        },
+      });
+
+      // Quantidade
+      const qtdValor = document.querySelector('[data-qtd-valor]');
+      document.querySelector('[data-qtd-mais]').addEventListener('click', () => {
+        quantidade += 1;
+        qtdValor.value = quantidade;
+      });
+      document.querySelector('[data-qtd-menos]').addEventListener('click', () => {
+        if (quantidade <= 1) return;
+        quantidade -= 1;
+        qtdValor.value = quantidade;
+      });
+
+      // Adicionar ao carrinho — validação de variações obrigatórias
+      const exigeCor = produto.cores.length > 1;
+      const exigeTamanho = produto.tamanhos.length > 1;
+
+      const grupoCor = document.querySelector('[data-seletor-cores]');
+      const grupoTamanho = document.querySelector('[data-seletor-tamanhos]');
+      const erroCor = document.querySelector('[data-erro-cor]');
+      const erroTamanho = document.querySelector('[data-erro-tamanho]');
+
+      function limparErro(grupo, erroEl) {
+        grupo.removeAttribute('aria-invalid');
+        erroEl.hidden = true;
+        erroEl.textContent = '';
+      }
+
+      function marcarErro(grupo, erroEl, mensagem) {
+        grupo.setAttribute('aria-invalid', 'true');
+        erroEl.hidden = false;
+        erroEl.textContent = mensagem;
+        grupo.classList.remove('animacao-atencao');
+        // Força reflow para permitir reexecutar a animação em cliques repetidos.
+        void grupo.offsetWidth;
+        grupo.classList.add('animacao-atencao');
+      }
+
+      // Limpa o erro automaticamente assim que o usuário completa a seleção.
+      if (exigeCor) {
+        grupoCor.addEventListener('click', (e) => {
+          if (e.target.closest('button[data-cor]')) limparErro(grupoCor, erroCor);
+        });
+      }
+      if (exigeTamanho) {
+        grupoTamanho.addEventListener('click', (e) => {
+          if (e.target.closest('button[data-tamanho]')) limparErro(grupoTamanho, erroTamanho);
+        });
+      }
+
+      document.querySelector('[data-adicionar-carrinho]').addEventListener('click', () => {
+        const corValida = !exigeCor || Boolean(controleCor.obterSelecionado());
+        const tamanhoValido = !exigeTamanho || Boolean(controleTamanho.obterSelecionado());
+
+        if (!corValida) {
+          marcarErro(grupoCor, erroCor, 'Selecione uma cor para continuar.');
+        } else if (exigeCor) {
+          limparErro(grupoCor, erroCor);
+        }
+
+        if (!tamanhoValido) {
+          marcarErro(grupoTamanho, erroTamanho, 'Selecione um tamanho para continuar.');
+        } else if (exigeTamanho) {
+          limparErro(grupoTamanho, erroTamanho);
+        }
+
+        if (!corValida) {
+          grupoCor.querySelector('button[data-cor]').focus();
+          return;
+        }
+        if (!tamanhoValido) {
+          grupoTamanho.querySelector('button[data-tamanho]').focus();
+          return;
+        }
+
+        const botaoAdicionar = document.querySelector('[data-adicionar-carrinho]');
+        botaoAdicionar.classList.add('is-carregando');
+
+        const tamanhoFinal = tamanhoSelecionado || produto.tamanhos[0];
+        const itens = adicionarAoCarrinho(produto.id, {
+          cor: corSelecionada,
+          tamanho: tamanhoFinal,
+          quantidade,
+        });
+        const itemAdicionado = itens.find(
+          (item) => item.chave === `${produto.id}|${corSelecionada || ''}|${tamanhoFinal || ''}`,
+        );
+
+        botaoAdicionar.classList.remove('is-carregando');
+        abrirDrawerCarrinho(itemAdicionado);
+      });
+
+      // Abas (padrão WAI-ARIA Tabs: roving tabindex, setas para navegar)
+      const listaAbas = Array.from(document.querySelectorAll('[data-aba]'));
+
+      function ativarAba(aba, { focar = true } = {}) {
+        listaAbas.forEach((b) => {
+          const ativa = b === aba;
+          b.classList.toggle('is-ativo', ativa);
+          b.setAttribute('aria-selected', ativa ? 'true' : 'false');
+          b.tabIndex = ativa ? 0 : -1;
+        });
+        document.querySelectorAll('[data-painel]').forEach((p) => {
+          p.hidden = p.dataset.painel !== aba.dataset.aba;
+        });
+        if (focar) aba.focus();
+      }
+
+      listaAbas.forEach((btn, indice) => {
+        btn.addEventListener('click', () => ativarAba(btn, { focar: false }));
+
+        btn.addEventListener('keydown', (evento) => {
+          let novoIndice = null;
+          if (evento.key === 'ArrowRight') novoIndice = (indice + 1) % listaAbas.length;
+          else if (evento.key === 'ArrowLeft') novoIndice = (indice - 1 + listaAbas.length) % listaAbas.length;
+          else if (evento.key === 'Home') novoIndice = 0;
+          else if (evento.key === 'End') novoIndice = listaAbas.length - 1;
+
+          if (novoIndice === null) return;
+          evento.preventDefault();
+          ativarAba(listaAbas[novoIndice]);
+        });
+      });
+
+      // "Guia de medidas": abre a aba de medidas e move o foco para o painel.
+      const botaoGuiaMedidas = document.querySelector('[data-abrir-guia-medidas]');
+      if (botaoGuiaMedidas) {
+        botaoGuiaMedidas.addEventListener('click', () => {
+          // Abas (desktop) — só existe efeito visível se o bloco estiver visível na tela.
+          const abaMedidas = listaAbas.find((b) => b.dataset.aba === 'medidas');
+          if (abaMedidas) {
+            ativarAba(abaMedidas, { focar: false });
+          }
+
+          // Acordeão (mobile) — abre o <details> correspondente.
+          const acordeaoMedidas = document.querySelector('[data-acordeao-medidas]');
+          if (acordeaoMedidas) acordeaoMedidas.open = true;
+
+          const painelVisivel = [
+            document.querySelector('[data-painel="medidas"]'),
+            acordeaoMedidas,
+          ].find((el) => el && el.offsetParent !== null);
+
+          if (painelVisivel) {
+            painelVisivel.scrollIntoView({ block: 'start' });
+            painelVisivel.focus();
+          }
+        });
+      }
+
+      // Relacionados
+      const relacionados = PRODUTOS.filter((p) => p.categoria === produto.categoria && p.id !== produto.id).slice(0, 4);
+      if (relacionados.length > 0) {
+        document.querySelector('[data-produto-relacionados-secao]').hidden = false;
+        document.querySelector('[data-produto-relacionados]').innerHTML = relacionados.map(cartaoProdutoHTML).join('');
+        document.querySelectorAll('[data-adicionar-rapido]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            adicionarAoCarrinho(btn.dataset.adicionarRapido, { quantidade: 1 });
+            mostrarToast('Produto adicionado ao carrinho!');
+          });
+        });
+      }
+
+      // Schema.org
+      document.querySelector('[data-schema-produto]').textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: produto.nome,
+        category: categoriaNome,
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'BRL',
+          price: produto.preco,
+          availability: 'https://schema.org/InStock',
+        },
+      });
+    })();
+  </script>
+</body>
+</html>

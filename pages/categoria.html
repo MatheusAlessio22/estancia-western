@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-titulo-pagina>Categoria — Estância Western</title>
+  <meta name="description" content="Explore as categorias da Estância Western: camisas, jeans, botas, chapéus, cintos e acessórios country.">
+  <link rel="icon" type="image/svg+xml" href="/assets/logos/favicon-placeholder.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+
+  <div id="site-header"></div>
+
+  <main id="conteudo-principal">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page" data-breadcrumb-atual>Categoria</span>
+      </nav>
+
+      <div class="pagina-header">
+        <h1 data-categoria-titulo>Categoria</h1>
+        <p data-categoria-descricao>Confira as peças desta categoria.</p>
+      </div>
+
+      <div class="layout-categoria">
+        <aside class="filtros" aria-label="Filtros de produtos">
+          <div class="filtros__grupo">
+            <div class="filtros__titulo">Tamanho</div>
+            <div class="filtros__tamanhos">
+              <button type="button" class="filtros__tamanho">PP</button>
+              <button type="button" class="filtros__tamanho">P</button>
+              <button type="button" class="filtros__tamanho">M</button>
+              <button type="button" class="filtros__tamanho">G</button>
+              <button type="button" class="filtros__tamanho">GG</button>
+            </div>
+          </div>
+          <div class="filtros__grupo">
+            <div class="filtros__titulo">Cor</div>
+            <div class="filtros__cores">
+              <button type="button" class="filtros__cor" style="background:#5F3A2A" aria-label="Marrom"></button>
+              <button type="button" class="filtros__cor" style="background:#1C1C1C" aria-label="Preto"></button>
+              <button type="button" class="filtros__cor" style="background:#F4E4D7" aria-label="Bege"></button>
+              <button type="button" class="filtros__cor" style="background:#2b3a55" aria-label="Azul"></button>
+              <button type="button" class="filtros__cor" style="background:#556B2F" aria-label="Verde"></button>
+            </div>
+          </div>
+          <div class="filtros__grupo">
+            <div class="filtros__titulo">Preço</div>
+            <label class="filtros__opcao"><input type="checkbox"> Até R$ 100</label>
+            <label class="filtros__opcao"><input type="checkbox"> R$ 100 — R$ 250</label>
+            <label class="filtros__opcao"><input type="checkbox"> R$ 250 — R$ 500</label>
+            <label class="filtros__opcao"><input type="checkbox"> Acima de R$ 500</label>
+          </div>
+          <button type="button" class="btn btn--secundario btn--bloco btn--pequeno">Limpar Filtros</button>
+        </aside>
+
+        <div>
+          <div class="categoria__barra">
+            <span class="categoria__contagem" data-categoria-contagem>0 produtos</span>
+            <div class="categoria__ordenar">
+              <select aria-label="Ordenar por">
+                <option>Mais relevantes</option>
+                <option>Menor preço</option>
+                <option>Maior preço</option>
+                <option>Lançamentos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-produtos" data-categoria-grid></div>
+
+          <p data-categoria-vazio hidden style="text-align:center;padding-block:var(--espaco-10);color:var(--cor-texto-suave);">
+            Nenhum produto encontrado nesta categoria no momento. Volte em breve!
+          </p>
+
+          <nav class="paginacao" aria-label="Paginação de produtos">
+            <button type="button" aria-label="Página anterior">‹</button>
+            <span class="is-ativo">1</span>
+            <button type="button">2</button>
+            <button type="button" aria-label="Próxima página">›</button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/partials.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/carrinho-drawer.js"></script>
+  <script src="/js/main.js"></script>
+  <script>injetarParciais('');</script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('cat') || '';
+
+      const titulos = {
+        'lancamentos': ['Lançamentos', 'As últimas peças que acabaram de chegar.'],
+        'mais-vendidos': ['Mais Vendidos', 'As peças mais desejadas por quem entende de moda country.'],
+        'promocoes': ['Promoções', 'Ofertas especiais por tempo limitado.'],
+      };
+
+      let produtos = [];
+      let tituloCategoria = 'Categoria';
+      let descricaoCategoria = 'Confira as peças desta categoria.';
+
+      if (titulos[slug]) {
+        [tituloCategoria, descricaoCategoria] = titulos[slug];
+        produtos = slug === 'lancamentos' ? PRODUTOS.filter((p) => p.novo)
+          : slug === 'mais-vendidos' ? PRODUTOS.filter((p) => p.maisVendido)
+          : PRODUTOS.filter((p) => p.precoDe);
+      } else if (slug) {
+        tituloCategoria = nomeCategoria(slug);
+        descricaoCategoria = `Confira toda a linha de ${tituloCategoria.toLowerCase()} da Estância Western.`;
+        produtos = buscarProdutosPorCategoria(slug);
+      } else {
+        tituloCategoria = 'Todos os Produtos';
+        descricaoCategoria = 'Confira toda a coleção da Estância Western.';
+        produtos = PRODUTOS;
+      }
+
+      document.title = `${tituloCategoria} — Estância Western`;
+      document.querySelector('[data-categoria-titulo]').textContent = tituloCategoria;
+      document.querySelector('[data-categoria-descricao]').textContent = descricaoCategoria;
+      document.querySelector('[data-breadcrumb-atual]').textContent = tituloCategoria;
+      document.querySelector('[data-categoria-contagem]').textContent = `${produtos.length} produto${produtos.length === 1 ? '' : 's'}`;
+
+      const grid = document.querySelector('[data-categoria-grid]');
+      const vazio = document.querySelector('[data-categoria-vazio]');
+
+      if (produtos.length === 0) {
+        vazio.hidden = false;
+      } else {
+        grid.innerHTML = produtos.map(cartaoProdutoHTML).join('');
+        grid.querySelectorAll('[data-adicionar-rapido]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            adicionarAoCarrinho(btn.dataset.adicionarRapido, { quantidade: 1 });
+            mostrarToast('Produto adicionado ao carrinho!');
+          });
+        });
+      }
+
+      document.querySelectorAll('.filtros__cor').forEach((btn) => {
+        btn.addEventListener('click', () => btn.classList.toggle('is-selecionada'));
+      });
+      document.querySelectorAll('.filtros__tamanho').forEach((btn) => {
+        btn.addEventListener('click', () => btn.classList.toggle('is-selecionado'));
+      });
+    })();
+  </script>
+</body>
+</html>

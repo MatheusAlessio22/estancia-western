@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600">
+  <rect width="480" height="600" fill="#F4E4D7"/>
+  <rect x="0" y="0" width="480" height="600" fill="none" stroke="#5F3A2A" stroke-opacity="0.15" stroke-width="2"/>
+  <g fill="none" stroke="#5F3A2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55">
+    <path d="M170 220c0-38 31-69 70-69s70 31 70 69v40H170z"/>
+    <path d="M150 260h180l14 220H136z"/>
+    <path d="M150 260l-30 60M330 260l30 60"/>
+  </g>
+  <text x="240" y="520" font-family="Georgia, serif" font-size="22" fill="#5F3A2A" text-anchor="middle" opacity="0.6">Foto do produto</text>
+  <text x="240" y="548" font-family="Arial, sans-serif" font-size="14" fill="#5F3A2A" text-anchor="middle" opacity="0.45">em breve</text>
+</svg>

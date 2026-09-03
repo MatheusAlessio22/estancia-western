@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fale Conosco — Estância Western</title>
+  <meta name="description" content="Entre em contato com a Estância Western: WhatsApp, e-mail, redes sociais ou formulário de contato.">
+  <link rel="icon" type="image/svg+xml" href="/assets/logos/favicon-placeholder.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+
+  <div id="site-header"></div>
+
+  <main id="conteudo-principal">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Contato</span>
+      </nav>
+
+      <div class="pagina-header">
+        <h1>Fale Conosco</h1>
+        <p>Estamos aqui para ajudar. Escolha o canal que preferir.</p>
+      </div>
+
+      <div class="contato-layout">
+        <div class="contato-info">
+          <div class="contato-info__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div>
+              <h4>WhatsApp <span class="tag-exemplo" title="Número de exemplo — será substituído pelo WhatsApp real da loja.">Exemplo</span></h4>
+              <p><a href="https://wa.me/5500000000000" target="_blank" rel="noopener" style="text-decoration:underline;">(00) 00000-0000</a></p>
+            </div>
+          </div>
+          <div class="contato-info__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+            <div>
+              <h4>E-mail</h4>
+              <p><a href="mailto:contato@estanciawestern.com.br" style="text-decoration:underline;">contato@estanciawestern.com.br</a></p>
+            </div>
+          </div>
+          <div class="contato-info__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <h4>Horário de Atendimento</h4>
+              <p>Segunda a sexta, das 9h às 18h</p>
+            </div>
+          </div>
+          <div class="contato-info__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <h4>Endereço</h4>
+              <p><em>[Endereço da loja física, se houver — a confirmar com o cliente]</em></p>
+            </div>
+          </div>
+        </div>
+
+        <form class="contato-form" onsubmit="return false;">
+          <h3 style="margin-bottom:var(--espaco-4);">Envie uma Mensagem</h3>
+          <div class="campo">
+            <label for="contato-nome">Nome</label>
+            <input type="text" id="contato-nome" required>
+          </div>
+          <div class="campo">
+            <label for="contato-email">E-mail</label>
+            <input type="email" id="contato-email" required>
+          </div>
+          <div class="campo">
+            <label for="contato-assunto">Assunto</label>
+            <select id="contato-assunto">
+              <option>Dúvida sobre produto</option>
+              <option>Status do pedido</option>
+              <option>Trocas e devoluções</option>
+              <option>Trabalhe conosco</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="contato-mensagem">Mensagem</label>
+            <textarea id="contato-mensagem" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn--primario btn--bloco">Enviar Mensagem</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/partials.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/carrinho-drawer.js"></script>
+  <script src="/js/main.js"></script>
+  <script>injetarParciais('');</script>
+</body>
+</html>
