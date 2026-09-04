@@ -93,6 +93,24 @@
             </button>
           </div>
 
+          <div class="frete-card" data-frete-card>
+            <p class="frete-card__titulo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Frete e Prazo de Entrega
+            </p>
+            <form class="frete-card__form" data-frete-form novalidate>
+              <label for="cep-produto" class="sr-only">CEP</label>
+              <input type="text" id="cep-produto" name="cep-produto" inputmode="numeric" placeholder="00000-000" maxlength="9" autocomplete="postal-code">
+              <button type="submit" class="btn btn--secundario">Calcular</button>
+            </form>
+            <a class="frete-card__link" href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" rel="noopener">Não sei meu CEP</a>
+            <p class="frete-card__erro" role="alert" data-frete-erro></p>
+            <p class="frete-card__carregando" data-frete-carregando hidden>
+              <span class="frete-card__spinner" aria-hidden="true"></span> Calculando...
+            </p>
+            <div class="frete-card__opcoes" data-frete-opcoes role="status" aria-live="polite" hidden></div>
+          </div>
+
           <ul class="produto-info__beneficios">
             <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Frete grátis para compras acima de R$ 299</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Troca grátis em até 30 dias</li>
@@ -281,6 +299,7 @@
   <script src="/js/main.js"></script>
   <script src="/js/produto-variacoes.js"></script>
   <script src="/js/produto-galeria.js"></script>
+  <script src="/js/produto.js"></script>
   <script>injetarParciais('');</script>
   <script>
     (function () {

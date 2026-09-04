@@ -847,6 +847,162 @@
   stroke: var(--cor-branco);
 }
 
+/* ---- Frete: card de simulação (produto) e seleção (checkout) ---- */
+.frete-card {
+  margin-top: var(--espaco-5);
+  padding: var(--espaco-4);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda-lg);
+  background-color: var(--cor-bege-areia);
+}
+
+.frete-card__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-family: var(--fonte-destaque);
+  font-size: var(--texto-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cor-marrom-couro);
+  margin-bottom: var(--espaco-3);
+}
+
+.frete-card__titulo svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--cor-marrom-couro);
+  flex-shrink: 0;
+}
+
+.frete-card__form {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.frete-card__form input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  background-color: var(--cor-branco);
+  font-size: var(--texto-sm);
+}
+
+.frete-card__form input:focus {
+  border-color: var(--cor-primaria);
+}
+
+.frete-card__form .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.frete-card__link {
+  display: inline-block;
+  margin-top: var(--espaco-2);
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+  text-decoration: underline;
+}
+
+.frete-card__erro {
+  margin-top: var(--espaco-2);
+  font-size: var(--texto-xs);
+  color: var(--cor-erro);
+  min-height: 1em;
+}
+
+.frete-card__carregando {
+  margin-top: var(--espaco-3);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.frete-card__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--cor-borda);
+  border-top-color: var(--cor-primaria);
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.frete-card__opcoes {
+  margin-top: var(--espaco-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.frete-opcao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  background-color: var(--cor-branco);
+  cursor: pointer;
+}
+
+.frete-opcao:has(input:checked) {
+  border-color: var(--cor-primaria);
+  background-color: rgb(95 58 42 / 6%);
+}
+
+.frete-opcao.is-gratis:has(input:checked),
+.frete-opcao.is-gratis.is-unica {
+  border-color: var(--cor-sucesso);
+  background-color: rgb(85 107 47 / 8%);
+}
+
+.frete-opcao__info {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-size: var(--texto-sm);
+}
+
+.frete-opcao__tipo {
+  font-weight: 700;
+}
+
+.frete-opcao__prazo {
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-xs);
+}
+
+.frete-opcao__valor {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.frete-opcao__valor.is-gratis {
+  color: var(--cor-sucesso);
+  text-transform: uppercase;
+  font-size: var(--texto-xs);
+}
+
+.frete-card__endereco {
+  margin-top: var(--espaco-3);
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+}
+
 /* ---- 404 ---- */
 .pagina-404 {
   text-align: center;

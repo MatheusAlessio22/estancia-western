@@ -662,13 +662,14 @@
   background:
     linear-gradient(
       to right,
-      rgb(28 28 28 / 85%) 0%,
-      rgb(28 28 28 / 40%) 60%,
+      rgb(28 28 28 / 92%) 0%,
+      rgb(28 28 28 / 75%) 45%,
+      rgb(28 28 28 / 30%) 75%,
       rgb(28 28 28 / 15%) 100%
     ),
-    var(--cor-preto);
+    var(--cor-preto) url('/assets/images/banners/hero-banner.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: 75% 8%;
   overflow: hidden;
 }
 
@@ -1292,7 +1293,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: var(--sombra-elevada);
-  z-index: var(--z-toast);
+  z-index: 150;
   transition: transform var(--transicao-rapida);
 }
 
@@ -1304,6 +1305,16 @@
   width: 30px;
   height: 30px;
   fill: var(--cor-branco);
+}
+
+/* Ocultar botão do WhatsApp quando o drawer de sacola estiver aberto */
+body.has-drawer-aberto .whatsapp-flutuante,
+body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: scale(0.7);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
 }
 
 /* ---- Breadcrumb ---- */
@@ -1605,4 +1616,189 @@
   margin-block-start: var(--espaco-1);
   min-height: 1em;
   text-align: start;
+}
+
+/* ---- Modal de pagamento Pix ---- */
+.modal-pix {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espaco-4);
+}
+
+.modal-pix[hidden] {
+  display: none;
+}
+
+.modal-pix__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(28 28 28 / 65%);
+}
+
+.modal-pix__caixa {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - var(--espaco-8));
+  overflow-y: auto;
+  background: var(--cor-branco);
+  color: var(--cor-preto);
+  border-radius: var(--raio-borda-lg);
+  box-shadow: var(--sombra-elevada);
+  padding: var(--espaco-8) var(--espaco-6) var(--espaco-6);
+  text-align: center;
+}
+
+.modal-pix__fechar {
+  position: absolute;
+  inset-block-start: var(--espaco-4);
+  inset-inline-end: var(--espaco-4);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--cor-bege-areia);
+  color: var(--cor-preto);
+  transition: transform var(--transicao-rapida);
+}
+
+.modal-pix__fechar:hover {
+  transform: scale(1.06);
+}
+
+.modal-pix__titulo {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--texto-xl);
+  line-height: 1.2;
+  margin-block-end: var(--espaco-2);
+}
+
+.modal-pix__valor {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: var(--texto-lg);
+  color: var(--cor-marrom-couro);
+  margin-block-end: var(--espaco-4);
+}
+
+.modal-pix__qrcode {
+  width: 220px;
+  height: 220px;
+  margin-inline: auto;
+  margin-block-end: var(--espaco-4);
+  border-radius: var(--raio-borda);
+  border: 1px solid var(--cor-borda);
+}
+
+.modal-pix__instrucao {
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  margin-block-end: var(--espaco-4);
+}
+
+.modal-pix__codigo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  margin-block-end: var(--espaco-4);
+}
+
+.modal-pix__codigo-campo {
+  flex-basis: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: var(--espaco-3);
+  border-radius: var(--raio-borda);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-alt);
+  font-family: monospace;
+  font-size: var(--texto-xs);
+  color: var(--cor-preto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-pix__copiar {
+  flex: 0 0 auto;
+}
+
+.modal-pix__copiar.is-copiado {
+  background: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+  color: var(--cor-branco);
+}
+
+.modal-pix__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
+.modal-pix__spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--cor-borda);
+  border-top-color: var(--cor-marrom-couro);
+  animation: modal-pix-girar 0.8s linear infinite;
+}
+
+@keyframes modal-pix-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-pix__spinner {
+    animation: none;
+  }
+}
+
+.modal-pix__sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.modal-pix__sucesso-icone {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--cor-sucesso);
+  color: var(--cor-branco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-pix__sucesso-icone svg {
+  width: 32px;
+  height: 32px;
+  stroke: currentColor;
+}
+
+.modal-pix__erro {
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  color: #b3261e;
+  margin-block-end: var(--espaco-4);
 }

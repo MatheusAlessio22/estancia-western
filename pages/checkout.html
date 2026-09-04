@@ -88,6 +88,14 @@
             </div>
           </div>
 
+          <div class="checkout-secao" data-frete-secao hidden>
+            <h3>Escolha o Tipo de Envio</h3>
+            <p class="frete-card__carregando" data-checkout-frete-carregando hidden>
+              <span class="frete-card__spinner" aria-hidden="true"></span> Calculando frete...
+            </p>
+            <div class="frete-card__opcoes" data-checkout-frete-opcoes></div>
+          </div>
+
           <div class="checkout-secao">
             <h3>Forma de Pagamento</h3>
             <div class="pagamento-opcoes">
@@ -144,12 +152,13 @@
           </div>
           <div class="carrinho-resumo__linha">
             <span>Frete</span>
-            <span data-resumo-frete>Grátis</span>
+            <span data-resumo-frete>Calcule o CEP</span>
           </div>
           <div class="carrinho-resumo__linha total">
             <span>Total</span>
             <span data-resumo-total>R$ 0,00</span>
           </div>
+          <p class="frete-card__endereco" data-resumo-endereco hidden></p>
         </aside>
       </div>
 
@@ -166,6 +175,53 @@
   </main>
 
   <div id="site-footer"></div>
+
+  <div class="modal-pix" data-modal-pix hidden role="dialog" aria-modal="true" aria-labelledby="modal-pix-titulo">
+    <div class="modal-pix__overlay" data-modal-pix-fechar></div>
+    <div class="modal-pix__caixa">
+      <button type="button" class="modal-pix__fechar" data-modal-pix-fechar aria-label="Fechar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div data-modal-pix-carregando>
+        <h2 id="modal-pix-titulo" class="modal-pix__titulo">Gerando Pix...</h2>
+        <div class="modal-pix__status">
+          <span class="modal-pix__spinner" aria-hidden="true"></span>
+          <span>Aguarde um instante</span>
+        </div>
+      </div>
+
+      <div data-modal-pix-conteudo hidden>
+        <h2 class="modal-pix__titulo">Pague com Pix</h2>
+        <p class="modal-pix__valor" data-modal-pix-valor></p>
+        <img class="modal-pix__qrcode" data-modal-pix-qrcode alt="QR Code para pagamento Pix" width="220" height="220">
+        <p class="modal-pix__instrucao">Abra o app do seu banco, escolha pagar com Pix e escaneie o QR Code, ou copie o código abaixo.</p>
+        <div class="modal-pix__codigo">
+          <span class="modal-pix__codigo-campo" data-modal-pix-codigo></span>
+          <button type="button" class="btn btn--secundario modal-pix__copiar" data-modal-pix-copiar>Copiar Código Pix</button>
+        </div>
+        <div class="modal-pix__status" data-modal-pix-aguardando>
+          <span class="modal-pix__spinner" aria-hidden="true"></span>
+          <span>Aguardando confirmação do pagamento...</span>
+        </div>
+      </div>
+
+      <div data-modal-pix-erro hidden>
+        <h2 class="modal-pix__titulo">Não foi possível gerar o Pix</h2>
+        <p class="modal-pix__erro" data-modal-pix-erro-mensagem></p>
+        <button type="button" class="btn btn--primario btn--bloco" data-modal-pix-fechar>Tentar novamente</button>
+      </div>
+
+      <div class="modal-pix__sucesso" data-modal-pix-sucesso hidden>
+        <div class="modal-pix__sucesso-icone">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 class="modal-pix__titulo">Pedido Confirmado com Sucesso!</h2>
+        <p>Seu pagamento foi identificado. Número do pedido: <strong data-modal-pix-numero-pedido></strong></p>
+        <a href="/index.html" class="btn btn--primario btn--bloco">Voltar para a Loja</a>
+      </div>
+    </div>
+  </div>
 
   <script src="/js/partials.js"></script>
   <script src="/js/products.js"></script>
