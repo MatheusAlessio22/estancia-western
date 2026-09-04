@@ -21,10 +21,58 @@
 
   <main id="conteudo-principal">
     <div class="container">
-      <div class="pagina-header" style="padding-block:var(--espaco-10);">
+      <div class="pagina-header">
         <h1>Minha Conta</h1>
-        <p>Login, histórico de pedidos e rastreamento chegam na próxima fase do projeto — integrados à plataforma de e-commerce escolhida (Nuvemshop, Shopify ou WooCommerce).</p>
-        <a href="/index.html" class="btn btn--primario" style="margin-top:var(--espaco-5);">Voltar para a Home</a>
+        <p>Login e histórico completo de pedidos chegam na próxima fase do projeto, integrados à plataforma de e-commerce escolhida (Nuvemshop, Shopify ou WooCommerce).</p>
+      </div>
+
+      <div class="rastreio-card">
+        <h2>Já comprou na Estância Western?</h2>
+        <p>Acompanhe o status do seu pedido informando o e-mail usado na compra e o número do pedido.</p>
+
+        <form data-rastreio-form novalidate>
+          <div class="campo">
+            <label for="rastreio-email">E-mail do comprador</label>
+            <input type="email" id="rastreio-email" name="email" required autocomplete="email">
+            <span class="campo-erro"></span>
+          </div>
+          <div class="campo">
+            <label for="rastreio-numero">Número do pedido</label>
+            <input type="text" id="rastreio-numero" name="numero" placeholder="Ex: EW123456" required>
+            <span class="campo-erro"></span>
+          </div>
+          <button type="submit" class="btn btn--primario btn--bloco">Rastrear Pedido</button>
+        </form>
+
+        <div class="rastreio-resultado" data-rastreio-resultado hidden>
+          <div class="rastreio-resultado__cabecalho">
+            <span>Pedido <strong data-rastreio-numero></strong></span>
+            <span data-rastreio-total></span>
+          </div>
+
+          <ol class="rastreio-linha-tempo" data-rastreio-etapas>
+            <li data-etapa="pedido-recebido">
+              <span class="rastreio-linha-tempo__ponto" aria-hidden="true"></span>
+              <span class="rastreio-linha-tempo__texto">Pedido Recebido</span>
+            </li>
+            <li data-etapa="pagamento-confirmado">
+              <span class="rastreio-linha-tempo__ponto" aria-hidden="true"></span>
+              <span class="rastreio-linha-tempo__texto">Pagamento Confirmado</span>
+            </li>
+            <li data-etapa="em-separacao">
+              <span class="rastreio-linha-tempo__ponto" aria-hidden="true"></span>
+              <span class="rastreio-linha-tempo__texto">Em Separação</span>
+            </li>
+            <li data-etapa="enviado">
+              <span class="rastreio-linha-tempo__ponto" aria-hidden="true"></span>
+              <span class="rastreio-linha-tempo__texto">Enviado / A caminho</span>
+            </li>
+          </ol>
+        </div>
+
+        <p class="rastreio-nao-encontrado" data-rastreio-nao-encontrado role="alert" hidden>
+          Não encontramos nenhum pedido com esse e-mail e número. Confira os dados e tente novamente.
+        </p>
       </div>
     </div>
   </main>
@@ -36,6 +84,7 @@
   <script src="/js/cart.js"></script>
   <script src="/js/carrinho-drawer.js"></script>
   <script src="/js/main.js"></script>
+  <script src="/js/conta.js"></script>
   <script>injetarParciais('');</script>
 </body>
 </html>

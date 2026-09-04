@@ -1026,6 +1026,128 @@
   color: var(--cor-texto-suave);
 }
 
+/* ---- Conta: central de rastreamento de pedidos ---- */
+.rastreio-card {
+  max-width: 560px;
+  margin-inline: auto;
+  background-color: var(--cor-branco);
+  border-radius: var(--raio-borda-lg);
+  box-shadow: var(--sombra-card);
+  padding: var(--espaco-8);
+  margin-bottom: var(--espaco-10);
+}
+
+.rastreio-card h2 {
+  margin-bottom: var(--espaco-2);
+}
+
+.rastreio-card > p {
+  color: var(--cor-texto-suave);
+  margin-bottom: var(--espaco-5);
+}
+
+.rastreio-card form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.rastreio-card .btn {
+  margin-top: var(--espaco-2);
+}
+
+.rastreio-resultado {
+  margin-top: var(--espaco-8);
+  padding-top: var(--espaco-6);
+  border-top: 1px solid var(--cor-borda);
+}
+
+.rastreio-resultado__cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--fonte-destaque);
+  font-size: var(--texto-sm);
+  color: var(--cor-marrom-couro);
+  margin-bottom: var(--espaco-6);
+}
+
+.rastreio-linha-tempo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rastreio-linha-tempo li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding-bottom: var(--espaco-6);
+  padding-left: var(--espaco-2);
+}
+
+.rastreio-linha-tempo li::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--espaco-2) + 5px);
+  top: 18px;
+  bottom: -4px;
+  width: 2px;
+  background-color: var(--cor-borda);
+}
+
+.rastreio-linha-tempo li:last-child::before {
+  display: none;
+}
+
+.rastreio-linha-tempo li:last-child {
+  padding-bottom: 0;
+}
+
+.rastreio-linha-tempo__ponto {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--cor-branco);
+  border: 2px solid var(--cor-borda);
+  z-index: 1;
+}
+
+.rastreio-linha-tempo__texto {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
+.rastreio-linha-tempo li.is-concluida .rastreio-linha-tempo__ponto {
+  background-color: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+}
+
+.rastreio-linha-tempo li.is-concluida::before {
+  background-color: var(--cor-sucesso);
+}
+
+.rastreio-linha-tempo li.is-concluida .rastreio-linha-tempo__texto {
+  color: var(--cor-texto);
+  font-weight: 600;
+}
+
+.rastreio-linha-tempo li.is-atual .rastreio-linha-tempo__ponto {
+  box-shadow: 0 0 0 4px rgb(46 92 46 / 18%);
+}
+
+.rastreio-nao-encontrado {
+  margin-top: var(--espaco-6);
+  padding: var(--espaco-4);
+  border-radius: var(--raio-borda);
+  background-color: rgb(179 38 30 / 8%);
+  color: var(--cor-erro);
+  font-size: var(--texto-sm);
+  text-align: center;
+}
+
 /* ---- 404 ---- */
 .pagina-404 {
   text-align: center;

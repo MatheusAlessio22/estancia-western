@@ -276,7 +276,7 @@ function cartaoProdutoHTML(produto) {
   `;
 }
 
-function renderizarVitrines() {
+async function renderizarVitrines() {
   const grids = [
     { seletor: "[data-grid-lancamentos]", filtro: (p) => p.novo, limite: 8 },
     {
@@ -286,10 +286,12 @@ function renderizarVitrines() {
     },
   ];
 
+  const produtosCatalogo = await carregarCatalogoProdutos();
+
   grids.forEach(({ seletor, filtro, limite }) => {
     const container = document.querySelector(seletor);
-    if (!container || typeof PRODUTOS === "undefined") return;
-    const produtos = PRODUTOS.filter(filtro).slice(0, limite);
+    if (!container) return;
+    const produtos = produtosCatalogo.filter(filtro).slice(0, limite);
     container.innerHTML = produtos.map(cartaoProdutoHTML).join("");
   });
 

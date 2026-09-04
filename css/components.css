@@ -99,6 +99,22 @@
   }
 }
 
+.btn.is-enviando {
+  opacity: 0.8;
+  cursor: wait;
+  gap: var(--espaco-3);
+}
+
+.btn.is-enviando::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-girar 700ms linear infinite;
+}
+
 .btn--primario {
   background-color: var(--cor-primaria);
   color: var(--cor-texto-claro);

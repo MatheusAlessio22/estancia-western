@@ -253,11 +253,30 @@ function inicializarAutocompleteCep() {
   });
 }
 
+function definirBotaoCheckoutCarregando(botao, carregando) {
+  if (!botao) return;
+
+  if (carregando) {
+    if (!botao.dataset.textoOriginal) {
+      botao.dataset.textoOriginal = botao.textContent;
+    }
+    botao.disabled = true;
+    botao.classList.add("is-enviando");
+    botao.textContent = "Processando pedido...";
+  } else {
+    botao.disabled = false;
+    botao.classList.remove("is-enviando");
+    botao.textContent = botao.dataset.textoOriginal || "Confirmar Pedido";
+  }
+}
+
 function inicializarFormularioCheckout() {
   const form = document.querySelector("[data-checkout-form]");
   if (!form) return;
 
-  form.addEventListener("submit", (evento) => {
+  const botaoConfirmar = form.querySelector('button[type="submit"]');
+
+  form.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
     const camposObrigatorios = Array.from(form.querySelectorAll("[required]")).filter(
@@ -294,14 +313,19 @@ function inicializarFormularioCheckout() {
       return;
     }
 
+    definirBotaoCheckoutCarregando(botaoConfirmar, true);
+
     const metodoPagamento = form.querySelector('input[name="pagamento"]:checked')?.value;
 
-    if (metodoPagamento === "pix") {
-      iniciarPagamentoPix(form);
-      return;
+    try {
+      if (metodoPagamento === "pix") {
+        await iniciarPagamentoPix(form);
+      } else {
+        await finalizarPedidoSimulado(form, metodoPagamento);
+      }
+    } finally {
+      definirBotaoCheckoutCarregando(botaoConfirmar, false);
     }
-
-    finalizarPedidoSimulado();
   });
 }
 
@@ -332,12 +356,14 @@ async function iniciarPagamentoPix(form) {
   abrirModalPix();
   mostrarEstadoModalPix("carregando");
 
+  const dadosCliente = coletarDadosCliente(form);
+
   try {
     const resposta = await fetch("/api/checkout/pix", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        cliente: coletarDadosCliente(form),
+        cliente: dadosCliente,
         itens: coletarItensCarrinho(),
         tipoFrete: freteSelecionado ? freteSelecionado.tipo : null,
       }),
@@ -351,7 +377,7 @@ async function iniciarPagamentoPix(form) {
 
     preencherModalPix(dados);
     mostrarEstadoModalPix("conteudo");
-    iniciarPollingStatusPedido(dados.pedidoId);
+    iniciarPollingStatusPedido(dados.pedidoId, dadosCliente.email);
   } catch (erro) {
     console.error("Erro ao iniciar pagamento Pix:", erro);
     document.querySelector("[data-modal-pix-erro-mensagem]").textContent =
@@ -405,7 +431,7 @@ function fecharModalPix() {
   pararPollingStatusPedido();
 }
 
-function iniciarPollingStatusPedido(pedidoId) {
+function iniciarPollingStatusPedido(pedidoId, email) {
   pararPollingStatusPedido();
 
   pixPollingTimer = setInterval(async () => {
@@ -417,7 +443,7 @@ function iniciarPollingStatusPedido(pedidoId) {
 
       if (pedido.status === "pago") {
         pararPollingStatusPedido();
-        exibirSucessoPix(pedidoId);
+        exibirSucessoPix(pedidoId, email, pedido.total);
       } else if (pedido.status === "cancelado") {
         pararPollingStatusPedido();
         document.querySelector("[data-modal-pix-erro-mensagem]").textContent =
@@ -437,9 +463,19 @@ function pararPollingStatusPedido() {
   }
 }
 
-function exibirSucessoPix(pedidoId) {
+function exibirSucessoPix(pedidoId, email, total) {
+  const numeroPedido = `EW${String(pedidoId).padStart(6, "0")}`;
   const numeroEl = document.querySelector("[data-modal-pix-numero-pedido]");
-  if (numeroEl) numeroEl.textContent = `EW${String(pedidoId).padStart(6, "0")}`;
+  if (numeroEl) numeroEl.textContent = numeroPedido;
+
+  salvarPedidoLocal({
+    numero: numeroPedido,
+    email: email || "",
+    total: Number(total) || subtotalCarrinho() + (freteSelecionado ? freteSelecionado.valor : 0),
+    metodoPagamento: "pix",
+    etapa: "pagamento-confirmado",
+    criadoEm: new Date().toISOString(),
+  });
 
   mostrarEstadoModalPix("sucesso");
   esvaziarCarrinho();
@@ -478,8 +514,18 @@ function inicializarModalPix() {
   }
 }
 
-function finalizarPedidoSimulado() {
+function finalizarPedidoSimulado(form, metodoPagamento) {
   const numeroPedido = "EW" + Math.floor(100000 + Math.random() * 900000);
+  const email = form?.querySelector("#email")?.value.trim() || "";
+
+  salvarPedidoLocal({
+    numero: numeroPedido,
+    email,
+    total: subtotalCarrinho() + (freteSelecionado ? freteSelecionado.valor : 0),
+    metodoPagamento: metodoPagamento || "cartao",
+    etapa: "pagamento-confirmado",
+    criadoEm: new Date().toISOString(),
+  });
 
   document
     .querySelectorAll(".checkout-etapas span")

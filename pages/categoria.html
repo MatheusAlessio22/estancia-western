@@ -103,7 +103,7 @@
   <script src="/js/main.js"></script>
   <script>injetarParciais('');</script>
   <script>
-    (function () {
+    (async function () {
       const params = new URLSearchParams(window.location.search);
       const slug = params.get('cat') || '';
 
@@ -113,23 +113,25 @@
         'promocoes': ['Promoções', 'Ofertas especiais por tempo limitado.'],
       };
 
+      const catalogo = await carregarCatalogoProdutos();
+
       let produtos = [];
       let tituloCategoria = 'Categoria';
       let descricaoCategoria = 'Confira as peças desta categoria.';
 
       if (titulos[slug]) {
         [tituloCategoria, descricaoCategoria] = titulos[slug];
-        produtos = slug === 'lancamentos' ? PRODUTOS.filter((p) => p.novo)
-          : slug === 'mais-vendidos' ? PRODUTOS.filter((p) => p.maisVendido)
-          : PRODUTOS.filter((p) => p.precoDe);
+        produtos = slug === 'lancamentos' ? catalogo.filter((p) => p.novo)
+          : slug === 'mais-vendidos' ? catalogo.filter((p) => p.maisVendido)
+          : catalogo.filter((p) => p.precoDe);
       } else if (slug) {
         tituloCategoria = nomeCategoria(slug);
         descricaoCategoria = `Confira toda a linha de ${tituloCategoria.toLowerCase()} da Estância Western.`;
-        produtos = buscarProdutosPorCategoria(slug);
+        produtos = catalogo.filter((p) => p.categoria === slug);
       } else {
         tituloCategoria = 'Todos os Produtos';
         descricaoCategoria = 'Confira toda a coleção da Estância Western.';
-        produtos = PRODUTOS;
+        produtos = catalogo;
       }
 
       document.title = `${tituloCategoria} — Estância Western`;

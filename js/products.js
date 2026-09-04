@@ -179,3 +179,69 @@ function nomeCategoria(slug) {
   const categoria = CATEGORIAS.find((item) => item.slug === slug);
   return categoria ? categoria.nome : slug;
 }
+
+/**
+ * Camada híbrida de carregamento de produtos: tenta a API do backend
+ * (/api/produtos) e cai no array local PRODUTOS se o backend estiver
+ * offline (ex: hospedagem estática na Vercel) ou a rota não existir.
+ */
+async function carregarCatalogoProdutos() {
+  try {
+    const resposta = await fetch("/api/produtos");
+    if (!resposta.ok) throw new Error("Resposta inesperada da API de produtos.");
+
+    const produtosApi = await resposta.json();
+    if (!Array.isArray(produtosApi) || produtosApi.length === 0) {
+      throw new Error("API de produtos retornou lista vazia.");
+    }
+
+    // O banco de dados ainda não guarda os sinalizadores "novo"/"maisVendido"
+    // usados nas vitrines da Home; herda-os do catálogo local pelo id
+    // enquanto essas colunas não existem no schema do backend.
+    return produtosApi.map((produto) => {
+      const produtoLocal = buscarProdutoPorId(produto.id);
+      return {
+        novo: produtoLocal?.novo || false,
+        maisVendido: produtoLocal?.maisVendido || false,
+        ...produto,
+      };
+    });
+  } catch (erro) {
+    console.warn("Backend de produtos indisponível, usando catálogo local.", erro);
+    return PRODUTOS;
+  }
+}
+
+const PEDIDOS_STORAGE_KEY = "estancia_pedidos";
+
+function lerPedidosLocais() {
+  try {
+    const dados = localStorage.getItem(PEDIDOS_STORAGE_KEY);
+    return dados ? JSON.parse(dados) : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarPedidoLocal(pedido) {
+  try {
+    const pedidos = lerPedidosLocais();
+    pedidos.unshift(pedido);
+    localStorage.setItem(PEDIDOS_STORAGE_KEY, JSON.stringify(pedidos));
+  } catch {
+    /* localStorage indisponível (modo privado etc.) — ignora silenciosamente */
+  }
+}
+
+function buscarPedidoLocal(numero, email) {
+  const numeroLimpo = String(numero || "").trim().toUpperCase();
+  const emailLimpo = String(email || "").trim().toLowerCase();
+
+  return (
+    lerPedidosLocais().find(
+      (pedido) =>
+        String(pedido.numero || "").trim().toUpperCase() === numeroLimpo &&
+        String(pedido.email || "").trim().toLowerCase() === emailLimpo,
+    ) || null
+  );
+}
