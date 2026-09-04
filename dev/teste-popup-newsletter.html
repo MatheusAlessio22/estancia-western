@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[DEV] Teste — Popup Newsletter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    /* ---- Somente para esta página de teste (não faz parte do site) ---- */
+    .dev-aviso {
+      position: fixed;
+      inset-block-start: 0;
+      inset-inline: 0;
+      z-index: 999;
+      background: var(--cor-preto);
+      color: var(--cor-branco);
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-xs);
+      text-align: center;
+      padding: var(--espaco-2);
+    }
+
+    .dev-fundo {
+      min-height: 100vh;
+      background: var(--cor-fundo-alt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--espaco-10) var(--espaco-4);
+    }
+
+    .dev-botao-reabrir {
+      font-family: var(--fonte-corpo);
+      font-weight: 600;
+      font-size: var(--texto-sm);
+      color: var(--cor-texto-claro);
+      background: var(--cor-primaria);
+      border-radius: var(--raio-borda);
+      padding: var(--espaco-3) var(--espaco-5);
+      transition: background var(--transicao-rapida);
+    }
+
+    .dev-botao-reabrir:hover {
+      background: var(--cor-primaria-hover);
+    }
+
+    /* ========================================================
+       Popup de newsletter (candidato — avaliar antes de portar
+       para components.css / partials.js)
+       ======================================================== */
+    .popup-boas-vindas {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-modal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--espaco-4);
+    }
+
+    .popup-boas-vindas__overlay {
+      position: absolute;
+      inset: 0;
+      background: rgb(28 28 28 / 55%);
+      opacity: 0;
+      transition: opacity var(--motion-duracao-padrao) var(--motion-entrada);
+    }
+
+    .popup-boas-vindas__caixa {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      max-height: calc(100vh - var(--espaco-8));
+      overflow-y: auto;
+      background: var(--cor-fundo-escuro);
+      color: var(--cor-texto-claro);
+      border-radius: var(--raio-borda-lg);
+      box-shadow: var(--sombra-elevada);
+      padding: var(--espaco-8) var(--espaco-6) var(--espaco-6);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+      transition:
+        opacity var(--motion-duracao-padrao) var(--motion-entrada),
+        transform var(--motion-duracao-padrao) var(--motion-entrada);
+    }
+
+    .popup-boas-vindas.is-aberto .popup-boas-vindas__overlay {
+      opacity: 1;
+    }
+
+    .popup-boas-vindas.is-aberto .popup-boas-vindas__caixa {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .popup-boas-vindas__caixa {
+        transform: none;
+      }
+    }
+
+    .popup-boas-vindas__fechar {
+      position: absolute;
+      inset-block-start: var(--espaco-4);
+      inset-inline-end: var(--espaco-4);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--cor-texto-claro);
+      color: var(--cor-preto);
+      transition: transform var(--transicao-rapida);
+    }
+
+    .popup-boas-vindas__fechar:hover {
+      transform: scale(1.06);
+    }
+
+    .popup-boas-vindas__titulo {
+      font-family: var(--fonte-titulo);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: var(--texto-xl);
+      line-height: 1.2;
+      color: var(--cor-texto-claro);
+      margin-block-end: var(--espaco-4);
+    }
+
+    .popup-boas-vindas__texto {
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-md);
+      color: var(--cor-bege-areia);
+      margin-block-end: var(--espaco-6);
+    }
+
+    .popup-boas-vindas__campo {
+      margin-block-end: var(--espaco-3);
+      text-align: start;
+    }
+
+    .popup-boas-vindas__input {
+      width: 100%;
+      min-height: 48px;
+      padding: var(--espaco-3) var(--espaco-4);
+      border-radius: var(--raio-borda);
+      border: 1px solid transparent;
+      background: var(--cor-branco);
+      color: var(--cor-preto);
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-base);
+    }
+
+    .popup-boas-vindas__input::placeholder {
+      color: var(--cor-texto-suave);
+    }
+
+    .popup-boas-vindas__input:focus-visible {
+      outline: 2px solid var(--cor-bege-areia);
+      outline-offset: 2px;
+    }
+
+    .popup-boas-vindas__tel {
+      display: flex;
+      align-items: stretch;
+      gap: var(--espaco-2);
+    }
+
+    .popup-boas-vindas__ddi {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: var(--espaco-1);
+      padding-inline: var(--espaco-3);
+      border-radius: var(--raio-borda);
+      background: var(--cor-branco);
+      color: var(--cor-preto);
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-sm);
+    }
+
+    .popup-boas-vindas__tel .popup-boas-vindas__input {
+      flex: 1 1 auto;
+    }
+
+    .popup-boas-vindas__checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: var(--espaco-3);
+      margin-block: var(--espaco-4) var(--espaco-6);
+      text-align: start;
+    }
+
+    .popup-boas-vindas__opcao {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--espaco-2);
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-sm);
+      color: var(--cor-bege-areia);
+      line-height: 1.4;
+    }
+
+    .popup-boas-vindas__opcao input {
+      appearance: none;
+      flex: 0 0 auto;
+      width: 20px;
+      height: 20px;
+      margin-block-start: 0.1em;
+      border: 1px solid var(--cor-bege-areia);
+      border-radius: 3px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .popup-boas-vindas__opcao input:checked {
+      background: var(--cor-bege-areia);
+    }
+
+    .popup-boas-vindas__opcao input:focus-visible {
+      outline: 2px solid var(--cor-bege-areia);
+      outline-offset: 2px;
+    }
+
+    .popup-boas-vindas__opcao a {
+      text-decoration: underline;
+      color: var(--cor-texto-claro);
+    }
+
+    .popup-boas-vindas__enviar {
+      width: 100%;
+      min-height: 48px;
+      background: var(--cor-bege-areia);
+      color: var(--cor-preto);
+      font-family: var(--fonte-corpo);
+      font-weight: 700;
+      font-size: var(--texto-sm);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--raio-borda);
+      transition: background var(--transicao-rapida);
+    }
+
+    .popup-boas-vindas__enviar:hover {
+      background: var(--cor-branco);
+    }
+
+    .popup-boas-vindas__enviar:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .popup-boas-vindas__pular {
+      display: inline-block;
+      margin-block-start: var(--espaco-4);
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-sm);
+      color: var(--cor-texto-suave);
+      text-decoration: underline;
+    }
+
+    .popup-boas-vindas__erro {
+      font-family: var(--fonte-corpo);
+      font-size: var(--texto-xs);
+      color: #f2b8b0;
+      margin-block-start: var(--espaco-1);
+      min-height: 1em;
+      text-align: start;
+    }
+  </style>
+</head>
+<body>
+  <p class="dev-aviso">Página de teste isolada — não faz parte do site publicado. Usar apenas em /dev.</p>
+
+  <div class="dev-fundo">
+    <button type="button" class="dev-botao-reabrir" data-reabrir-popup>Reabrir popup</button>
+  </div>
+
+  <div class="popup-boas-vindas" data-popup-newsletter hidden>
+    <div class="popup-boas-vindas__overlay" data-popup-fechar></div>
+
+    <div
+      class="popup-boas-vindas__caixa"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popup-titulo"
+    >
+      <button
+        type="button"
+        class="popup-boas-vindas__fechar foco-visivel"
+        data-popup-fechar
+        aria-label="Fechar"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M1 1L15 15M15 1L1 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <h2 class="popup-boas-vindas__titulo" id="popup-titulo">Bem-vindo à<br>Estância Western</h2>
+      <p class="popup-boas-vindas__texto">Cadastre-se e ganhe 10% OFF na sua primeira compra.</p>
+
+      <form data-popup-form novalidate>
+        <div class="popup-boas-vindas__campo">
+          <label for="popup-email" class="sr-only">E-mail</label>
+          <input
+            type="email"
+            id="popup-email"
+            name="email"
+            class="popup-boas-vindas__input"
+            placeholder="Insira seu endereço de e-mail"
+            autocomplete="email"
+            required
+            aria-describedby="popup-email-erro"
+          >
+          <p class="popup-boas-vindas__erro" id="popup-email-erro" role="alert"></p>
+        </div>
+
+        <div class="popup-boas-vindas__campo">
+          <label for="popup-telefone" class="sr-only">Telefone</label>
+          <div class="popup-boas-vindas__tel">
+            <span class="popup-boas-vindas__ddi" aria-hidden="true">🇧🇷 +55</span>
+            <input
+              type="tel"
+              id="popup-telefone"
+              name="telefone"
+              class="popup-boas-vindas__input"
+              placeholder="(XX) XXXXX-XXXX"
+              autocomplete="tel-national"
+              inputmode="numeric"
+            >
+          </div>
+        </div>
+
+        <div class="popup-boas-vindas__checkboxes">
+          <label class="popup-boas-vindas__opcao">
+            <input type="checkbox" name="aceite-privacidade" required>
+            <span>Declaro que li e concordo com a <a href="#">Política de Privacidade</a> da Estância Western.</span>
+          </label>
+          <label class="popup-boas-vindas__opcao">
+            <input type="checkbox" name="aceite-novidades">
+            <span>Eu aceito receber novidades, promoções e conteúdo da Estância Western.</span>
+          </label>
+        </div>
+
+        <button type="submit" class="popup-boas-vindas__enviar">Enviar</button>
+      </form>
+
+      <button type="button" class="popup-boas-vindas__pular" data-popup-fechar>Não, obrigado</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const popup = document.querySelector('[data-popup-newsletter]');
+      const abrirBotoes = document.querySelectorAll('[data-reabrir-popup]');
+      const fecharBotoes = popup.querySelectorAll('[data-popup-fechar]');
+      const form = popup.querySelector('[data-popup-form]');
+      const emailInput = popup.querySelector('#popup-email');
+      const emailErro = popup.querySelector('#popup-email-erro');
+      let ultimoFoco = null;
+
+      function getFocaveis() {
+        return popup.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+      }
+
+      function abrirPopup() {
+        ultimoFoco = document.activeElement;
+        popup.hidden = false;
+        requestAnimationFrame(() => popup.classList.add('is-aberto'));
+        document.body.style.overflow = 'hidden';
+        const primeiro = popup.querySelector('.popup-boas-vindas__fechar');
+        if (primeiro) primeiro.focus();
+        document.addEventListener('keydown', aoTeclar);
+      }
+
+      function fecharPopup() {
+        popup.classList.remove('is-aberto');
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', aoTeclar);
+        window.setTimeout(() => {
+          popup.hidden = true;
+        }, 220);
+        if (ultimoFoco) ultimoFoco.focus();
+      }
+
+      function aoTeclar(evento) {
+        if (evento.key === 'Escape') {
+          fecharPopup();
+          return;
+        }
+
+        if (evento.key === 'Tab') {
+          const focaveis = Array.from(getFocaveis());
+          if (focaveis.length === 0) return;
+          const primeiro = focaveis[0];
+          const ultimo = focaveis[focaveis.length - 1];
+
+          if (evento.shiftKey && document.activeElement === primeiro) {
+            evento.preventDefault();
+            ultimo.focus();
+          } else if (!evento.shiftKey && document.activeElement === ultimo) {
+            evento.preventDefault();
+            primeiro.focus();
+          }
+        }
+      }
+
+      abrirBotoes.forEach((botao) => botao.addEventListener('click', abrirPopup));
+      fecharBotoes.forEach((botao) => botao.addEventListener('click', fecharPopup));
+
+      form.addEventListener('submit', (evento) => {
+        evento.preventDefault();
+        const valido = emailInput.value.trim().length > 0 && emailInput.checkValidity();
+
+        emailInput.setAttribute('aria-invalid', valido ? 'false' : 'true');
+        emailErro.textContent = valido ? '' : 'Informe um e-mail válido.';
+
+        if (!valido) {
+          emailInput.focus();
+          return;
+        }
+
+        emailErro.textContent = '';
+        alert('[DEV] Formulário simulado enviado com sucesso.');
+        fecharPopup();
+      });
+
+      // Abre automaticamente ao carregar, como no comportamento real (com pequeno atraso).
+      window.setTimeout(abrirPopup, 400);
+    })();
+  </script>
+</body>
+</html>

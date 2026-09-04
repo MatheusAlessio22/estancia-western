@@ -329,9 +329,87 @@ function inicializarAnoRodape() {
   });
 }
 
+const CHAVE_POPUP_NEWSLETTER = "estancia-western:popup-newsletter-fechado";
+let elementoAntesDoPopupNewsletter = null;
+
+function abrirPopupNewsletter(popup) {
+  elementoAntesDoPopupNewsletter = document.activeElement;
+  popup.hidden = false;
+  requestAnimationFrame(() => popup.classList.add("is-aberto"));
+  document.body.style.overflow = "hidden";
+  const fechar = popup.querySelector(".popup-boas-vindas__fechar");
+  if (fechar) fechar.focus();
+}
+
+function fecharPopupNewsletter(popup) {
+  popup.classList.remove("is-aberto");
+  document.body.style.overflow = "";
+  window.setTimeout(() => {
+    popup.hidden = true;
+  }, 220);
+  if (elementoAntesDoPopupNewsletter) {
+    elementoAntesDoPopupNewsletter.focus();
+    elementoAntesDoPopupNewsletter = null;
+  }
+  try {
+    localStorage.setItem(CHAVE_POPUP_NEWSLETTER, "1");
+  } catch {
+    /* localStorage indisponível (modo privado etc.) — ignora silenciosamente */
+  }
+}
+
+function inicializarPopupNewsletter() {
+  const popup = document.querySelector("[data-popup-newsletter]");
+  if (!popup) return;
+
+  let jaFechado = false;
+  try {
+    jaFechado = localStorage.getItem(CHAVE_POPUP_NEWSLETTER) === "1";
+  } catch {
+    /* localStorage indisponível — trata como não fechado ainda */
+  }
+  if (jaFechado) return;
+
+  const form = popup.querySelector("[data-popup-form]");
+  const emailInput = popup.querySelector("#popup-email");
+  const emailErro = popup.querySelector("#popup-email-erro");
+
+  popup.querySelectorAll("[data-popup-fechar]").forEach((botao) => {
+    botao.addEventListener("click", () => fecharPopupNewsletter(popup));
+  });
+
+  popup.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+      fecharPopupNewsletter(popup);
+      return;
+    }
+    prenderFoco(popup, evento);
+  });
+
+  form.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    const valido = emailInput.value.trim().length > 0 && emailInput.checkValidity();
+
+    emailInput.setAttribute("aria-invalid", valido ? "false" : "true");
+    emailErro.textContent = valido ? "" : "Informe um e-mail válido.";
+
+    if (!valido) {
+      emailInput.focus();
+      return;
+    }
+
+    // Integração futura: enviar dados do form para Mailchimp/RD Station.
+    emailErro.textContent = "";
+    fecharPopupNewsletter(popup);
+  });
+
+  window.setTimeout(() => abrirPopupNewsletter(popup), 2000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   inicializarHeader();
   inicializarNewsletter();
   renderizarVitrines();
   inicializarAnoRodape();
+  inicializarPopupNewsletter();
 });
