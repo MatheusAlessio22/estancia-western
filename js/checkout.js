@@ -80,7 +80,11 @@ function renderizarOpcoesFreteCheckout(opcoes) {
 
   container.innerHTML = opcoes
     .map((opcao, indice) => {
-      const icone = opcao.tipo === "SEDEX" ? "⚡" : "🚚";
+      const tagHtml = opcao.gratis
+        ? `<span class="frete-tag frete-tag--gratis">Frete Grátis</span>`
+        : opcao.tipo === "SEDEX"
+          ? `<span class="frete-tag frete-tag--expresso">Mais rápido</span>`
+          : `<span class="frete-tag">Econômico</span>`;
       const valorHtml = opcao.gratis
         ? `<span class="frete-opcao__valor is-gratis">Frete Grátis</span>`
         : `<span class="frete-opcao__valor">${formatarPreco(opcao.valor)}</span>`;
@@ -89,9 +93,8 @@ function renderizarOpcoesFreteCheckout(opcoes) {
         <label class="frete-opcao${opcao.gratis ? " is-gratis" : ""}">
           <span class="frete-opcao__info">
             <input type="radio" name="frete-checkout-opcao" value="${opcao.tipo}" ${indice === 0 ? "checked" : ""}>
-            <span aria-hidden="true">${icone}</span>
             <span>
-              <span class="frete-opcao__tipo">${opcao.tipo} ${opcao.tipo === "SEDEX" ? "Expresso" : "Econômico"}</span><br>
+              <span class="frete-opcao__tipo">${opcao.tipo}</span> ${tagHtml}<br>
               <span class="frete-opcao__prazo">${opcao.prazo}</span>
             </span>
           </span>
