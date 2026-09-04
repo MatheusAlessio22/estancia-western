@@ -984,7 +984,6 @@
 }
 
 .card-produto__preco {
-  margin-top: auto;
   padding-top: var(--espaco-2);
   display: flex;
   flex-wrap: wrap;
@@ -1014,7 +1013,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  margin-top: var(--espaco-3);
+  margin-top: auto;
   white-space: normal;
   text-align: center;
 }
