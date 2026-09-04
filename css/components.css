@@ -1012,7 +1012,10 @@
 .card-produto__btn {
   position: relative;
   z-index: 1;
+  width: 100%;
   margin-top: var(--espaco-3);
+  white-space: normal;
+  text-align: center;
 }
 
 /* ---- Diferenciais ---- */
