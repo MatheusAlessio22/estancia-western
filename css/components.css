@@ -987,8 +987,9 @@
   margin-top: auto;
   padding-top: var(--espaco-2);
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--espaco-2);
+  gap: var(--espaco-1) var(--espaco-2);
 }
 
 .card-produto__preco-de {
