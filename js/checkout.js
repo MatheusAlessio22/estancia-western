@@ -7,6 +7,9 @@
 const PIX_POLLING_INTERVALO_MS = 3000;
 let pixPollingTimer = null;
 
+const CARTAO_PARCELAS_MAXIMAS = 6;
+const CARTAO_PARCELA_MINIMA = 10;
+
 let opcoesFreteCheckout = [];
 let freteSelecionado = null;
 let enderecoConfirmado = null;
@@ -59,6 +62,8 @@ function atualizarResumoCheckout() {
 
   if (totalEl) totalEl.textContent = formatarPreco(subtotal + valorFreteSelecionado);
 
+  atualizarOpcoesParcelas(subtotal + valorFreteSelecionado);
+
   if (enderecoEl) {
     if (enderecoConfirmado) {
       const numero = document.getElementById("numero")?.value.trim() || "";
@@ -67,6 +72,33 @@ function atualizarResumoCheckout() {
     } else {
       enderecoEl.hidden = true;
     }
+  }
+}
+
+function atualizarOpcoesParcelas(total) {
+  const campoParcelas = document.getElementById("cartao-parcelas");
+  if (!campoParcelas) return;
+
+  const valorSelecionado = campoParcelas.value;
+  const maxParcelas = Math.max(
+    1,
+    Math.min(CARTAO_PARCELAS_MAXIMAS, Math.floor(total / CARTAO_PARCELA_MINIMA) || 1),
+  );
+
+  const opcoes = [];
+  for (let parcela = 1; parcela <= maxParcelas; parcela += 1) {
+    const valorParcela = total / parcela;
+    const texto =
+      parcela === 1
+        ? `1x de ${formatarPreco(valorParcela)} à vista`
+        : `${parcela}x de ${formatarPreco(valorParcela)} sem juros`;
+    opcoes.push(`<option value="${parcela}">${texto}</option>`);
+  }
+
+  campoParcelas.innerHTML = opcoes.join("");
+
+  if (opcoes.some((_, indice) => String(indice + 1) === valorSelecionado)) {
+    campoParcelas.value = valorSelecionado;
   }
 }
 
@@ -602,12 +634,17 @@ function inicializarModalPix() {
 function finalizarPedidoSimulado(form, metodoPagamento) {
   const numeroPedido = "EW" + Math.floor(100000 + Math.random() * 900000);
   const email = form?.querySelector("#email")?.value.trim() || "";
+  const parcelas =
+    metodoPagamento === "cartao"
+      ? Number(form?.querySelector("#cartao-parcelas")?.value) || 1
+      : 1;
 
   salvarPedidoLocal({
     numero: numeroPedido,
     email,
     total: subtotalCarrinho() + (freteSelecionado ? freteSelecionado.valor : 0),
     metodoPagamento: metodoPagamento || "cartao",
+    parcelas,
     etapa: "pagamento-confirmado",
     criadoEm: new Date().toISOString(),
   });
