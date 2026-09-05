@@ -180,6 +180,85 @@ function simularOpcoesFreteLocalCheckout(total) {
   };
 }
 
+const IBGE_ESTADOS_URL = "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";
+const IBGE_MUNICIPIOS_URL = (uf) =>
+  `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`;
+
+function normalizarTexto(texto) {
+  return String(texto || "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+async function carregarEstadosIbge(campoEstado) {
+  try {
+    const resposta = await fetch(IBGE_ESTADOS_URL);
+    if (!resposta.ok) throw new Error("Resposta inesperada da API de estados do IBGE.");
+
+    const estados = await resposta.json();
+
+    campoEstado.innerHTML =
+      `<option value="">Selecione o estado</option>` +
+      estados
+        .map((estado) => `<option value="${estado.sigla}">${estado.nome}</option>`)
+        .join("");
+  } catch (erro) {
+    console.warn("API do IBGE indisponível, não foi possível carregar os estados.", erro);
+    definirErroCampo(campoEstado, "Não foi possível carregar a lista de estados agora.");
+  }
+}
+
+async function carregarMunicipiosIbge(uf, campoCidade, cidadeParaSelecionar) {
+  campoCidade.disabled = true;
+  campoCidade.innerHTML = `<option value="">Carregando cidades...</option>`;
+
+  if (!uf) {
+    campoCidade.innerHTML = `<option value="">Selecione o estado primeiro</option>`;
+    return;
+  }
+
+  try {
+    const resposta = await fetch(IBGE_MUNICIPIOS_URL(uf));
+    if (!resposta.ok) throw new Error("Resposta inesperada da API de municípios do IBGE.");
+
+    const municipios = await resposta.json();
+
+    campoCidade.innerHTML =
+      `<option value="">Selecione a cidade</option>` +
+      municipios
+        .map((municipio) => `<option value="${municipio.nome}">${municipio.nome}</option>`)
+        .join("");
+    campoCidade.disabled = false;
+
+    if (cidadeParaSelecionar) {
+      const alvo = normalizarTexto(cidadeParaSelecionar);
+      const opcao = Array.from(campoCidade.options).find(
+        (option) => normalizarTexto(option.value) === alvo,
+      );
+      if (opcao) campoCidade.value = opcao.value;
+    }
+  } catch (erro) {
+    console.warn("API do IBGE indisponível, não foi possível carregar as cidades.", erro);
+    campoCidade.innerHTML = `<option value="">Não foi possível carregar as cidades</option>`;
+    definirErroCampo(campoCidade, "Não foi possível carregar a lista de cidades agora.");
+  }
+}
+
+function inicializarSeletoresEstadoCidade() {
+  const campoEstado = document.getElementById("estado");
+  const campoCidade = document.getElementById("cidade");
+  if (!campoEstado || !campoCidade) return;
+
+  carregarEstadosIbge(campoEstado);
+
+  campoEstado.addEventListener("change", () => {
+    definirErroCampo(campoCidade, "");
+    carregarMunicipiosIbge(campoEstado.value, campoCidade);
+  });
+}
+
 function inicializarAutocompleteCep() {
   const campoCep = document.getElementById("cep");
   if (!campoCep) return;
@@ -197,6 +276,16 @@ function inicializarAutocompleteCep() {
   campoCep.addEventListener("input", () => {
     campoCep.value = aplicarMascaraCep(campoCep.value);
   });
+
+  async function aplicarEnderecoDoCep(endereco) {
+    if (campoEndereco && endereco.logradouro) {
+      campoEndereco.value = endereco.logradouro;
+    }
+    if (campoEstado && endereco.estado) {
+      campoEstado.value = endereco.estado;
+      await carregarMunicipiosIbge(endereco.estado, campoCidade, endereco.cidade);
+    }
+  }
 
   campoCep.addEventListener("blur", async () => {
     const cepLimpo = campoCep.value.replace(/\D/g, "");
@@ -221,11 +310,7 @@ function inicializarAutocompleteCep() {
       definirErroCampo(campoCep, "");
       localStorage.setItem("estancia_cep", cepLimpo);
 
-      if (campoEndereco && dados.endereco.logradouro) {
-        campoEndereco.value = dados.endereco.logradouro;
-      }
-      if (campoCidade) campoCidade.value = dados.endereco.cidade;
-      if (campoEstado) campoEstado.value = dados.endereco.estado;
+      await aplicarEnderecoDoCep(dados.endereco);
 
       enderecoConfirmado = {
         endereco: campoEndereco ? campoEndereco.value.trim() : "",
@@ -546,6 +631,7 @@ function finalizarPedidoSimulado(form, metodoPagamento) {
 document.addEventListener("DOMContentLoaded", () => {
   popularResumoCheckout();
   inicializarSelecaoPagamento();
+  inicializarSeletoresEstadoCidade();
   inicializarAutocompleteCep();
   inicializarFormularioCheckout();
   inicializarModalPix();

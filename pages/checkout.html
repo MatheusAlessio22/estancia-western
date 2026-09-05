@@ -76,13 +76,17 @@
             </div>
             <div class="campo-linha campo-linha--2">
               <div class="campo">
-                <label for="cidade">Cidade</label>
-                <input type="text" id="cidade" name="cidade" required>
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado" required>
+                  <option value="">Selecione o estado</option>
+                </select>
                 <span class="campo-erro"></span>
               </div>
               <div class="campo">
-                <label for="estado">Estado</label>
-                <input type="text" id="estado" name="estado" required>
+                <label for="cidade">Cidade</label>
+                <select id="cidade" name="cidade" required disabled>
+                  <option value="">Selecione o estado primeiro</option>
+                </select>
                 <span class="campo-erro"></span>
               </div>
             </div>
