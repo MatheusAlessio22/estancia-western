@@ -21,7 +21,7 @@ function HEADER_HTML(paginaAtiva = "") {
         </button>
 
         <a href="/index.html" class="header__logo">
-          <img src="/assets/logos/logo-transparente-marrom.png" alt="Estância Western — Moda Country">
+          <img src="/assets/logos/logo-w-marrom.png" alt="Estância Western — Moda Country">
         </a>
 
         <nav class="header__nav" aria-label="Navegação principal">
