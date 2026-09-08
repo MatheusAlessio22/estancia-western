@@ -105,14 +105,111 @@ function atualizarOpcoesParcelas(total) {
       parcela === 1
         ? `1x de ${formatarPreco(valorParcela)} à vista`
         : `${parcela}x de ${formatarPreco(valorParcela)} sem juros`;
-    opcoes.push(`<option value="${parcela}">${texto}</option>`);
+    opcoes.push({ valor: String(parcela), texto });
   }
 
-  campoParcelas.innerHTML = opcoes.join("");
+  campoParcelas.innerHTML = opcoes
+    .map((opcao) => `<option value="${opcao.valor}">${opcao.texto}</option>`)
+    .join("");
 
-  if (opcoes.some((_, indice) => String(indice + 1) === valorSelecionado)) {
+  const selecaoValida = opcoes.some(
+    (opcao) => opcao.valor === valorSelecionado,
+  );
+  if (selecaoValida) {
     campoParcelas.value = valorSelecionado;
   }
+
+  renderizarSeletorParcelasCustom(opcoes, campoParcelas.value);
+}
+
+function renderizarSeletorParcelasCustom(opcoes, valorAtual) {
+  const wrapper = document.querySelector("[data-seletor-parcelas]");
+  const menu = document.querySelector("[data-seletor-parcelas-menu]");
+  const textoGatilho = document.querySelector("[data-seletor-parcelas-texto]");
+  const campoParcelas = document.getElementById("cartao-parcelas");
+  if (!wrapper || !menu || !campoParcelas) return;
+
+  menu.innerHTML = opcoes
+    .map(
+      (opcao) => `
+        <button type="button" class="seletor-parcelas-custom__opcao${opcao.valor === valorAtual ? " is-selecionada" : ""}" role="option" aria-selected="${opcao.valor === valorAtual}" data-valor="${opcao.valor}">
+          ${opcao.texto}
+        </button>
+      `,
+    )
+    .join("");
+
+  const selecionada = opcoes.find((opcao) => opcao.valor === valorAtual);
+  if (textoGatilho && selecionada) {
+    textoGatilho.textContent = selecionada.texto;
+  }
+
+  menu.querySelectorAll("[data-valor]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      campoParcelas.value = botao.dataset.valor;
+      campoParcelas.dispatchEvent(new Event("change", { bubbles: true }));
+
+      if (textoGatilho) textoGatilho.textContent = botao.textContent.trim();
+      menu
+        .querySelectorAll(".seletor-parcelas-custom__opcao")
+        .forEach((el) => {
+          el.classList.toggle("is-selecionada", el === botao);
+          el.setAttribute("aria-selected", el === botao ? "true" : "false");
+        });
+
+      fecharSeletorParcelasCustom();
+    });
+  });
+}
+
+function abrirSeletorParcelasCustom() {
+  const wrapper = document.querySelector("[data-seletor-parcelas]");
+  const menu = document.querySelector("[data-seletor-parcelas-menu]");
+  const gatilho = document.querySelector("[data-seletor-parcelas-gatilho]");
+  if (!wrapper || !menu || !gatilho) return;
+
+  wrapper.classList.add("is-aberto");
+  menu.hidden = false;
+  gatilho.setAttribute("aria-expanded", "true");
+}
+
+function fecharSeletorParcelasCustom() {
+  const wrapper = document.querySelector("[data-seletor-parcelas]");
+  const menu = document.querySelector("[data-seletor-parcelas-menu]");
+  const gatilho = document.querySelector("[data-seletor-parcelas-gatilho]");
+  if (!wrapper || !menu || !gatilho) return;
+
+  wrapper.classList.remove("is-aberto");
+  menu.hidden = true;
+  gatilho.setAttribute("aria-expanded", "false");
+}
+
+function inicializarSeletorParcelasCustom() {
+  const wrapper = document.querySelector("[data-seletor-parcelas]");
+  const gatilho = document.querySelector("[data-seletor-parcelas-gatilho]");
+  if (!wrapper || !gatilho) return;
+
+  gatilho.addEventListener("click", () => {
+    const aberto = wrapper.classList.contains("is-aberto");
+    if (aberto) {
+      fecharSeletorParcelasCustom();
+    } else {
+      abrirSeletorParcelasCustom();
+    }
+  });
+
+  document.addEventListener("click", (evento) => {
+    if (!wrapper.contains(evento.target)) {
+      fecharSeletorParcelasCustom();
+    }
+  });
+
+  wrapper.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+      fecharSeletorParcelasCustom();
+      gatilho.focus();
+    }
+  });
 }
 
 function renderizarOpcoesFreteCheckout(opcoes) {
@@ -818,6 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarSeletoresEstadoCidade();
   inicializarAutocompleteCep();
   inicializarMascarasFormulario();
+  inicializarSeletorParcelasCustom();
   inicializarFormularioCheckout();
   inicializarModalPix();
   inicializarCupom(atualizarResumoCheckout);

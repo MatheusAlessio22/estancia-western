@@ -143,10 +143,17 @@
                 </div>
               </div>
               <div class="campo">
-                <label for="cartao-parcelas">Parcelas</label>
-                <select id="cartao-parcelas" name="cartao-parcelas" required>
+                <label for="cartao-parcelas-gatilho">Parcelas</label>
+                <select id="cartao-parcelas" name="cartao-parcelas" class="sr-only" tabindex="-1" aria-hidden="true" required>
                   <option value="1">1x sem juros</option>
                 </select>
+                <div class="seletor-parcelas-custom" data-seletor-parcelas>
+                  <button type="button" id="cartao-parcelas-gatilho" class="seletor-parcelas-custom__gatilho" aria-haspopup="listbox" aria-expanded="false" data-seletor-parcelas-gatilho>
+                    <span data-seletor-parcelas-texto>1x sem juros</span>
+                    <svg class="seletor-parcelas-custom__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="seletor-parcelas-custom__menu" role="listbox" tabindex="-1" data-seletor-parcelas-menu hidden></div>
+                </div>
                 <span class="campo-erro"></span>
               </div>
             </div>

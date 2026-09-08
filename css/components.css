@@ -1603,6 +1603,97 @@ body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
   line-height: 1.4;
 }
 
+.seletor-parcelas-custom {
+  position: relative;
+  width: 100%;
+}
+
+.seletor-parcelas-custom__gatilho {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--espaco-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-base);
+  color: var(--cor-texto);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color var(--transicao-rapida),
+    box-shadow var(--transicao-rapida);
+}
+
+.seletor-parcelas-custom__gatilho:focus,
+.seletor-parcelas-custom.is-aberto .seletor-parcelas-custom__gatilho {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgb(95 58 42 / 12%);
+}
+
+.seletor-parcelas-custom__icone {
+  width: 16px;
+  height: 16px;
+  color: var(--cor-primaria);
+  transition: transform var(--transicao-rapida);
+  flex-shrink: 0;
+}
+
+.seletor-parcelas-custom.is-aberto .seletor-parcelas-custom__icone {
+  transform: rotate(180deg);
+}
+
+.seletor-parcelas-custom__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda-lg);
+  box-shadow: var(--sombra-elevada);
+  z-index: 50;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--espaco-1);
+}
+
+.seletor-parcelas-custom__opcao {
+  width: 100%;
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-borda);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  transition:
+    background-color var(--transicao-rapida),
+    color var(--transicao-rapida);
+}
+
+.seletor-parcelas-custom__opcao:hover,
+.seletor-parcelas-custom__opcao:focus {
+  background-color: var(--cor-bege-areia);
+  color: var(--cor-marrom-couro-escuro);
+  outline: none;
+}
+
+.seletor-parcelas-custom__opcao.is-selecionada {
+  background-color: rgb(95 58 42 / 8%);
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
 .popup-boas-vindas__opcao input {
   appearance: none;
   flex: 0 0 auto;
