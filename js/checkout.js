@@ -6,6 +6,7 @@
 
 const PIX_POLLING_INTERVALO_MS = 3000;
 let pixPollingTimer = null;
+let pixContadorTimer = null;
 
 const CARTAO_PARCELAS_MAXIMAS = 6;
 const CARTAO_PARCELA_MINIMA = 10;
@@ -755,6 +756,43 @@ function preencherModalPix(dados) {
 
   const modal = document.querySelector("[data-modal-pix]");
   if (modal) modal.dataset.pedidoId = dados.pedidoId;
+
+  iniciarContadorExpiracaoPix(dados.expiraEm || 1800);
+}
+
+function formatarTempoContador(segundosRestantes) {
+  const minutos = Math.floor(segundosRestantes / 60);
+  const segundos = segundosRestantes % 60;
+  return `${minutos}:${String(segundos).padStart(2, "0")}`;
+}
+
+function iniciarContadorExpiracaoPix(segundosIniciais) {
+  pararContadorExpiracaoPix();
+
+  const expiraEl = document.querySelector("[data-modal-pix-expira]");
+  if (!expiraEl) return;
+
+  let segundosRestantes = segundosIniciais;
+
+  const atualizar = () => {
+    if (segundosRestantes <= 0) {
+      expiraEl.textContent = "Este código Pix expirou.";
+      pararContadorExpiracaoPix();
+      return;
+    }
+    expiraEl.textContent = `Este código expira em ${formatarTempoContador(segundosRestantes)}`;
+    segundosRestantes -= 1;
+  };
+
+  atualizar();
+  pixContadorTimer = setInterval(atualizar, 1000);
+}
+
+function pararContadorExpiracaoPix() {
+  if (pixContadorTimer) {
+    clearInterval(pixContadorTimer);
+    pixContadorTimer = null;
+  }
 }
 
 function mostrarEstadoModalPix(estado) {
@@ -783,6 +821,7 @@ function fecharModalPix() {
   modal.hidden = true;
   document.body.style.overflow = "";
   pararPollingStatusPedido();
+  pararContadorExpiracaoPix();
 }
 
 function iniciarPollingStatusPedido(pedidoId, email) {
@@ -818,6 +857,8 @@ function pararPollingStatusPedido() {
 }
 
 function exibirSucessoPix(pedidoId, email, total) {
+  pararContadorExpiracaoPix();
+
   const numeroPedido = `EW${String(pedidoId).padStart(6, "0")}`;
   const numeroEl = document.querySelector("[data-modal-pix-numero-pedido]");
   if (numeroEl) numeroEl.textContent = numeroPedido;
@@ -860,7 +901,7 @@ function inicializarModalPix() {
         document.querySelector("[data-modal-pix-codigo]")?.textContent || "";
       try {
         await navigator.clipboard.writeText(codigo);
-        botaoCopiar.textContent = "Copiado!";
+        botaoCopiar.textContent = "Código copiado!";
         botaoCopiar.classList.add("is-copiado");
         setTimeout(() => {
           botaoCopiar.textContent = "Copiar Código Pix";

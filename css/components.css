@@ -1884,6 +1884,14 @@ body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
   color: var(--cor-branco);
 }
 
+.modal-pix__expira {
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  color: var(--cor-marrom-couro);
+  margin-block-end: var(--espaco-3);
+}
+
 .modal-pix__status {
   display: flex;
   align-items: center;
@@ -1892,6 +1900,27 @@ body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
   font-family: var(--fonte-corpo);
   font-size: var(--texto-sm);
   color: var(--cor-texto-suave);
+}
+
+.modal-pix__status--pulsante span:last-child {
+  animation: modal-pix-pulsar 1.8s ease-in-out infinite;
+}
+
+@keyframes modal-pix-pulsar {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-pix__status--pulsante span:last-child {
+    animation: none;
+  }
 }
 
 .modal-pix__spinner {
@@ -1931,12 +1960,31 @@ body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: modal-pix-sucesso-entrada var(--motion-duracao-padrao) var(--motion-entrada);
 }
 
 .modal-pix__sucesso-icone svg {
   width: 32px;
   height: 32px;
   stroke: currentColor;
+}
+
+@keyframes modal-pix-sucesso-entrada {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-pix__sucesso-icone {
+    animation: none;
+  }
 }
 
 .modal-pix__erro {

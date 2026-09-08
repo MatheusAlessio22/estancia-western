@@ -25,7 +25,7 @@ function gerarQrCodeSimuladoBase64(copiaECola) {
   return Buffer.from(svg).toString("base64");
 }
 
-async function criarPagamentoPix({ pedidoId, valor, clienteNome, clienteEmail }) {
+async function criarPagamentoPix({ pedidoId, valor, clienteNome, clienteEmail, clienteCpf }) {
   if (!credencialValida || !paymentClient) {
     const copiaECola = gerarChavePixSimulada(pedidoId);
     return {
@@ -50,6 +50,10 @@ async function criarPagamentoPix({ pedidoId, valor, clienteNome, clienteEmail })
           email: clienteEmail,
           first_name: primeiroNome,
           last_name: sobrenome,
+          identification: {
+            type: "CPF",
+            number: String(clienteCpf || "").replace(/\D/g, "") || "00000000000",
+          },
         },
         external_reference: String(pedidoId),
       },

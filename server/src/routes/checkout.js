@@ -128,6 +128,7 @@ router.post("/pix", async (req, res) => {
       valor: total,
       clienteNome: cliente.nome,
       clienteEmail: cliente.email,
+      clienteCpf: cliente.cpf,
     });
 
     db.prepare(`
@@ -137,6 +138,7 @@ router.post("/pix", async (req, res) => {
     `).run(pagamento.mpPaymentId, pagamento.copiaECola, pagamento.qrCodeBase64, pedidoId);
 
     res.json({
+      sucesso: true,
       pedidoId,
       qrCodeBase64: pagamento.qrCodeBase64,
       qrCodeMimeType: pagamento.qrCodeMimeType,
@@ -145,6 +147,7 @@ router.post("/pix", async (req, res) => {
       desconto,
       cupom: cupomCodigo,
       simulado: pagamento.simulado,
+      expiraEm: 1800,
     });
   } catch (erro) {
     console.error("Erro ao processar checkout Pix:", erro);
