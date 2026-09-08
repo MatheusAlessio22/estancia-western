@@ -719,6 +719,7 @@ async function iniciarPagamentoPix(form) {
         cliente: dadosCliente,
         itens: coletarItensCarrinho(),
         tipoFrete: freteSelecionado ? freteSelecionado.tipo : null,
+        cupom: typeof cupomAplicado !== "undefined" ? cupomAplicado : null,
       }),
     });
 

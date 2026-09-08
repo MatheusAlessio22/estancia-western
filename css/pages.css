@@ -1295,3 +1295,10 @@
 .cupom-mensagem.is-erro {
   color: var(--cor-erro);
 }
+
+.rastreio-resultado__codigo {
+  margin-top: var(--espaco-4);
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  color: var(--cor-marrom-couro);
+}

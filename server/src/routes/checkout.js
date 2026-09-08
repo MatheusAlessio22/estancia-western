@@ -1,5 +1,5 @@
 const express = require("express");
-const { db } = require("../database/db");
+const { db, validarCupom } = require("../database/db");
 const { calcularOpcoesFrete } = require("../services/frete");
 const { criarPagamentoPix } = require("../services/mercadopago");
 
@@ -28,7 +28,7 @@ function validarDadosCliente(cliente) {
 
 router.post("/pix", async (req, res) => {
   try {
-    const { cliente, itens, tipoFrete } = req.body;
+    const { cliente, itens, tipoFrete, cupom } = req.body;
 
     const erroCliente = validarDadosCliente(cliente);
     if (erroCliente) {
@@ -65,15 +65,30 @@ router.post("/pix", async (req, res) => {
     const opcaoFrete =
       opcoesFrete.find((opcao) => opcao.tipo === tipoFrete) || opcoesFrete[0];
     const frete = opcaoFrete.valor;
-    const total = subtotal + frete;
+
+    let desconto = 0;
+    let cupomCodigo = null;
+
+    if (cupom) {
+      const resultadoCupom = validarCupom(cupom, subtotal);
+      if (!resultadoCupom.valido) {
+        return res.status(resultadoCupom.status).json({ erro: resultadoCupom.mensagem });
+      }
+      desconto = resultadoCupom.desconto;
+      cupomCodigo = resultadoCupom.codigo;
+    }
+
+    const total = subtotal + frete - desconto;
 
     const inserirPedido = db.prepare(`
       INSERT INTO pedidos (
         cliente_nome, cliente_email, cliente_telefone, cep, endereco, numero,
-        complemento, bairro, cidade, estado, total, frete, status, metodo_pagamento
+        complemento, bairro, cidade, estado, total, frete, status, metodo_pagamento,
+        cupom_codigo, desconto
       ) VALUES (
         @nome, @email, @telefone, @cep, @endereco, @numero,
-        @complemento, @bairro, @cidade, @estado, @total, @frete, 'pendente', 'pix'
+        @complemento, @bairro, @cidade, @estado, @total, @frete, 'pendente', 'pix',
+        @cupomCodigo, @desconto
       )
     `);
 
@@ -90,6 +105,8 @@ router.post("/pix", async (req, res) => {
       estado: cliente.estado,
       total,
       frete,
+      cupomCodigo,
+      desconto,
     });
 
     const pedidoId = resultado.lastInsertRowid;
@@ -125,6 +142,8 @@ router.post("/pix", async (req, res) => {
       qrCodeMimeType: pagamento.qrCodeMimeType,
       copiaECola: pagamento.copiaECola,
       total,
+      desconto,
+      cupom: cupomCodigo,
       simulado: pagamento.simulado,
     });
   } catch (erro) {

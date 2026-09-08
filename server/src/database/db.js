@@ -48,6 +48,9 @@ function criarTabelas() {
       mp_payment_id TEXT,
       pix_copia_cola TEXT,
       pix_qr_code_base64 TEXT,
+      cupom_codigo TEXT,
+      desconto REAL NOT NULL DEFAULT 0,
+      codigo_rastreio TEXT,
       criado_em TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -62,7 +65,32 @@ function criarTabelas() {
       FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
       FOREIGN KEY (produto_id) REFERENCES produtos(id)
     );
+
+    CREATE TABLE IF NOT EXISTS cupons (
+      codigo TEXT PRIMARY KEY,
+      desconto_percentual REAL,
+      desconto_fixo REAL,
+      valor_minimo REAL,
+      ativo INTEGER NOT NULL DEFAULT 1
+    );
   `);
+
+  migrarColunasPedidos();
+}
+
+function migrarColunasPedidos() {
+  const colunas = db.prepare("PRAGMA table_info(pedidos)").all();
+  const nomes = new Set(colunas.map((coluna) => coluna.name));
+
+  if (!nomes.has("cupom_codigo")) {
+    db.exec("ALTER TABLE pedidos ADD COLUMN cupom_codigo TEXT");
+  }
+  if (!nomes.has("desconto")) {
+    db.exec("ALTER TABLE pedidos ADD COLUMN desconto REAL NOT NULL DEFAULT 0");
+  }
+  if (!nomes.has("codigo_rastreio")) {
+    db.exec("ALTER TABLE pedidos ADD COLUMN codigo_rastreio TEXT");
+  }
 }
 
 function extrairProdutosDoArquivo() {
@@ -125,9 +153,94 @@ function seedProdutos() {
   console.log(`Seed: ${produtos.length} produtos importados de js/products.js`);
 }
 
+function seedCupons() {
+  const { count } = db.prepare("SELECT COUNT(*) AS count FROM cupons").get();
+  if (count > 0) return;
+
+  const inserir = db.prepare(`
+    INSERT INTO cupons (codigo, desconto_percentual, desconto_fixo, valor_minimo, ativo)
+    VALUES (@codigo, @descontoPercentual, @descontoFixo, @valorMinimo, @ativo)
+  `);
+
+  const cuponsIniciais = [
+    {
+      codigo: "PRIMEIRACOMPRA",
+      descontoPercentual: 0.1,
+      descontoFixo: null,
+      valorMinimo: 99,
+      ativo: 1,
+    },
+    {
+      codigo: "ESTANCIA10",
+      descontoPercentual: 0.1,
+      descontoFixo: null,
+      valorMinimo: null,
+      ativo: 1,
+    },
+    {
+      codigo: "ESTANCIA20",
+      descontoPercentual: null,
+      descontoFixo: 20,
+      valorMinimo: 199,
+      ativo: 1,
+    },
+  ];
+
+  const transacao = db.transaction((lista) => {
+    for (const cupom of lista) {
+      inserir.run(cupom);
+    }
+  });
+
+  transacao(cuponsIniciais);
+  console.log(`Seed: ${cuponsIniciais.length} cupons cadastrados.`);
+}
+
 function inicializarBanco() {
   criarTabelas();
   seedProdutos();
+  seedCupons();
 }
 
-module.exports = { db, inicializarBanco, DB_PATH };
+function validarCupom(codigo, subtotal) {
+  const codigoNormalizado = String(codigo || "").trim().toUpperCase();
+
+  if (!codigoNormalizado) {
+    return { valido: false, status: 400, mensagem: "Informe o código do cupom." };
+  }
+
+  const cupom = db
+    .prepare("SELECT * FROM cupons WHERE codigo = ?")
+    .get(codigoNormalizado);
+
+  if (!cupom) {
+    return { valido: false, status: 400, mensagem: "Cupom inválido." };
+  }
+
+  if (!cupom.ativo) {
+    return { valido: false, status: 400, mensagem: "Cupom expirado." };
+  }
+
+  const subtotalNumerico = Number(subtotal) || 0;
+
+  if (cupom.valor_minimo && subtotalNumerico < cupom.valor_minimo) {
+    return {
+      valido: false,
+      status: 400,
+      mensagem: `Valor mínimo não atingido. Este cupom exige compras a partir de R$ ${cupom.valor_minimo.toFixed(2).replace(".", ",")}.`,
+    };
+  }
+
+  const desconto = cupom.desconto_percentual
+    ? subtotalNumerico * cupom.desconto_percentual
+    : Math.min(cupom.desconto_fixo || 0, subtotalNumerico);
+
+  return {
+    valido: true,
+    codigo: cupom.codigo,
+    desconto,
+    mensagem: "Cupom aplicado com sucesso!",
+  };
+}
+
+module.exports = { db, inicializarBanco, DB_PATH, validarCupom };

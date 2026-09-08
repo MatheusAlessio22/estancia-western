@@ -7,7 +7,9 @@ router.get("/:id", (req, res) => {
   try {
     const pedido = db
       .prepare(
-        "SELECT id, cliente_email, status, total, frete, criado_em FROM pedidos WHERE id = ?",
+        `SELECT id, cliente_email, status, total, frete, desconto, cupom_codigo,
+                codigo_rastreio, criado_em
+         FROM pedidos WHERE id = ?`,
       )
       .get(req.params.id);
 
@@ -15,7 +17,14 @@ router.get("/:id", (req, res) => {
       return res.status(404).json({ erro: "Pedido não encontrado." });
     }
 
-    res.json(pedido);
+    const itens = db
+      .prepare(
+        `SELECT produto_id, quantidade, preco_unitario, tamanho, cor
+         FROM pedido_itens WHERE pedido_id = ?`,
+      )
+      .all(req.params.id);
+
+    res.json({ ...pedido, itens });
   } catch (erro) {
     console.error("Erro ao buscar pedido:", erro);
     res.status(500).json({ erro: "Erro ao buscar pedido." });

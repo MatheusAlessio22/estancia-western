@@ -38,6 +38,7 @@ async function buscarPedidoParaRastreio(numero, email) {
             numero,
             total: pedido.total,
             etapa: mapearStatusParaEtapa(pedido.status),
+            codigoRastreio: pedido.codigo_rastreio || null,
           };
         }
       }
@@ -71,6 +72,7 @@ function inicializarRastreioPedido() {
   const numeroEl = document.querySelector("[data-rastreio-numero]");
   const totalEl = document.querySelector("[data-rastreio-total]");
   const etapasEl = document.querySelector("[data-rastreio-etapas]");
+  const codigoRastreioEl = document.querySelector("[data-rastreio-codigo]");
   const botao = form.querySelector('button[type="submit"]');
 
   form.addEventListener("submit", async (evento) => {
@@ -112,6 +114,14 @@ function inicializarRastreioPedido() {
       numeroEl.textContent = pedido.numero;
       totalEl.textContent = typeof pedido.total === "number" ? formatarPreco(pedido.total) : "";
       renderizarLinhaTempoRastreio(etapasEl, pedido.etapa || "pedido-recebido");
+      if (codigoRastreioEl) {
+        if (pedido.codigoRastreio) {
+          codigoRastreioEl.textContent = `Código de rastreio: ${pedido.codigoRastreio}`;
+          codigoRastreioEl.hidden = false;
+        } else {
+          codigoRastreioEl.hidden = true;
+        }
+      }
       resultado.hidden = false;
       resultado.scrollIntoView({ behavior: "smooth", block: "center" });
     } finally {
