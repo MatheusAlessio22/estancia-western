@@ -189,7 +189,8 @@
   object-fit: cover;
   cursor: zoom-in;
   opacity: 0;
-  animation: galeria-fade-inicial var(--motion-duracao-padrao) var(--motion-entrada) forwards;
+  animation: galeria-fade-inicial var(--motion-duracao-padrao)
+    var(--motion-entrada) forwards;
 }
 
 @keyframes galeria-fade-inicial {
@@ -1239,11 +1240,58 @@
    de .produto-galeria__thumbs img / .produto-galeria__principal img para
    respeitar a ordem de especificidade exigida pelo stylelint. */
 .produto-galeria__principal.is-trocando img {
-  animation: galeria-fade-troca var(--motion-duracao-padrao) var(--motion-entrada);
+  animation: galeria-fade-troca var(--motion-duracao-padrao)
+    var(--motion-entrada);
 }
 
 .produto-info__avaliacao .estrelas svg {
   width: 16px;
   height: 16px;
   fill: currentcolor;
+}
+
+.carrinho-resumo__linha--desconto {
+  color: var(--cor-sucesso);
+  font-weight: 600;
+}
+
+.cupom-form {
+  display: flex;
+  gap: var(--espaco-2);
+  margin-bottom: var(--espaco-3);
+}
+
+.cupom-form__input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  font-size: var(--texto-sm);
+  background-color: var(--cor-fundo);
+  transition: border-color var(--motion-estado);
+}
+
+.cupom-form__input:focus-visible {
+  outline: none;
+  border-color: var(--cor-primaria);
+}
+
+.cupom-form .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cupom-mensagem {
+  font-size: var(--texto-xs);
+  margin-top: calc(var(--espaco-3) * -1);
+  margin-bottom: var(--espaco-3);
+}
+
+.cupom-mensagem.is-sucesso {
+  color: var(--cor-sucesso);
+}
+
+.cupom-mensagem.is-erro {
+  color: var(--cor-erro);
 }

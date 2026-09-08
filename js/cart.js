@@ -6,6 +6,71 @@ const CARRINHO_CHAVE = "ew_carrinho";
 const FRETE_GRATIS_A_PARTIR_DE = 299;
 const VALOR_FRETE_PADRAO = 29.9;
 
+const CUPOM_CHAVE = "ew_cupom";
+const CUPONS_VALIDOS = {
+  PRIMEIRACOMPRA: 0.1,
+  ESTANCIA10: 0.1,
+};
+
+let cupomAplicado = lerCupomSalvo();
+
+function lerCupomSalvo() {
+  try {
+    const codigo = localStorage.getItem(CUPOM_CHAVE);
+    return codigo && CUPONS_VALIDOS[codigo] ? codigo : null;
+  } catch (erro) {
+    return null;
+  }
+}
+
+function percentualDesconto() {
+  return cupomAplicado ? CUPONS_VALIDOS[cupomAplicado] : 0;
+}
+
+function valorDesconto() {
+  return subtotalCarrinho() * percentualDesconto();
+}
+
+function inicializarCupom(aoAplicar) {
+  const form = document.querySelector("[data-cupom-form]");
+  if (!form) return;
+
+  const campo = form.querySelector("[data-cupom-input]");
+  const mensagemEl = document.querySelector("[data-cupom-mensagem]");
+
+  if (cupomAplicado && campo) {
+    campo.value = cupomAplicado;
+  }
+
+  form.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+
+    const codigoDigitado = (campo?.value || "").trim().toUpperCase();
+
+    if (!codigoDigitado) return;
+
+    if (CUPONS_VALIDOS[codigoDigitado]) {
+      cupomAplicado = codigoDigitado;
+      localStorage.setItem(CUPOM_CHAVE, codigoDigitado);
+      if (mensagemEl) {
+        mensagemEl.textContent = "Cupom aplicado com sucesso!";
+        mensagemEl.className = "cupom-mensagem is-sucesso";
+        mensagemEl.hidden = false;
+      }
+    } else {
+      cupomAplicado = null;
+      localStorage.removeItem(CUPOM_CHAVE);
+      if (mensagemEl) {
+        mensagemEl.textContent = "Cupom inválido.";
+        mensagemEl.className = "cupom-mensagem is-erro";
+        mensagemEl.hidden = false;
+      }
+    }
+
+    if (typeof aoAplicar === "function") aoAplicar();
+  });
+}
+
 function lerCarrinho() {
   try {
     const dados = localStorage.getItem(CARRINHO_CHAVE);
@@ -80,6 +145,8 @@ function atualizarQuantidade(chave, quantidade) {
 
 function esvaziarCarrinho() {
   salvarCarrinho([]);
+  cupomAplicado = null;
+  localStorage.removeItem(CUPOM_CHAVE);
 }
 
 function totalItensCarrinho() {
@@ -179,14 +246,22 @@ function atualizarResumoCarrinho() {
   const freteEl = document.querySelector("[data-resumo-frete]");
   const totalEl = document.querySelector("[data-resumo-total]");
   const avisoFreteEl = document.querySelector("[data-resumo-aviso-frete]");
+  const descontoLinhaEl = document.querySelector(
+    "[data-resumo-desconto-linha]",
+  );
+  const descontoEl = document.querySelector("[data-resumo-desconto]");
 
   const subtotal = subtotalCarrinho();
   const frete = valorFrete();
+  const desconto = valorDesconto();
 
   if (subtotalEl) subtotalEl.textContent = formatarPreco(subtotal);
   if (freteEl)
     freteEl.textContent = frete === 0 ? "Grátis" : formatarPreco(frete);
-  if (totalEl) totalEl.textContent = formatarPreco(subtotal + frete);
+  if (totalEl) totalEl.textContent = formatarPreco(subtotal + frete - desconto);
+
+  if (descontoLinhaEl) descontoLinhaEl.hidden = desconto <= 0;
+  if (descontoEl) descontoEl.textContent = `-${formatarPreco(desconto)}`;
 
   if (avisoFreteEl) {
     const faltam = FRETE_GRATIS_A_PARTIR_DE - subtotal;
@@ -200,4 +275,5 @@ function atualizarResumoCarrinho() {
 document.addEventListener("DOMContentLoaded", () => {
   atualizarBadgeCarrinho();
   renderizarPaginaCarrinho();
+  inicializarCupom(atualizarResumoCarrinho);
 });

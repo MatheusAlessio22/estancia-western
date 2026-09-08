@@ -48,7 +48,7 @@
               </div>
               <div class="campo">
                 <label for="telefone">Telefone / WhatsApp</label>
-                <input type="tel" id="telefone" name="telefone" required>
+                <input type="tel" id="telefone" name="telefone" inputmode="tel" placeholder="(00) 00000-0000" maxlength="15" required>
                 <span class="campo-erro"></span>
               </div>
             </div>
@@ -69,10 +69,17 @@
                 <span class="campo-erro"></span>
               </div>
             </div>
-            <div class="campo">
-              <label for="endereco">Endereço</label>
-              <input type="text" id="endereco" name="endereco" required>
-              <span class="campo-erro"></span>
+            <div class="campo-linha campo-linha--2">
+              <div class="campo">
+                <label for="endereco">Endereço (Rua/Av.)</label>
+                <input type="text" id="endereco" name="endereco" required>
+                <span class="campo-erro"></span>
+              </div>
+              <div class="campo">
+                <label for="bairro">Bairro</label>
+                <input type="text" id="bairro" name="bairro" required>
+                <span class="campo-erro"></span>
+              </div>
             </div>
             <div class="campo-linha campo-linha--2">
               <div class="campo">
@@ -120,18 +127,18 @@
             <div style="margin-top:var(--espaco-4);" data-pagamento-painel="cartao">
               <div class="campo">
                 <label for="cartao-numero">Número do cartão</label>
-                <input type="text" id="cartao-numero" name="cartao-numero" placeholder="0000 0000 0000 0000" required>
+                <input type="text" id="cartao-numero" name="cartao-numero" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" required>
                 <span class="campo-erro"></span>
               </div>
               <div class="campo-linha campo-linha--2">
                 <div class="campo">
                   <label for="cartao-validade">Validade</label>
-                  <input type="text" id="cartao-validade" name="cartao-validade" placeholder="MM/AA" required>
+                  <input type="text" id="cartao-validade" name="cartao-validade" inputmode="numeric" placeholder="MM/AA" maxlength="5" required>
                   <span class="campo-erro"></span>
                 </div>
                 <div class="campo">
                   <label for="cartao-cvv">CVV</label>
-                  <input type="text" id="cartao-cvv" name="cartao-cvv" required>
+                  <input type="text" id="cartao-cvv" name="cartao-cvv" inputmode="numeric" maxlength="4" required>
                   <span class="campo-erro"></span>
                 </div>
               </div>
@@ -157,9 +164,21 @@
         <aside class="carrinho-resumo">
           <h3>Resumo do Pedido</h3>
           <div data-checkout-itens></div>
+
+          <form class="cupom-form" data-cupom-form>
+            <label for="cupom" class="sr-only">Código do cupom</label>
+            <input type="text" id="cupom" name="cupom" class="cupom-form__input" placeholder="Código do cupom" autocomplete="off" data-cupom-input>
+            <button type="submit" class="btn btn--secundario btn--pequeno" data-cupom-aplicar>Aplicar</button>
+          </form>
+          <p class="cupom-mensagem" data-cupom-mensagem role="alert" hidden></p>
+
           <div class="carrinho-resumo__linha">
             <span>Subtotal</span>
             <span data-resumo-subtotal>R$ 0,00</span>
+          </div>
+          <div class="carrinho-resumo__linha carrinho-resumo__linha--desconto" data-resumo-desconto-linha hidden>
+            <span>Desconto</span>
+            <span data-resumo-desconto>-R$ 0,00</span>
           </div>
           <div class="carrinho-resumo__linha">
             <span>Frete</span>

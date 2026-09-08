@@ -44,11 +44,19 @@ function atualizarResumoCheckout() {
   const freteEl = document.querySelector("[data-resumo-frete]");
   const totalEl = document.querySelector("[data-resumo-total]");
   const enderecoEl = document.querySelector("[data-resumo-endereco]");
+  const descontoLinhaEl = document.querySelector(
+    "[data-resumo-desconto-linha]",
+  );
+  const descontoEl = document.querySelector("[data-resumo-desconto]");
 
   const subtotal = subtotalCarrinho();
   const valorFreteSelecionado = freteSelecionado ? freteSelecionado.valor : 0;
+  const desconto = valorDesconto();
 
   if (subtotalEl) subtotalEl.textContent = formatarPreco(subtotal);
+
+  if (descontoLinhaEl) descontoLinhaEl.hidden = desconto <= 0;
+  if (descontoEl) descontoEl.textContent = `-${formatarPreco(desconto)}`;
 
   if (freteEl) {
     if (!freteSelecionado) {
@@ -60,9 +68,11 @@ function atualizarResumoCheckout() {
     }
   }
 
-  if (totalEl) totalEl.textContent = formatarPreco(subtotal + valorFreteSelecionado);
+  const total = subtotal + valorFreteSelecionado - desconto;
 
-  atualizarOpcoesParcelas(subtotal + valorFreteSelecionado);
+  if (totalEl) totalEl.textContent = formatarPreco(total);
+
+  atualizarOpcoesParcelas(total);
 
   if (enderecoEl) {
     if (enderecoConfirmado) {
@@ -82,7 +92,10 @@ function atualizarOpcoesParcelas(total) {
   const valorSelecionado = campoParcelas.value;
   const maxParcelas = Math.max(
     1,
-    Math.min(CARTAO_PARCELAS_MAXIMAS, Math.floor(total / CARTAO_PARCELA_MINIMA) || 1),
+    Math.min(
+      CARTAO_PARCELAS_MAXIMAS,
+      Math.floor(total / CARTAO_PARCELA_MINIMA) || 1,
+    ),
   );
 
   const opcoes = [];
@@ -136,12 +149,15 @@ function renderizarOpcoesFreteCheckout(opcoes) {
     })
     .join("");
 
-  container.querySelectorAll('input[name="frete-checkout-opcao"]').forEach((input) => {
-    input.addEventListener("change", () => {
-      freteSelecionado = opcoesFreteCheckout.find((o) => o.tipo === input.value) || null;
-      atualizarResumoCheckout();
+  container
+    .querySelectorAll('input[name="frete-checkout-opcao"]')
+    .forEach((input) => {
+      input.addEventListener("change", () => {
+        freteSelecionado =
+          opcoesFreteCheckout.find((o) => o.tipo === input.value) || null;
+        atualizarResumoCheckout();
+      });
     });
-  });
 
   secao.hidden = false;
   atualizarResumoCheckout();
@@ -194,9 +210,83 @@ function definirErroCampo(campo, mensagem) {
 }
 
 function aplicarMascaraCep(valor) {
-  const digitos = String(valor || "").replace(/\D/g, "").slice(0, 8);
+  const digitos = String(valor || "")
+    .replace(/\D/g, "")
+    .slice(0, 8);
   if (digitos.length <= 5) return digitos;
   return `${digitos.slice(0, 5)}-${digitos.slice(5)}`;
+}
+
+function aplicarMascaraTelefone(valor) {
+  const digitos = String(valor || "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
+
+  if (digitos.length <= 2) return digitos.replace(/^(\d*)/, "($1");
+
+  const ddd = digitos.slice(0, 2);
+  const resto = digitos.slice(2);
+
+  if (resto.length <= 4) return `(${ddd}) ${resto}`;
+  if (digitos.length <= 10)
+    return `(${ddd}) ${resto.slice(0, 4)}-${resto.slice(4)}`;
+  return `(${ddd}) ${resto.slice(0, 5)}-${resto.slice(5, 9)}`;
+}
+
+function aplicarMascaraCartaoNumero(valor) {
+  const digitos = String(valor || "")
+    .replace(/\D/g, "")
+    .slice(0, 16);
+  return digitos.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+}
+
+function aplicarMascaraCartaoValidade(valor) {
+  const digitos = String(valor || "")
+    .replace(/\D/g, "")
+    .slice(0, 4);
+  if (digitos.length <= 2) return digitos;
+  return `${digitos.slice(0, 2)}/${digitos.slice(2)}`;
+}
+
+function aplicarMascaraCartaoCvv(valor) {
+  return String(valor || "")
+    .replace(/\D/g, "")
+    .slice(0, 4);
+}
+
+function inicializarMascarasFormulario() {
+  const campoTelefone = document.getElementById("telefone");
+  const campoCartaoNumero = document.getElementById("cartao-numero");
+  const campoCartaoValidade = document.getElementById("cartao-validade");
+  const campoCartaoCvv = document.getElementById("cartao-cvv");
+
+  if (campoTelefone) {
+    campoTelefone.addEventListener("input", () => {
+      campoTelefone.value = aplicarMascaraTelefone(campoTelefone.value);
+    });
+  }
+
+  if (campoCartaoNumero) {
+    campoCartaoNumero.addEventListener("input", () => {
+      campoCartaoNumero.value = aplicarMascaraCartaoNumero(
+        campoCartaoNumero.value,
+      );
+    });
+  }
+
+  if (campoCartaoValidade) {
+    campoCartaoValidade.addEventListener("input", () => {
+      campoCartaoValidade.value = aplicarMascaraCartaoValidade(
+        campoCartaoValidade.value,
+      );
+    });
+  }
+
+  if (campoCartaoCvv) {
+    campoCartaoCvv.addEventListener("input", () => {
+      campoCartaoCvv.value = aplicarMascaraCartaoCvv(campoCartaoCvv.value);
+    });
+  }
 }
 
 function simularOpcoesFreteLocalCheckout(total) {
@@ -206,13 +296,19 @@ function simularOpcoesFreteLocalCheckout(total) {
   return {
     endereco: null,
     opcoes: [
-      { tipo: "PAC", valor: freteGratis ? 0 : 24.9, prazo: "6 a 9 dias úteis", gratis: freteGratis },
+      {
+        tipo: "PAC",
+        valor: freteGratis ? 0 : 24.9,
+        prazo: "6 a 9 dias úteis",
+        gratis: freteGratis,
+      },
       { tipo: "SEDEX", valor: 39.9, prazo: "2 a 4 dias úteis", gratis: false },
     ],
   };
 }
 
-const IBGE_ESTADOS_URL = "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";
+const IBGE_ESTADOS_URL =
+  "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome";
 const IBGE_MUNICIPIOS_URL = (uf) =>
   `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`;
 
@@ -227,18 +323,27 @@ function normalizarTexto(texto) {
 async function carregarEstadosIbge(campoEstado) {
   try {
     const resposta = await fetch(IBGE_ESTADOS_URL);
-    if (!resposta.ok) throw new Error("Resposta inesperada da API de estados do IBGE.");
+    if (!resposta.ok)
+      throw new Error("Resposta inesperada da API de estados do IBGE.");
 
     const estados = await resposta.json();
 
     campoEstado.innerHTML =
       `<option value="">Selecione o estado</option>` +
       estados
-        .map((estado) => `<option value="${estado.sigla}">${estado.nome}</option>`)
+        .map(
+          (estado) => `<option value="${estado.sigla}">${estado.nome}</option>`,
+        )
         .join("");
   } catch (erro) {
-    console.warn("API do IBGE indisponível, não foi possível carregar os estados.", erro);
-    definirErroCampo(campoEstado, "Não foi possível carregar a lista de estados agora.");
+    console.warn(
+      "API do IBGE indisponível, não foi possível carregar os estados.",
+      erro,
+    );
+    definirErroCampo(
+      campoEstado,
+      "Não foi possível carregar a lista de estados agora.",
+    );
   }
 }
 
@@ -253,14 +358,18 @@ async function carregarMunicipiosIbge(uf, campoCidade, cidadeParaSelecionar) {
 
   try {
     const resposta = await fetch(IBGE_MUNICIPIOS_URL(uf));
-    if (!resposta.ok) throw new Error("Resposta inesperada da API de municípios do IBGE.");
+    if (!resposta.ok)
+      throw new Error("Resposta inesperada da API de municípios do IBGE.");
 
     const municipios = await resposta.json();
 
     campoCidade.innerHTML =
       `<option value="">Selecione a cidade</option>` +
       municipios
-        .map((municipio) => `<option value="${municipio.nome}">${municipio.nome}</option>`)
+        .map(
+          (municipio) =>
+            `<option value="${municipio.nome}">${municipio.nome}</option>`,
+        )
         .join("");
     campoCidade.disabled = false;
 
@@ -272,9 +381,15 @@ async function carregarMunicipiosIbge(uf, campoCidade, cidadeParaSelecionar) {
       if (opcao) campoCidade.value = opcao.value;
     }
   } catch (erro) {
-    console.warn("API do IBGE indisponível, não foi possível carregar as cidades.", erro);
+    console.warn(
+      "API do IBGE indisponível, não foi possível carregar as cidades.",
+      erro,
+    );
     campoCidade.innerHTML = `<option value="">Não foi possível carregar as cidades</option>`;
-    definirErroCampo(campoCidade, "Não foi possível carregar a lista de cidades agora.");
+    definirErroCampo(
+      campoCidade,
+      "Não foi possível carregar a lista de cidades agora.",
+    );
   }
 }
 
@@ -296,9 +411,12 @@ function inicializarAutocompleteCep() {
   if (!campoCep) return;
 
   const campoEndereco = document.getElementById("endereco");
+  const campoBairro = document.getElementById("bairro");
   const campoCidade = document.getElementById("cidade");
   const campoEstado = document.getElementById("estado");
-  const carregandoEl = document.querySelector("[data-checkout-frete-carregando]");
+  const carregandoEl = document.querySelector(
+    "[data-checkout-frete-carregando]",
+  );
 
   const cepSalvo = localStorage.getItem("estancia_cep");
   if (cepSalvo) {
@@ -313,9 +431,16 @@ function inicializarAutocompleteCep() {
     if (campoEndereco && endereco.logradouro) {
       campoEndereco.value = endereco.logradouro;
     }
+    if (campoBairro) {
+      campoBairro.value = endereco.bairro || "";
+    }
     if (campoEstado && endereco.estado) {
       campoEstado.value = endereco.estado;
-      await carregarMunicipiosIbge(endereco.estado, campoCidade, endereco.cidade);
+      await carregarMunicipiosIbge(
+        endereco.estado,
+        campoCidade,
+        endereco.cidade,
+      );
     }
   }
 
@@ -353,7 +478,10 @@ function inicializarAutocompleteCep() {
 
       renderizarOpcoesFreteCheckout(dados.opcoes);
     } catch (erro) {
-      console.warn("Backend de frete indisponível, usando simulação local.", erro);
+      console.warn(
+        "Backend de frete indisponível, usando simulação local.",
+        erro,
+      );
       definirErroCampo(campoCep, "");
       localStorage.setItem("estancia_cep", cepLimpo);
       enderecoConfirmado = {
@@ -362,7 +490,8 @@ function inicializarAutocompleteCep() {
         estado: campoEstado ? campoEstado.value.trim() : "",
         cep: cepLimpo,
       };
-      const dadosSimulados = simularOpcoesFreteLocalCheckout(subtotalCarrinho());
+      const dadosSimulados =
+        simularOpcoesFreteLocalCheckout(subtotalCarrinho());
       renderizarOpcoesFreteCheckout(dadosSimulados.opcoes);
     } finally {
       if (carregandoEl) carregandoEl.hidden = true;
@@ -396,8 +525,12 @@ function inicializarFormularioCheckout() {
   form.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
-    const camposObrigatorios = Array.from(form.querySelectorAll("[required]")).filter(
-      (campo) => !campo.closest("[data-pagamento-painel]") || !campo.closest("[data-pagamento-painel]").hidden,
+    const camposObrigatorios = Array.from(
+      form.querySelectorAll("[required]"),
+    ).filter(
+      (campo) =>
+        !campo.closest("[data-pagamento-painel]") ||
+        !campo.closest("[data-pagamento-painel]").hidden,
     );
     let formularioValido = true;
 
@@ -425,14 +558,19 @@ function inicializarFormularioCheckout() {
         secaoFrete.hidden = false;
         secaoFrete.scrollIntoView({ behavior: "smooth", block: "center" });
       }
-      definirErroCampo(document.getElementById("cep"), "Informe o CEP para calcular o frete antes de continuar.");
+      definirErroCampo(
+        document.getElementById("cep"),
+        "Informe o CEP para calcular o frete antes de continuar.",
+      );
       document.getElementById("cep").focus();
       return;
     }
 
     definirBotaoCheckoutCarregando(botaoConfirmar, true);
 
-    const metodoPagamento = form.querySelector('input[name="pagamento"]:checked')?.value;
+    const metodoPagamento = form.querySelector(
+      'input[name="pagamento"]:checked',
+    )?.value;
 
     try {
       if (metodoPagamento === "pix") {
@@ -455,6 +593,7 @@ function coletarDadosCliente(form) {
     endereco: form.querySelector("#endereco").value.trim(),
     numero: form.querySelector("#numero").value.trim(),
     complemento: form.querySelector("#complemento")?.value.trim() || "",
+    bairro: form.querySelector("#bairro")?.value.trim() || "",
     cidade: form.querySelector("#cidade").value.trim(),
     estado: form.querySelector("#estado").value.trim(),
   };
@@ -588,7 +727,11 @@ function exibirSucessoPix(pedidoId, email, total) {
   salvarPedidoLocal({
     numero: numeroPedido,
     email: email || "",
-    total: Number(total) || subtotalCarrinho() + (freteSelecionado ? freteSelecionado.valor : 0),
+    total:
+      Number(total) ||
+      subtotalCarrinho() +
+        (freteSelecionado ? freteSelecionado.valor : 0) -
+        valorDesconto(),
     metodoPagamento: "pix",
     etapa: "pagamento-confirmado",
     criadoEm: new Date().toISOString(),
@@ -615,7 +758,8 @@ function inicializarModalPix() {
   const botaoCopiar = document.querySelector("[data-modal-pix-copiar]");
   if (botaoCopiar) {
     botaoCopiar.addEventListener("click", async () => {
-      const codigo = document.querySelector("[data-modal-pix-codigo]")?.textContent || "";
+      const codigo =
+        document.querySelector("[data-modal-pix-codigo]")?.textContent || "";
       try {
         await navigator.clipboard.writeText(codigo);
         botaoCopiar.textContent = "Copiado!";
@@ -642,7 +786,10 @@ function finalizarPedidoSimulado(form, metodoPagamento) {
   salvarPedidoLocal({
     numero: numeroPedido,
     email,
-    total: subtotalCarrinho() + (freteSelecionado ? freteSelecionado.valor : 0),
+    total:
+      subtotalCarrinho() +
+      (freteSelecionado ? freteSelecionado.valor : 0) -
+      valorDesconto(),
     metodoPagamento: metodoPagamento || "cartao",
     parcelas,
     etapa: "pagamento-confirmado",
@@ -670,6 +817,8 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarSelecaoPagamento();
   inicializarSeletoresEstadoCidade();
   inicializarAutocompleteCep();
+  inicializarMascarasFormulario();
   inicializarFormularioCheckout();
   inicializarModalPix();
+  inicializarCupom(atualizarResumoCheckout);
 });
