@@ -9,3 +9,5 @@ server/.env
 server/data/estancia.db
 server/data/estancia.db-shm
 server/data/estancia.db-wal
+
+.env*

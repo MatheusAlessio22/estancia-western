@@ -36,7 +36,7 @@ router.post("/mercadopago", async (req, res) => {
     }
 
     if (novoStatus) {
-      db.prepare("UPDATE pedidos SET status = ? WHERE id = ?").run(novoStatus, pedidoId);
+      await db.query("UPDATE pedidos SET status = $1 WHERE id = $2", [novoStatus, pedidoId]);
     }
 
     res.status(200).json({ recebido: true });

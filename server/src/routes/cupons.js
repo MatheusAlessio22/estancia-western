@@ -3,11 +3,11 @@ const { validarCupom } = require("../database/db");
 
 const router = express.Router();
 
-router.post("/validar", (req, res) => {
+router.post("/validar", async (req, res) => {
   try {
     const { codigo, subtotal } = req.body;
 
-    const resultado = validarCupom(codigo, subtotal);
+    const resultado = await validarCupom(codigo, subtotal);
 
     if (!resultado.valido) {
       return res.status(resultado.status).json({ erro: resultado.mensagem });

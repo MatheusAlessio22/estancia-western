@@ -3,45 +3,45 @@ const { db } = require("../database/db");
 
 const router = express.Router();
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const pedido = db
-      .prepare(
-        `SELECT id, cliente_email, status, total, frete, desconto, cupom_codigo,
-                codigo_rastreio, criado_em
-         FROM pedidos WHERE id = ?`,
-      )
-      .get(req.params.id);
+    const { rows } = await db.query(
+      `SELECT id, cliente_email, status, total, frete, desconto, cupom_codigo,
+              codigo_rastreio, criado_em
+       FROM pedidos WHERE id = $1`,
+      [req.params.id],
+    );
+    const pedido = rows[0];
 
     if (!pedido) {
       return res.status(404).json({ erro: "Pedido não encontrado." });
     }
 
-    const itens = db
-      .prepare(
-        `SELECT produto_id, quantidade, preco_unitario, tamanho, cor
-         FROM pedido_itens WHERE pedido_id = ?`,
-      )
-      .all(req.params.id);
+    const itensResultado = await db.query(
+      `SELECT produto_id, quantidade, preco_unitario, tamanho, cor
+       FROM pedido_itens WHERE pedido_id = $1`,
+      [req.params.id],
+    );
 
-    res.json({ ...pedido, itens });
+    res.json({ ...pedido, itens: itensResultado.rows });
   } catch (erro) {
     console.error("Erro ao buscar pedido:", erro);
     res.status(500).json({ erro: "Erro ao buscar pedido." });
   }
 });
 
-router.get("/:id/status", (req, res) => {
+router.get("/:id/status", async (req, res) => {
   try {
-    const pedido = db
-      .prepare("SELECT id, status, total, criado_em FROM pedidos WHERE id = ?")
-      .get(req.params.id);
+    const { rows } = await db.query(
+      "SELECT id, status, total, criado_em FROM pedidos WHERE id = $1",
+      [req.params.id],
+    );
 
-    if (!pedido) {
+    if (!rows[0]) {
       return res.status(404).json({ erro: "Pedido não encontrado." });
     }
 
-    res.json(pedido);
+    res.json(rows[0]);
   } catch (erro) {
     console.error("Erro ao consultar status do pedido:", erro);
     res.status(500).json({ erro: "Erro ao consultar status do pedido." });
@@ -49,13 +49,14 @@ router.get("/:id/status", (req, res) => {
 });
 
 if (process.env.NODE_ENV !== "production") {
-  router.post("/:id/simular-pagamento", (req, res) => {
+  router.post("/:id/simular-pagamento", async (req, res) => {
     try {
-      const resultado = db
-        .prepare("UPDATE pedidos SET status = 'pago' WHERE id = ?")
-        .run(req.params.id);
+      const resultado = await db.query(
+        "UPDATE pedidos SET status = 'pago' WHERE id = $1",
+        [req.params.id],
+      );
 
-      if (resultado.changes === 0) {
+      if (resultado.rowCount === 0) {
         return res.status(404).json({ erro: "Pedido não encontrado." });
       }
 

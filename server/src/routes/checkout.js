@@ -39,12 +39,15 @@ router.post("/pix", async (req, res) => {
       return res.status(400).json({ erro: "O carrinho está vazio." });
     }
 
-    const produtoStmt = db.prepare("SELECT * FROM produtos WHERE id = ? AND ativo = 1");
     let subtotal = 0;
     const itensValidados = [];
 
     for (const item of itens) {
-      const produto = produtoStmt.get(item.produtoId);
+      const { rows } = await db.query(
+        "SELECT * FROM produtos WHERE id = $1 AND ativo = true",
+        [item.produtoId],
+      );
+      const produto = rows[0];
       if (!produto) {
         return res.status(400).json({ erro: `Produto não encontrado: ${item.produtoId}` });
       }
@@ -70,7 +73,7 @@ router.post("/pix", async (req, res) => {
     let cupomCodigo = null;
 
     if (cupom) {
-      const resultadoCupom = validarCupom(cupom, subtotal);
+      const resultadoCupom = await validarCupom(cupom, subtotal);
       if (!resultadoCupom.valido) {
         return res.status(resultadoCupom.status).json({ erro: resultadoCupom.mensagem });
       }
@@ -80,48 +83,54 @@ router.post("/pix", async (req, res) => {
 
     const total = subtotal + frete - desconto;
 
-    const inserirPedido = db.prepare(`
-      INSERT INTO pedidos (
-        cliente_nome, cliente_email, cliente_telefone, cep, endereco, numero,
-        complemento, bairro, cidade, estado, total, frete, status, metodo_pagamento,
-        cupom_codigo, desconto
-      ) VALUES (
-        @nome, @email, @telefone, @cep, @endereco, @numero,
-        @complemento, @bairro, @cidade, @estado, @total, @frete, 'pendente', 'pix',
-        @cupomCodigo, @desconto
-      )
-    `);
+    const client = await db.pool.connect();
+    let pedidoId;
 
-    const resultado = inserirPedido.run({
-      nome: cliente.nome,
-      email: cliente.email,
-      telefone: cliente.telefone,
-      cep: cliente.cep,
-      endereco: cliente.endereco,
-      numero: cliente.numero,
-      complemento: cliente.complemento || null,
-      bairro: cliente.bairro || null,
-      cidade: cliente.cidade,
-      estado: cliente.estado,
-      total,
-      frete,
-      cupomCodigo,
-      desconto,
-    });
+    try {
+      await client.query("BEGIN");
 
-    const pedidoId = resultado.lastInsertRowid;
+      const inserirPedido = await client.query(
+        `INSERT INTO pedidos (
+          cliente_nome, cliente_email, cliente_telefone, cep, endereco, numero,
+          complemento, bairro, cidade, estado, total, frete, status, metodo_pagamento,
+          cupom_codigo, desconto
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'pendente', 'pix', $13, $14)
+        RETURNING id`,
+        [
+          cliente.nome,
+          cliente.email,
+          cliente.telefone,
+          cliente.cep,
+          cliente.endereco,
+          cliente.numero,
+          cliente.complemento || null,
+          cliente.bairro || null,
+          cliente.cidade,
+          cliente.estado,
+          total,
+          frete,
+          cupomCodigo,
+          desconto,
+        ],
+      );
 
-    const inserirItem = db.prepare(`
-      INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unitario, tamanho, cor)
-      VALUES (@pedidoId, @produtoId, @quantidade, @precoUnitario, @tamanho, @cor)
-    `);
+      pedidoId = inserirPedido.rows[0].id;
 
-    const transacaoItens = db.transaction((lista) => {
-      for (const item of lista) {
-        inserirItem.run({ pedidoId, ...item });
+      for (const item of itensValidados) {
+        await client.query(
+          `INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unitario, tamanho, cor)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [pedidoId, item.produtoId, item.quantidade, item.precoUnitario, item.tamanho, item.cor],
+        );
       }
-    });
-    transacaoItens(itensValidados);
+
+      await client.query("COMMIT");
+    } catch (erroTransacao) {
+      await client.query("ROLLBACK");
+      throw erroTransacao;
+    } finally {
+      client.release();
+    }
 
     const pagamento = await criarPagamentoPix({
       pedidoId,
@@ -131,11 +140,12 @@ router.post("/pix", async (req, res) => {
       clienteCpf: cliente.cpf,
     });
 
-    db.prepare(`
-      UPDATE pedidos
-      SET mp_payment_id = ?, pix_copia_cola = ?, pix_qr_code_base64 = ?
-      WHERE id = ?
-    `).run(pagamento.mpPaymentId, pagamento.copiaECola, pagamento.qrCodeBase64, pedidoId);
+    await db.query(
+      `UPDATE pedidos
+       SET mp_payment_id = $1, pix_copia_cola = $2, pix_qr_code_base64 = $3
+       WHERE id = $4`,
+      [pagamento.mpPaymentId, pagamento.copiaECola, pagamento.qrCodeBase64, pedidoId],
+    );
 
     res.json({
       sucesso: true,

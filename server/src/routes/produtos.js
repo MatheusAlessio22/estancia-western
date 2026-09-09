@@ -11,48 +11,51 @@ function formatarProduto(linha) {
     preco: linha.preco,
     precoDe: linha.preco_de,
     parcelas: linha.parcelas,
-    cores: JSON.parse(linha.cores || "[]"),
-    tamanhos: JSON.parse(linha.tamanhos || "[]"),
+    cores: linha.cores || [],
+    tamanhos: linha.tamanhos || [],
     selo: linha.selo,
     imagem: linha.imagem,
     estoque: linha.estoque,
   };
 }
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { categoria, busca } = req.query;
 
-    let sql = "SELECT * FROM produtos WHERE ativo = 1";
+    let sql = "SELECT * FROM produtos WHERE ativo = true";
     const params = [];
 
     if (categoria) {
-      sql += " AND categoria = ?";
       params.push(categoria);
+      sql += ` AND categoria = $${params.length}`;
     }
 
     if (busca) {
-      sql += " AND nome LIKE ?";
       params.push(`%${busca}%`);
+      sql += ` AND nome ILIKE $${params.length}`;
     }
 
     sql += " ORDER BY nome ASC";
 
-    const linhas = db.prepare(sql).all(...params);
-    res.json(linhas.map(formatarProduto));
+    const { rows } = await db.query(sql, params);
+    res.json(rows.map(formatarProduto));
   } catch (erro) {
     console.error("Erro ao listar produtos:", erro);
     res.status(500).json({ erro: "Erro ao listar produtos." });
   }
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const linha = db.prepare("SELECT * FROM produtos WHERE id = ? AND ativo = 1").get(req.params.id);
-    if (!linha) {
+    const { rows } = await db.query(
+      "SELECT * FROM produtos WHERE id = $1 AND ativo = true",
+      [req.params.id],
+    );
+    if (!rows[0]) {
       return res.status(404).json({ erro: "Produto não encontrado." });
     }
-    res.json(formatarProduto(linha));
+    res.json(formatarProduto(rows[0]));
   } catch (erro) {
     console.error("Erro ao buscar produto:", erro);
     res.status(500).json({ erro: "Erro ao buscar produto." });

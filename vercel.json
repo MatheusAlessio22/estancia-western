@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "destination": "https://estancia-western.onrender.com/api/:path*"
     }
   ]
 }

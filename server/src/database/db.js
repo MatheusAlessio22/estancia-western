@@ -1,22 +1,22 @@
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
-const Database = require("better-sqlite3");
+const { Pool } = require("@neondatabase/serverless");
 const bcrypt = require("bcryptjs");
 
-const DATA_DIR = path.join(__dirname, "..", "..", "data");
-const DB_PATH = path.join(DATA_DIR, "estancia.db");
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+/**
+ * Wrapper fino sobre o Pool para manter uma API parecida com a antiga
+ * (db.query) em todas as rotas. Sempre use `await db.query(sql, params)`.
+ */
+const db = {
+  query: (texto, params) => pool.query(texto, params),
+  pool,
+};
 
-const db = new Database(DB_PATH);
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = ON");
-
-function criarTabelas() {
-  db.exec(`
+async function criarTabelas() {
+  await db.query(`
     CREATE TABLE IF NOT EXISTS produtos (
       id TEXT PRIMARY KEY,
       nome TEXT NOT NULL,
@@ -24,16 +24,18 @@ function criarTabelas() {
       preco REAL NOT NULL,
       preco_de REAL,
       parcelas TEXT,
-      cores TEXT,
-      tamanhos TEXT,
+      cores JSONB NOT NULL DEFAULT '[]',
+      tamanhos JSONB NOT NULL DEFAULT '[]',
       selo TEXT,
       imagem TEXT,
       estoque INTEGER NOT NULL DEFAULT 100,
-      ativo INTEGER NOT NULL DEFAULT 1
-    );
+      ativo BOOLEAN NOT NULL DEFAULT true
+    )
+  `);
 
+  await db.query(`
     CREATE TABLE IF NOT EXISTS pedidos (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       cliente_nome TEXT NOT NULL,
       cliente_email TEXT NOT NULL,
       cliente_telefone TEXT NOT NULL,
@@ -54,71 +56,53 @@ function criarTabelas() {
       cupom_codigo TEXT,
       desconto REAL NOT NULL DEFAULT 0,
       codigo_rastreio TEXT,
-      criado_em TEXT NOT NULL DEFAULT (datetime('now'))
-    );
+      criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
 
+  await db.query(`
     CREATE TABLE IF NOT EXISTS pedido_itens (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      pedido_id INTEGER NOT NULL,
-      produto_id TEXT NOT NULL,
+      id SERIAL PRIMARY KEY,
+      pedido_id INTEGER NOT NULL REFERENCES pedidos(id),
+      produto_id TEXT NOT NULL REFERENCES produtos(id),
       quantidade INTEGER NOT NULL,
       preco_unitario REAL NOT NULL,
       tamanho TEXT,
-      cor TEXT,
-      FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
-      FOREIGN KEY (produto_id) REFERENCES produtos(id)
-    );
+      cor TEXT
+    )
+  `);
 
+  await db.query(`
     CREATE TABLE IF NOT EXISTS cupons (
       codigo TEXT PRIMARY KEY,
       desconto_percentual REAL,
       desconto_fixo REAL,
       valor_minimo REAL,
-      ativo INTEGER NOT NULL DEFAULT 1
-    );
+      ativo BOOLEAN NOT NULL DEFAULT true
+    )
+  `);
 
+  await db.query(`
     CREATE TABLE IF NOT EXISTS administradores (
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
       senha_hash TEXT NOT NULL,
       nome TEXT,
-      criado_em TEXT NOT NULL DEFAULT (datetime('now'))
-    );
+      criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
   `);
 
-  migrarColunasPedidos();
-  migrarColunasProdutos();
-}
-
-function migrarColunasPedidos() {
-  const colunas = db.prepare("PRAGMA table_info(pedidos)").all();
-  const nomes = new Set(colunas.map((coluna) => coluna.name));
-
-  if (!nomes.has("cupom_codigo")) {
-    db.exec("ALTER TABLE pedidos ADD COLUMN cupom_codigo TEXT");
-  }
-  if (!nomes.has("desconto")) {
-    db.exec("ALTER TABLE pedidos ADD COLUMN desconto REAL NOT NULL DEFAULT 0");
-  }
-  if (!nomes.has("codigo_rastreio")) {
-    db.exec("ALTER TABLE pedidos ADD COLUMN codigo_rastreio TEXT");
-  }
-}
-
-function migrarColunasProdutos() {
-  const colunas = db.prepare("PRAGMA table_info(produtos)").all();
-  const nomes = new Set(colunas.map((coluna) => coluna.name));
-
-  if (!nomes.has("imagem")) {
-    db.exec("ALTER TABLE produtos ADD COLUMN imagem TEXT");
-  }
+  // Idempotente: cobre bancos criados antes destas colunas existirem.
+  await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS cupom_codigo TEXT");
+  await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS desconto REAL NOT NULL DEFAULT 0");
+  await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS codigo_rastreio TEXT");
+  await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagem TEXT");
 }
 
 function extrairProdutosDoArquivo() {
   const productsPath = path.join(__dirname, "..", "..", "..", "js", "products.js");
   const conteudo = fs.readFileSync(productsPath, "utf-8");
 
-  const sandbox = {};
   const contexto = `
     ${conteudo}
     module.exports = { PRODUTOS, CATEGORIAS };
@@ -133,9 +117,9 @@ function extrairProdutosDoArquivo() {
   return mod.exports.PRODUTOS || [];
 }
 
-function seedProdutos() {
-  const { count } = db.prepare("SELECT COUNT(*) AS count FROM produtos").get();
-  if (count > 0) return;
+async function seedProdutos() {
+  const { rows } = await db.query("SELECT COUNT(*) AS count FROM produtos");
+  if (Number(rows[0].count) > 0) return;
 
   let produtos = [];
   try {
@@ -147,115 +131,84 @@ function seedProdutos() {
 
   if (!produtos.length) return;
 
-  const inserir = db.prepare(`
-    INSERT INTO produtos (id, nome, categoria, preco, preco_de, parcelas, cores, tamanhos, selo, imagem, estoque, ativo)
-    VALUES (@id, @nome, @categoria, @preco, @precoDe, @parcelas, @cores, @tamanhos, @selo, @imagem, @estoque, @ativo)
-  `);
+  for (const produto of produtos) {
+    await db.query(
+      `INSERT INTO produtos (id, nome, categoria, preco, preco_de, parcelas, cores, tamanhos, selo, imagem, estoque, ativo)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [
+        produto.id,
+        produto.nome,
+        produto.categoria,
+        produto.preco,
+        produto.precoDe ?? null,
+        produto.parcelas ?? null,
+        JSON.stringify(produto.cores || []),
+        JSON.stringify(produto.tamanhos || []),
+        produto.selo ?? null,
+        produto.imagem ?? null,
+        100,
+        true,
+      ],
+    );
+  }
 
-  const transacao = db.transaction((lista) => {
-    for (const produto of lista) {
-      inserir.run({
-        id: produto.id,
-        nome: produto.nome,
-        categoria: produto.categoria,
-        preco: produto.preco,
-        precoDe: produto.precoDe ?? null,
-        parcelas: produto.parcelas ?? null,
-        cores: JSON.stringify(produto.cores || []),
-        tamanhos: JSON.stringify(produto.tamanhos || []),
-        selo: produto.selo ?? null,
-        imagem: produto.imagem ?? null,
-        estoque: 100,
-        ativo: 1,
-      });
-    }
-  });
-
-  transacao(produtos);
   console.log(`Seed: ${produtos.length} produtos importados de js/products.js`);
 }
 
-function seedCupons() {
-  const { count } = db.prepare("SELECT COUNT(*) AS count FROM cupons").get();
-  if (count > 0) return;
-
-  const inserir = db.prepare(`
-    INSERT INTO cupons (codigo, desconto_percentual, desconto_fixo, valor_minimo, ativo)
-    VALUES (@codigo, @descontoPercentual, @descontoFixo, @valorMinimo, @ativo)
-  `);
+async function seedCupons() {
+  const { rows } = await db.query("SELECT COUNT(*) AS count FROM cupons");
+  if (Number(rows[0].count) > 0) return;
 
   const cuponsIniciais = [
-    {
-      codigo: "PRIMEIRACOMPRA",
-      descontoPercentual: 0.1,
-      descontoFixo: null,
-      valorMinimo: 99,
-      ativo: 1,
-    },
-    {
-      codigo: "ESTANCIA10",
-      descontoPercentual: 0.1,
-      descontoFixo: null,
-      valorMinimo: null,
-      ativo: 1,
-    },
-    {
-      codigo: "ESTANCIA20",
-      descontoPercentual: null,
-      descontoFixo: 20,
-      valorMinimo: 199,
-      ativo: 1,
-    },
+    { codigo: "PRIMEIRACOMPRA", descontoPercentual: 0.1, descontoFixo: null, valorMinimo: 99, ativo: true },
+    { codigo: "ESTANCIA10", descontoPercentual: 0.1, descontoFixo: null, valorMinimo: null, ativo: true },
+    { codigo: "ESTANCIA20", descontoPercentual: null, descontoFixo: 20, valorMinimo: 199, ativo: true },
   ];
 
-  const transacao = db.transaction((lista) => {
-    for (const cupom of lista) {
-      inserir.run(cupom);
-    }
-  });
+  for (const cupom of cuponsIniciais) {
+    await db.query(
+      `INSERT INTO cupons (codigo, desconto_percentual, desconto_fixo, valor_minimo, ativo)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [cupom.codigo, cupom.descontoPercentual, cupom.descontoFixo, cupom.valorMinimo, cupom.ativo],
+    );
+  }
 
-  transacao(cuponsIniciais);
   console.log(`Seed: ${cuponsIniciais.length} cupons cadastrados.`);
 }
 
-function seedAdministradores() {
-  const { count } = db.prepare("SELECT COUNT(*) AS count FROM administradores").get();
-  if (count > 0) return;
+async function seedAdministradores() {
+  const { rows } = await db.query("SELECT COUNT(*) AS count FROM administradores");
+  if (Number(rows[0].count) > 0) return;
 
   const email = process.env.ADMIN_SEED_EMAIL || "admin@estanciawestern.com.br";
   const senha = process.env.ADMIN_SEED_SENHA || "estancia2026";
   const senhaHash = bcrypt.hashSync(senha, 10);
 
-  db.prepare(`
-    INSERT INTO administradores (id, email, senha_hash, nome)
-    VALUES (@id, @email, @senhaHash, @nome)
-  `).run({
-    id: crypto.randomUUID(),
-    email,
-    senhaHash,
-    nome: "Administrador Estância Western",
-  });
+  await db.query(
+    `INSERT INTO administradores (id, email, senha_hash, nome)
+     VALUES ($1, $2, $3, $4)`,
+    [crypto.randomUUID(), email, senhaHash, "Administrador Estância Western"],
+  );
 
   console.log(`Seed: administrador inicial cadastrado (${email}).`);
 }
 
-function inicializarBanco() {
-  criarTabelas();
-  seedProdutos();
-  seedCupons();
-  seedAdministradores();
+async function inicializarBanco() {
+  await criarTabelas();
+  await seedProdutos();
+  await seedCupons();
+  await seedAdministradores();
 }
 
-function validarCupom(codigo, subtotal) {
+async function validarCupom(codigo, subtotal) {
   const codigoNormalizado = String(codigo || "").trim().toUpperCase();
 
   if (!codigoNormalizado) {
     return { valido: false, status: 400, mensagem: "Informe o código do cupom." };
   }
 
-  const cupom = db
-    .prepare("SELECT * FROM cupons WHERE codigo = ?")
-    .get(codigoNormalizado);
+  const { rows } = await db.query("SELECT * FROM cupons WHERE codigo = $1", [codigoNormalizado]);
+  const cupom = rows[0];
 
   if (!cupom) {
     return { valido: false, status: 400, mensagem: "Cupom inválido." };
@@ -271,7 +224,7 @@ function validarCupom(codigo, subtotal) {
     return {
       valido: false,
       status: 400,
-      mensagem: `Valor mínimo não atingido. Este cupom exige compras a partir de R$ ${cupom.valor_minimo.toFixed(2).replace(".", ",")}.`,
+      mensagem: `Valor mínimo não atingido. Este cupom exige compras a partir de R$ ${Number(cupom.valor_minimo).toFixed(2).replace(".", ",")}.`,
     };
   }
 
@@ -287,4 +240,4 @@ function validarCupom(codigo, subtotal) {
   };
 }
 
-module.exports = { db, inicializarBanco, DB_PATH, validarCupom };
+module.exports = { db, inicializarBanco, validarCupom };
