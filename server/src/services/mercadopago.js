@@ -4,6 +4,9 @@ const { MercadoPagoConfig, Payment } = require("mercadopago");
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || "";
 const credencialValida = accessToken && !accessToken.includes("SEU-ACCESS-TOKEN");
 
+const URL_BASE_BACKEND = process.env.URL_BASE_BACKEND || "https://estancia-western.onrender.com";
+const NOTIFICATION_URL = `${URL_BASE_BACKEND.replace(/\/$/, "")}/api/webhooks/mercadopago`;
+
 let paymentClient = null;
 if (credencialValida) {
   const client = new MercadoPagoConfig({ accessToken });
@@ -56,6 +59,7 @@ async function criarPagamentoPix({ pedidoId, valor, clienteNome, clienteEmail, c
           },
         },
         external_reference: String(pedidoId),
+        notification_url: NOTIFICATION_URL,
       },
     });
 
