@@ -1,4 +1,6 @@
-const FRETE_GRATIS_VALOR_MINIMO = Number(process.env.FRETE_GRATIS_VALOR_MINIMO) || 299;
+const FRETE_GRATIS_VALOR_MINIMO = Number.isFinite(Number(process.env.FRETE_GRATIS_VALOR_MINIMO))
+  ? Number(process.env.FRETE_GRATIS_VALOR_MINIMO)
+  : 299;
 const VALOR_PAC = 24.9;
 const VALOR_SEDEX = 39.9;
 const PRAZO_PAC = "6 a 9 dias úteis";
