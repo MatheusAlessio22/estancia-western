@@ -240,6 +240,37 @@ function inicializarNewsletter() {
   });
 }
 
+function inicializarFormularioContato() {
+  const form = document.querySelector("[data-contato-form]");
+  if (!form) return;
+
+  const aviso = form.querySelector("[data-contato-aviso]");
+
+  form.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+
+    const nome = form.querySelector("#contato-nome").value.trim();
+    const email = form.querySelector("#contato-email").value.trim();
+    const mensagem = form.querySelector("#contato-mensagem").value.trim();
+    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!aviso) return;
+
+    if (!nome || !emailValido || !mensagem) {
+      aviso.textContent = "Preencha seu nome, um e-mail válido e a mensagem antes de enviar.";
+      aviso.className = "contato-form__aviso erro";
+      aviso.hidden = false;
+      return;
+    }
+
+    // Integração futura: enviar os dados do formulário para o backend/CRM da loja.
+    aviso.textContent = "Mensagem enviada com sucesso! Responderemos em breve.";
+    aviso.className = "contato-form__aviso sucesso";
+    aviso.hidden = false;
+    form.reset();
+  });
+}
+
 function cartaoProdutoHTML(produto) {
   const precoDe = produto.precoDe
     ? `<span class="card-produto__preco-de">${formatarPreco(produto.precoDe)}</span>`
@@ -414,4 +445,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderizarVitrines();
   inicializarAnoRodape();
   inicializarPopupNewsletter();
+  inicializarFormularioContato();
 });

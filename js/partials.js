@@ -2,7 +2,7 @@
  * Header e footer compartilhados entre todas as páginas.
  * Injetados de forma síncrona (sem fetch) para funcionar em qualquer servidor estático.
  */
-const WHATSAPP_LINK = "https://wa.me/5500000000000";
+const WHATSAPP_LINK = "https://wa.me/5546999244179";
 
 function estrelaSVG() {
   return '<svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>';

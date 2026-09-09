@@ -618,9 +618,15 @@
   margin-block: var(--espaco-6);
 }
 
-@media (width >= 768px) {
+@media (width >= 560px) {
   .valores-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 1024px) {
+  .valores-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -662,6 +668,21 @@
   border-radius: var(--raio-borda-lg);
   padding: var(--espaco-6);
   box-shadow: var(--sombra-card);
+}
+
+.contato-form__aviso {
+  margin-top: var(--espaco-3);
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+.contato-form__aviso.sucesso {
+  color: var(--cor-sucesso);
+}
+
+.contato-form__aviso.erro {
+  color: var(--cor-erro);
 }
 
 /* ---- Carrinho / checkout ---- */

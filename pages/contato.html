@@ -39,14 +39,14 @@
           <div class="contato-info__item">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <div>
-              <h4>WhatsApp <span class="tag-exemplo" title="Número de exemplo — será substituído pelo WhatsApp real da loja.">Exemplo</span></h4>
-              <p><a href="https://wa.me/5500000000000" target="_blank" rel="noopener" style="text-decoration:underline;">(00) 00000-0000</a></p>
+              <h4>WhatsApp Oficial</h4>
+              <p><a href="https://wa.me/5546999244179" target="_blank" rel="noopener" style="text-decoration:underline;">(46) 99924-4179</a></p>
             </div>
           </div>
           <div class="contato-info__item">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
             <div>
-              <h4>E-mail</h4>
+              <h4>E-mail de Suporte</h4>
               <p><a href="mailto:contato@estanciawestern.com.br" style="text-decoration:underline;">contato@estanciawestern.com.br</a></p>
             </div>
           </div>
@@ -57,28 +57,21 @@
               <p>Segunda a sexta, das 9h às 18h</p>
             </div>
           </div>
-          <div class="contato-info__item">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div>
-              <h4>Endereço</h4>
-              <p><em>[Endereço da loja física, se houver — a confirmar com o cliente]</em></p>
-            </div>
-          </div>
         </div>
 
-        <form class="contato-form" onsubmit="return false;">
+        <form class="contato-form" data-contato-form>
           <h3 style="margin-bottom:var(--espaco-4);">Envie uma Mensagem</h3>
           <div class="campo">
             <label for="contato-nome">Nome</label>
-            <input type="text" id="contato-nome" required>
+            <input type="text" id="contato-nome" name="nome" required>
           </div>
           <div class="campo">
             <label for="contato-email">E-mail</label>
-            <input type="email" id="contato-email" required>
+            <input type="email" id="contato-email" name="email" required>
           </div>
           <div class="campo">
             <label for="contato-assunto">Assunto</label>
-            <select id="contato-assunto">
+            <select id="contato-assunto" name="assunto">
               <option>Dúvida sobre produto</option>
               <option>Status do pedido</option>
               <option>Trocas e devoluções</option>
@@ -88,9 +81,10 @@
           </div>
           <div class="campo">
             <label for="contato-mensagem">Mensagem</label>
-            <textarea id="contato-mensagem" rows="5" required></textarea>
+            <textarea id="contato-mensagem" name="mensagem" rows="5" required></textarea>
           </div>
           <button type="submit" class="btn btn--primario btn--bloco">Enviar Mensagem</button>
+          <p class="contato-form__aviso" data-contato-aviso hidden></p>
         </form>
       </div>
     </div>
