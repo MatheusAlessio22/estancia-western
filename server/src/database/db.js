@@ -148,8 +148,8 @@ function seedProdutos() {
   if (!produtos.length) return;
 
   const inserir = db.prepare(`
-    INSERT INTO produtos (id, nome, categoria, preco, preco_de, parcelas, cores, tamanhos, selo, estoque, ativo)
-    VALUES (@id, @nome, @categoria, @preco, @precoDe, @parcelas, @cores, @tamanhos, @selo, @estoque, @ativo)
+    INSERT INTO produtos (id, nome, categoria, preco, preco_de, parcelas, cores, tamanhos, selo, imagem, estoque, ativo)
+    VALUES (@id, @nome, @categoria, @preco, @precoDe, @parcelas, @cores, @tamanhos, @selo, @imagem, @estoque, @ativo)
   `);
 
   const transacao = db.transaction((lista) => {
@@ -164,6 +164,7 @@ function seedProdutos() {
         cores: JSON.stringify(produto.cores || []),
         tamanhos: JSON.stringify(produto.tamanhos || []),
         selo: produto.selo ?? null,
+        imagem: produto.imagem ?? null,
         estoque: 100,
         ativo: 1,
       });
@@ -221,19 +222,21 @@ function seedAdministradores() {
   const { count } = db.prepare("SELECT COUNT(*) AS count FROM administradores").get();
   if (count > 0) return;
 
-  const senhaHash = bcrypt.hashSync("estancia2026", 10);
+  const email = process.env.ADMIN_SEED_EMAIL || "admin@estanciawestern.com.br";
+  const senha = process.env.ADMIN_SEED_SENHA || "estancia2026";
+  const senhaHash = bcrypt.hashSync(senha, 10);
 
   db.prepare(`
     INSERT INTO administradores (id, email, senha_hash, nome)
     VALUES (@id, @email, @senhaHash, @nome)
   `).run({
     id: crypto.randomUUID(),
-    email: "admin@estanciawestern.com.br",
+    email,
     senhaHash,
     nome: "Administrador Estância Western",
   });
 
-  console.log("Seed: administrador inicial cadastrado (admin@estanciawestern.com.br).");
+  console.log(`Seed: administrador inicial cadastrado (${email}).`);
 }
 
 function inicializarBanco() {
