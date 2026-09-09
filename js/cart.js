@@ -178,13 +178,64 @@ function atualizarBadgeCarrinho() {
   });
 }
 
-function renderizarPaginaCarrinho() {
+/**
+ * Revalida preço e disponibilidade de cada item salvo no carrinho contra
+ * o catálogo atual (API/backend): atualiza o preço exibido se o lojista
+ * tiver alterado no Painel Administrativo, e remove itens cujo produto
+ * foi desativado ou excluído (evitando finalizar compra de algo que não
+ * está mais à venda). O valor efetivamente cobrado no checkout já é
+ * sempre recalculado no servidor (server/src/routes/checkout.js); isto
+ * aqui mantém a TELA do carrinho e do checkout condizentes com a loja.
+ *
+ * Retorna { itens, removidos }, onde `removidos` lista os itens tirados
+ * do carrinho por não estarem mais disponíveis.
+ */
+async function revalidarPrecosCarrinho() {
+  const itens = lerCarrinho();
+  if (itens.length === 0) return { itens, removidos: [] };
+
+  if (typeof carregarCatalogoProdutos !== "function") return { itens, removidos: [] };
+
+  const catalogo = await carregarCatalogoProdutos();
+  let alterado = false;
+  const removidos = [];
+
+  const itensAtualizados = itens.filter((item) => {
+    const produtoAtual = catalogo.find((produto) => produto.id === item.produtoId);
+
+    if (!produtoAtual) {
+      alterado = true;
+      removidos.push(item);
+      return false;
+    }
+
+    if (produtoAtual.preco !== item.preco) {
+      alterado = true;
+      item.preco = produtoAtual.preco;
+    }
+
+    return true;
+  });
+
+  if (alterado) {
+    salvarCarrinho(itensAtualizados);
+  }
+
+  return { itens: itensAtualizados, removidos };
+}
+
+async function renderizarPaginaCarrinho() {
   const lista = document.querySelector("[data-carrinho-lista]");
   const vazio = document.querySelector("[data-carrinho-vazio]");
   const resumo = document.querySelector("[data-carrinho-resumo]");
   if (!lista) return;
 
-  const itens = lerCarrinho();
+  const { itens, removidos } = await revalidarPrecosCarrinho();
+
+  if (removidos.length > 0 && typeof mostrarToast === "function") {
+    const nomes = removidos.map((item) => item.nome).join(", ");
+    mostrarToast(`${removidos.length > 1 ? "Itens indisponíveis foram removidos" : "Um item indisponível foi removido"}: ${nomes}.`);
+  }
 
   if (itens.length === 0) {
     lista.hidden = true;
@@ -272,8 +323,8 @@ function atualizarResumoCarrinho() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   atualizarBadgeCarrinho();
-  renderizarPaginaCarrinho();
+  await renderizarPaginaCarrinho();
   inicializarCupom(atualizarResumoCarrinho);
 });

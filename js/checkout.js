@@ -15,9 +15,19 @@ let opcoesFreteCheckout = [];
 let freteSelecionado = null;
 let enderecoConfirmado = null;
 
-function popularResumoCheckout() {
+async function popularResumoCheckout() {
   const container = document.querySelector("[data-checkout-itens]");
-  const itens = lerCarrinho();
+
+  let itens = lerCarrinho();
+  if (typeof revalidarPrecosCarrinho === "function") {
+    const resultado = await revalidarPrecosCarrinho();
+    itens = resultado.itens;
+
+    if (resultado.removidos.length > 0 && typeof mostrarToast === "function") {
+      const nomes = resultado.removidos.map((item) => item.nome).join(", ");
+      mostrarToast(`${resultado.removidos.length > 1 ? "Itens indisponíveis foram removidos" : "Um item indisponível foi removido"}: ${nomes}.`);
+    }
+  }
 
   if (itens.length === 0) {
     window.location.href = "/pages/carrinho.html";
@@ -951,8 +961,8 @@ function finalizarPedidoSimulado(form, metodoPagamento) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  popularResumoCheckout();
+document.addEventListener("DOMContentLoaded", async () => {
+  await popularResumoCheckout();
   inicializarSelecaoPagamento();
   inicializarSeletoresEstadoCidade();
   inicializarAutocompleteCep();
