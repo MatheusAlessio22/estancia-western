@@ -2,6 +2,7 @@ const express = require("express");
 const { db, validarCupom } = require("../database/db");
 const { calcularOpcoesFrete } = require("../services/frete");
 const { criarPagamentoPix } = require("../services/mercadopago");
+const { enviarEmailPedidoCriado } = require("../services/email");
 
 const router = express.Router();
 
@@ -57,6 +58,8 @@ router.post("/pix", async (req, res) => {
 
       itensValidados.push({
         produtoId: produto.id,
+        nome: produto.nome,
+        imagem: produto.imagem,
         quantidade,
         precoUnitario: produto.preco,
         tamanho: item.tamanho || null,
@@ -146,6 +149,32 @@ router.post("/pix", async (req, res) => {
        WHERE id = $4`,
       [pagamento.mpPaymentId, pagamento.copiaECola, pagamento.qrCodeBase64, pedidoId],
     );
+
+    // Disparo assíncrono e não-bloqueante: o cliente não deve esperar o
+    // envio do e-mail para receber a resposta do checkout, e uma falha
+    // aqui nunca deve derrubar o fluxo de pagamento.
+    const pedidoParaEmail = {
+      id: pedidoId,
+      cliente_nome: cliente.nome,
+      cliente_email: cliente.email,
+      cep: cliente.cep,
+      endereco: cliente.endereco,
+      numero: cliente.numero,
+      complemento: cliente.complemento || null,
+      bairro: cliente.bairro || null,
+      cidade: cliente.cidade,
+      estado: cliente.estado,
+      total,
+      frete,
+      desconto,
+      cupom_codigo: cupomCodigo,
+    };
+
+    enviarEmailPedidoCriado({
+      pedido: pedidoParaEmail,
+      itens: itensValidados,
+      dadosPix: pagamento,
+    }).catch((erro) => console.error("Falha ao enviar e-mail de pedido criado:", erro.message));
 
     res.json({
       sucesso: true,
