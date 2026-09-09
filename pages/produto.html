@@ -307,11 +307,15 @@
     (async function () {
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
-      let produto = id ? buscarProdutoPorId(id) : null;
+      let produto = null;
 
-      if (!produto && id) {
+      if (id) {
         const catalogo = await carregarCatalogoProdutos();
         produto = catalogo.find((item) => item.id === id) || null;
+      }
+
+      if (!produto && id) {
+        produto = buscarProdutoPorId(id);
       }
 
       if (!produto) {
