@@ -304,10 +304,15 @@
   <script src="/js/produto.js"></script>
   <script>injetarParciais('');</script>
   <script>
-    (function () {
+    (async function () {
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
-      const produto = id ? buscarProdutoPorId(id) : null;
+      let produto = id ? buscarProdutoPorId(id) : null;
+
+      if (!produto && id) {
+        const catalogo = await carregarCatalogoProdutos();
+        produto = catalogo.find((item) => item.id === id) || null;
+      }
 
       if (!produto) {
         document.querySelector('[data-produto-nao-encontrado]').hidden = false;

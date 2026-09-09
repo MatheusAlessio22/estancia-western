@@ -167,12 +167,45 @@ function formatarPreco(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+const PRODUTOS_CUSTOM_STORAGE_KEY = "estancia_produtos_custom";
+
+/**
+ * Produtos cadastrados pelo lojista no Painel Administrativo (js/admin.js),
+ * persistidos localmente como fallback quando o backend não está disponível
+ * (ex: hospedagem estática na Vercel sem servidor Express ativo).
+ */
+function lerProdutosCustom() {
+  try {
+    const dados = localStorage.getItem(PRODUTOS_CUSTOM_STORAGE_KEY);
+    const lista = dados ? JSON.parse(dados) : [];
+    return Array.isArray(lista) ? lista : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Combina o catálogo base com os produtos custom do lojista, dando
+ * prioridade ao custom quando o mesmo id existir nos dois (edição).
+ */
+function combinarComProdutosCustom(catalogoBase) {
+  const custom = lerProdutosCustom().filter((produto) => produto.ativo !== false);
+  if (custom.length === 0) return catalogoBase;
+
+  const idsCustom = new Set(custom.map((produto) => produto.id));
+  const baseSemSobrepostos = catalogoBase.filter((produto) => !idsCustom.has(produto.id));
+
+  return [...baseSemSobrepostos, ...custom];
+}
+
 function buscarProdutoPorId(id) {
+  const custom = lerProdutosCustom().find((produto) => produto.id === id);
+  if (custom) return custom;
   return PRODUTOS.find((produto) => produto.id === id) || null;
 }
 
 function buscarProdutosPorCategoria(slug) {
-  return PRODUTOS.filter((produto) => produto.categoria === slug);
+  return combinarComProdutosCustom(PRODUTOS).filter((produto) => produto.categoria === slug);
 }
 
 function nomeCategoria(slug) {
@@ -198,17 +231,19 @@ async function carregarCatalogoProdutos() {
     // O banco de dados ainda não guarda os sinalizadores "novo"/"maisVendido"
     // usados nas vitrines da Home; herda-os do catálogo local pelo id
     // enquanto essas colunas não existem no schema do backend.
-    return produtosApi.map((produto) => {
-      const produtoLocal = buscarProdutoPorId(produto.id);
+    const catalogo = produtosApi.map((produto) => {
+      const produtoLocal = PRODUTOS.find((item) => item.id === produto.id);
       return {
         novo: produtoLocal?.novo || false,
         maisVendido: produtoLocal?.maisVendido || false,
         ...produto,
       };
     });
+
+    return combinarComProdutosCustom(catalogo);
   } catch (erro) {
     console.warn("Backend de produtos indisponível, usando catálogo local.", erro);
-    return PRODUTOS;
+    return combinarComProdutosCustom(PRODUTOS);
   }
 }
 

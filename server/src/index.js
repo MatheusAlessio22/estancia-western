@@ -12,6 +12,8 @@ const checkoutRouter = require("./routes/checkout");
 const pedidosRouter = require("./routes/pedidos");
 const webhooksRouter = require("./routes/webhooks");
 const cuponsRouter = require("./routes/cupons");
+const authRouter = require("./routes/auth");
+const adminRouter = require("./routes/admin");
 
 inicializarBanco();
 
@@ -62,6 +64,8 @@ app.use("/api/checkout", limitadorCheckout, checkoutRouter);
 app.use("/api/pedidos", pedidosRouter);
 app.use("/api/webhooks", webhooksRouter);
 app.use("/api/cupons", cuponsRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRouter);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

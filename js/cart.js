@@ -112,7 +112,7 @@ function adicionarAoCarrinho(
       produtoId,
       nome: produto.nome,
       preco: produto.preco,
-      imagem: (produto.imagens && produto.imagens[0]) || PLACEHOLDER_IMG,
+      imagem: produto.imagem || (produto.imagens && produto.imagens[0]) || PLACEHOLDER_IMG,
       cor,
       tamanho,
       quantidade,

@@ -27,7 +27,9 @@ function renderizarGaleria(produto) {
   const imagens =
     Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens
-      : Array.from({ length: TOTAL_FOTOS_PLACEHOLDER }, () => PLACEHOLDER_IMG);
+      : produto.imagem
+        ? [produto.imagem]
+        : Array.from({ length: TOTAL_FOTOS_PLACEHOLDER }, () => PLACEHOLDER_IMG);
 
   let indiceAtual = 0;
 

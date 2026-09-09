@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 const Database = require("better-sqlite3");
+const bcrypt = require("bcryptjs");
 
 const DATA_DIR = path.join(__dirname, "..", "..", "data");
 const DB_PATH = path.join(DATA_DIR, "estancia.db");
@@ -25,6 +27,7 @@ function criarTabelas() {
       cores TEXT,
       tamanhos TEXT,
       selo TEXT,
+      imagem TEXT,
       estoque INTEGER NOT NULL DEFAULT 100,
       ativo INTEGER NOT NULL DEFAULT 1
     );
@@ -73,9 +76,18 @@ function criarTabelas() {
       valor_minimo REAL,
       ativo INTEGER NOT NULL DEFAULT 1
     );
+
+    CREATE TABLE IF NOT EXISTS administradores (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      senha_hash TEXT NOT NULL,
+      nome TEXT,
+      criado_em TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   migrarColunasPedidos();
+  migrarColunasProdutos();
 }
 
 function migrarColunasPedidos() {
@@ -90,6 +102,15 @@ function migrarColunasPedidos() {
   }
   if (!nomes.has("codigo_rastreio")) {
     db.exec("ALTER TABLE pedidos ADD COLUMN codigo_rastreio TEXT");
+  }
+}
+
+function migrarColunasProdutos() {
+  const colunas = db.prepare("PRAGMA table_info(produtos)").all();
+  const nomes = new Set(colunas.map((coluna) => coluna.name));
+
+  if (!nomes.has("imagem")) {
+    db.exec("ALTER TABLE produtos ADD COLUMN imagem TEXT");
   }
 }
 
@@ -196,10 +217,30 @@ function seedCupons() {
   console.log(`Seed: ${cuponsIniciais.length} cupons cadastrados.`);
 }
 
+function seedAdministradores() {
+  const { count } = db.prepare("SELECT COUNT(*) AS count FROM administradores").get();
+  if (count > 0) return;
+
+  const senhaHash = bcrypt.hashSync("estancia2026", 10);
+
+  db.prepare(`
+    INSERT INTO administradores (id, email, senha_hash, nome)
+    VALUES (@id, @email, @senhaHash, @nome)
+  `).run({
+    id: crypto.randomUUID(),
+    email: "admin@estanciawestern.com.br",
+    senhaHash,
+    nome: "Administrador Estância Western",
+  });
+
+  console.log("Seed: administrador inicial cadastrado (admin@estanciawestern.com.br).");
+}
+
 function inicializarBanco() {
   criarTabelas();
   seedProdutos();
   seedCupons();
+  seedAdministradores();
 }
 
 function validarCupom(codigo, subtotal) {

@@ -282,12 +282,14 @@ function cartaoProdutoHTML(produto) {
     ? `<span class="card-produto__parcelas">${produto.parcelas}</span>`
     : "";
   const urlProduto = `/pages/produto.html?id=${produto.id}`;
+  const imagemCard =
+    produto.imagem || (Array.isArray(produto.imagens) && produto.imagens[0]) || PLACEHOLDER_IMG;
 
   return `
     <article class="card-produto">
       <div class="card-produto__imagem">
         ${selo}
-        <img src="${PLACEHOLDER_IMG}" alt="${produto.nome}" loading="lazy" width="480" height="600">
+        <img src="${imagemCard}" alt="${produto.nome}" loading="lazy" width="480" height="600">
       </div>
       <div class="card-produto__corpo">
         <span class="card-produto__categoria">${nomeCategoria(produto.categoria)}</span>

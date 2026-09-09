@@ -14,6 +14,7 @@ function formatarProduto(linha) {
     cores: JSON.parse(linha.cores || "[]"),
     tamanhos: JSON.parse(linha.tamanhos || "[]"),
     selo: linha.selo,
+    imagem: linha.imagem,
     estoque: linha.estoque,
   };
 }

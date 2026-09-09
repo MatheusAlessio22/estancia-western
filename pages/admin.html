@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel do Lojista — Estância Western</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logos/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/logos/favicon-64.png">
+  <link rel="apple-touch-icon" href="/assets/logos/favicon-w-icone.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- ---- Tela de Login ---- -->
+  <div class="admin-login" data-admin-login>
+    <form class="admin-login__card" data-admin-login-form novalidate>
+      <img src="/assets/logos/logo-transparente-marrom.png" alt="Estância Western" class="admin-login__logo">
+      <h1 class="admin-login__titulo">Painel do Lojista</h1>
+      <p class="admin-login__subtitulo">Acesse para gerenciar o catálogo de produtos.</p>
+
+      <div class="campo">
+        <label for="admin-usuario">E-mail ou usuário</label>
+        <input type="text" id="admin-usuario" name="usuario" autocomplete="username" required>
+      </div>
+      <div class="campo">
+        <label for="admin-senha">Senha</label>
+        <input type="password" id="admin-senha" name="senha" autocomplete="current-password" required>
+      </div>
+
+      <p class="admin-login__aviso" data-admin-login-aviso hidden></p>
+
+      <button type="submit" class="btn btn--primario btn--bloco">Acessar Painel</button>
+    </form>
+  </div>
+
+  <!-- ---- Dashboard ---- -->
+  <div class="admin-dashboard" data-admin-dashboard hidden>
+    <header class="admin-topo">
+      <div class="admin-topo__marca">
+        <img src="/assets/logos/logo-transparente-marrom.png" alt="Estância Western" class="admin-topo__logo">
+        <span class="admin-topo__saudacao">Painel do Lojista</span>
+      </div>
+      <div class="admin-topo__acoes">
+        <a href="/index.html" target="_blank" rel="noopener" class="btn btn--secundario btn--pequeno">Ver Loja</a>
+        <button type="button" class="btn btn--secundario btn--pequeno" data-admin-logout>Sair</button>
+      </div>
+    </header>
+
+    <main class="admin-conteudo">
+      <div class="admin-resumo">
+        <div class="admin-resumo__info">
+          <span class="admin-resumo__numero" data-admin-contador-ativos>0</span>
+          <span class="admin-resumo__label">produtos ativos na loja</span>
+        </div>
+        <button type="button" class="btn btn--primario admin-resumo__btn" data-admin-novo-produto>+ Adicionar Novo Produto</button>
+      </div>
+
+      <div class="admin-toolbar">
+        <div class="admin-busca">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="Buscar por nome ou categoria..." aria-label="Buscar produtos" data-admin-busca-input>
+        </div>
+      </div>
+
+      <p class="admin-vazio" data-admin-vazio hidden>Nenhum produto encontrado.</p>
+
+      <div class="admin-tabela-wrap">
+        <table class="admin-tabela">
+          <thead>
+            <tr>
+              <th scope="col">Produto</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Preço</th>
+              <th scope="col">Ativo na Loja</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody data-admin-tabela-corpo></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- ---- Modal de Cadastro/Edição de Produto ---- -->
+  <div class="admin-modal" data-admin-modal hidden role="dialog" aria-modal="true" aria-labelledby="admin-modal-titulo">
+    <div class="admin-modal__overlay" data-admin-modal-fechar></div>
+    <div class="admin-modal__caixa">
+      <button type="button" class="admin-modal__fechar" data-admin-modal-fechar aria-label="Fechar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <h2 class="admin-modal__titulo" id="admin-modal-titulo" data-admin-modal-titulo>Adicionar Novo Produto</h2>
+
+      <form class="admin-form" data-admin-form novalidate>
+        <input type="hidden" data-admin-produto-id>
+
+        <div class="campo">
+          <label for="admin-produto-nome">Nome do Produto *</label>
+          <input type="text" id="admin-produto-nome" placeholder="Ex: Camisa Manga Longa Xadrez Country" data-admin-campo-nome required>
+        </div>
+
+        <div class="admin-form__linha">
+          <div class="campo">
+            <label for="admin-produto-categoria">Categoria *</label>
+            <select id="admin-produto-categoria" data-admin-campo-categoria required>
+              <option value="">Selecione...</option>
+              <option value="camisas">Camisas &amp; Camisetas</option>
+              <option value="calcas-jeans">Calças &amp; Jeans</option>
+              <option value="botas-calcados">Botas &amp; Calçados</option>
+              <option value="chapeus-bones">Chapéus &amp; Bonés</option>
+              <option value="cintos-fivelas">Cintos &amp; Fivelas</option>
+              <option value="acessorios">Acessórios</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="admin-produto-selo">Selo de Destaque</label>
+            <select id="admin-produto-selo" data-admin-campo-selo>
+              <option value="">Nenhum</option>
+              <option value="Lançamento">Lançamento</option>
+              <option value="Mais Vendido">Mais Vendido</option>
+              <option value="Promoção">Promoção</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-form__linha">
+          <div class="campo">
+            <label for="admin-produto-preco">Preço de Venda (R$) *</label>
+            <input type="number" id="admin-produto-preco" min="0" step="0.01" placeholder="0,00" data-admin-campo-preco required>
+          </div>
+          <div class="campo">
+            <label for="admin-produto-preco-de">Preço Anterior / De (R$)</label>
+            <input type="number" id="admin-produto-preco-de" min="0" step="0.01" placeholder="Opcional" data-admin-campo-preco-de>
+          </div>
+        </div>
+
+        <div class="campo">
+          <span class="admin-form__label-bloco">Foto do Produto</span>
+          <div class="admin-upload">
+            <img class="admin-upload__preview" data-admin-upload-preview alt="Pré-visualização da foto do produto" hidden>
+            <div class="admin-upload__vazio" data-admin-upload-vazio>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>Nenhuma foto selecionada</span>
+            </div>
+            <div class="admin-upload__acoes">
+              <label class="btn btn--secundario btn--pequeno admin-upload__botao">
+                Escolher do Dispositivo
+                <input type="file" accept="image/*" data-admin-campo-arquivo hidden>
+              </label>
+              <input type="url" placeholder="ou cole a URL de uma imagem externa" data-admin-campo-imagem-url class="admin-upload__url">
+            </div>
+          </div>
+        </div>
+
+        <div class="campo">
+          <span class="admin-form__label-bloco">Tamanhos Disponíveis</span>
+          <div class="admin-checkboxes" data-admin-tamanhos>
+            <label class="admin-checkbox"><input type="checkbox" value="P"><span>P</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="M"><span>M</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="G"><span>G</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="GG"><span>GG</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="XG"><span>XG</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="36"><span>36</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="37"><span>37</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="38"><span>38</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="39"><span>39</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="40"><span>40</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="41"><span>41</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="42"><span>42</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="43"><span>43</span></label>
+            <label class="admin-checkbox"><input type="checkbox" value="44"><span>44</span></label>
+          </div>
+        </div>
+
+        <div class="campo campo--switch">
+          <label class="admin-switch">
+            <input type="checkbox" data-admin-campo-ativo checked>
+            <span class="admin-switch__trilho"></span>
+            <span>Ativo na Loja</span>
+          </label>
+        </div>
+
+        <p class="admin-form__aviso" data-admin-form-aviso hidden></p>
+
+        <div class="admin-form__botoes">
+          <button type="button" class="btn btn--secundario" data-admin-modal-fechar>Cancelar</button>
+          <button type="submit" class="btn btn--primario">Salvar Produto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ---- Modal de Confirmação de Exclusão ---- -->
+  <div class="admin-modal admin-modal--pequeno" data-admin-confirmar-exclusao hidden role="dialog" aria-modal="true" aria-labelledby="admin-confirmar-titulo">
+    <div class="admin-modal__overlay" data-admin-confirmar-cancelar></div>
+    <div class="admin-modal__caixa">
+      <h2 class="admin-modal__titulo" id="admin-confirmar-titulo">Excluir produto?</h2>
+      <p data-admin-confirmar-mensagem>Tem certeza que deseja excluir este produto? Essa ação não pode ser desfeita.</p>
+      <div class="admin-form__botoes">
+        <button type="button" class="btn btn--secundario" data-admin-confirmar-cancelar>Cancelar</button>
+        <button type="button" class="btn btn--primario admin-btn-perigo" data-admin-confirmar-ok>Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/products.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
