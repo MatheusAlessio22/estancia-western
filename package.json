@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/src/index.js",
+    "db:sync": "node server/src/database/sync-produtos.js",
     "format": "prettier --write \"**/*.{html,css,js}\"",
     "lint:css": "stylelint \"css/**/*.css\""
   },
