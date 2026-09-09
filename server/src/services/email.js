@@ -3,7 +3,10 @@ const { templatePedidoCriado, assuntoPedidoCriado } = require("../templates/pedi
 const { templatePagamentoAprovado, assuntoPagamentoAprovado } = require("../templates/pagamentoAprovado");
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
-const EMAIL_REMETENTE = process.env.EMAIL_REMETENTE || "Estância Western <pedidos@estanciawestern.com.br>";
+// Enquanto a loja não verificar um domínio próprio no Resend, usa o
+// domínio de testes onboarding@resend.dev — ele só entrega para o
+// e-mail cadastrado na conta Resend, nunca para clientes reais.
+const EMAIL_REMETENTE = process.env.EMAIL_REMETENTE || "Estância Western <onboarding@resend.dev>";
 
 const credencialValida = Boolean(RESEND_API_KEY);
 const resend = credencialValida ? new Resend(RESEND_API_KEY) : null;
