@@ -60,7 +60,6 @@
           <div class="produto-selecao">
             <div class="produto-selecao__titulo">
               <span id="label-tamanho">Escolha seu tamanho</span>
-              <button type="button" class="botao-link foco-visivel" data-abrir-guia-medidas>Guia de medidas</button>
             </div>
             <div class="seletor-tamanhos" data-seletor-tamanhos role="group" aria-labelledby="label-tamanho" aria-describedby="erro-tamanho"></div>
             <p class="campo-erro" id="erro-tamanho" data-erro-tamanho hidden></p>
@@ -118,8 +117,6 @@
         <div class="produto-detalhes-abas">
           <div class="abas" role="tablist" aria-label="Informações do produto" data-abas>
             <button type="button" class="is-ativo foco-visivel" id="tab-descricao" data-aba="descricao" role="tab" aria-selected="true" aria-controls="descricao" tabindex="0">Descrição</button>
-            <button type="button" class="foco-visivel" id="tab-composicao" data-aba="composicao" role="tab" aria-selected="false" aria-controls="composicao" tabindex="-1">Composição e cuidados</button>
-            <button type="button" class="foco-visivel" id="tab-medidas" data-aba="medidas" role="tab" aria-selected="false" aria-controls="medidas" tabindex="-1">Guia de medidas</button>
             <button type="button" class="foco-visivel" id="tab-trocas" data-aba="trocas" role="tab" aria-selected="false" aria-controls="trocas" tabindex="-1">Trocas e devoluções</button>
             <button type="button" class="foco-visivel" id="tab-avaliacoes" data-aba="avaliacoes" role="tab" aria-selected="false" aria-controls="avaliacoes" tabindex="-1">Avaliações</button>
           </div>
@@ -128,63 +125,13 @@
             <p data-produto-descricao></p>
           </div>
 
-          <div class="aba-painel" id="composicao" data-painel="composicao" role="tabpanel" aria-labelledby="tab-composicao" tabindex="0" hidden>
-            <p>Composição: 98% algodão, 2% elastano.</p>
-            <p style="margin-top:var(--espaco-3);">Cuidados: lavar à mão ou em ciclo delicado, não usar alvejante, secar à sombra.</p>
-            <span class="tag-exemplo" title="Composição e instruções de cuidado de exemplo — serão substituídas pela ficha técnica real de cada produto." style="margin-top:var(--espaco-3);display:inline-flex;">Composição de exemplo</span>
-          </div>
-
-          <div class="aba-painel" id="medidas" data-painel="medidas" role="tabpanel" aria-labelledby="tab-medidas" tabindex="0" hidden>
-            <p>Encontre o caimento ideal para você. Consulte as medidas da peça antes de finalizar sua escolha.</p>
-            <span class="tag-exemplo" title="Tabela de medidas de exemplo — será substituída pela ficha técnica real de cada produto." style="margin-block:var(--espaco-3);display:inline-flex;">Medidas de exemplo</span>
-            <table class="tabela-medidas">
-              <thead>
-                <tr><th>Tamanho</th><th>Busto (cm)</th><th>Cintura (cm)</th><th>Quadril (cm)</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>P</td><td>88</td><td>68</td><td>94</td></tr>
-                <tr><td>M</td><td>92</td><td>72</td><td>98</td></tr>
-                <tr><td>G</td><td>96</td><td>76</td><td>102</td></tr>
-                <tr><td>GG</td><td>100</td><td>80</td><td>106</td></tr>
-              </tbody>
-            </table>
-            <p style="margin-top:var(--espaco-4);">Em caso de dúvida, fale com a nossa equipe pelo WhatsApp.</p>
-          </div>
-
           <div class="aba-painel" id="trocas" data-painel="trocas" role="tabpanel" aria-labelledby="tab-trocas" tabindex="0" hidden>
             <p>Trocas grátis em até 30 dias após o recebimento, para produtos sem uso e com etiquetas originais.</p>
             <p style="margin-top:var(--espaco-3);"><a href="/pages/politicas.html#trocas" style="text-decoration:underline;color:var(--cor-primaria);">Consulte a política completa de trocas e devoluções</a>.</p>
           </div>
 
           <div class="aba-painel" id="avaliacoes" data-painel="avaliacoes" role="tabpanel" aria-labelledby="tab-avaliacoes" tabindex="0" hidden>
-          <span class="tag-exemplo" title="Avaliações de exemplo — serão substituídas por avaliações reais e verificadas de clientes." style="margin-bottom:var(--espaco-3);display:inline-flex;">Avaliações de exemplo</span>
-          <div class="avaliacao-item">
-            <div class="avaliacao-item__topo">
-              <span class="avaliacao-item__autor">Ana Clara M.</span>
-              <span class="avaliacao-item__data">12/07/2026</span>
-            </div>
-            <div class="estrelas" aria-hidden="true">
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-            </div>
-            <p style="margin-top:var(--espaco-2);">Tecido de ótima qualidade, caimento perfeito. Recomendo!</p>
-          </div>
-          <div class="avaliacao-item">
-            <div class="avaliacao-item__topo">
-              <span class="avaliacao-item__autor">Ricardo T.</span>
-              <span class="avaliacao-item__data">03/06/2026</span>
-            </div>
-            <div class="estrelas" aria-hidden="true">
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-              <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-            </div>
-            <p style="margin-top:var(--espaco-2);">Muito bom, só achei que veio um pouco maior que o esperado.</p>
-          </div>
+            <p>Este produto ainda não tem avaliações. Seja o primeiro a avaliar depois da compra!</p>
           </div>
         </div>
 
@@ -198,35 +145,6 @@
           </details>
 
           <details class="acordeao-item">
-            <summary class="foco-visivel">Composição e cuidados</summary>
-            <div class="acordeao-item__corpo">
-              <p>Composição: 98% algodão, 2% elastano.</p>
-              <p style="margin-top:var(--espaco-3);">Cuidados: lavar à mão ou em ciclo delicado, não usar alvejante, secar à sombra.</p>
-              <span class="tag-exemplo" title="Composição e instruções de cuidado de exemplo — serão substituídas pela ficha técnica real de cada produto." style="margin-top:var(--espaco-3);display:inline-flex;">Composição de exemplo</span>
-            </div>
-          </details>
-
-          <details class="acordeao-item" data-acordeao-medidas>
-            <summary class="foco-visivel">Guia de medidas</summary>
-            <div class="acordeao-item__corpo">
-              <p>Encontre o caimento ideal para você. Consulte as medidas da peça antes de finalizar sua escolha.</p>
-              <span class="tag-exemplo" title="Tabela de medidas de exemplo — será substituída pela ficha técnica real de cada produto." style="margin-block:var(--espaco-3);display:inline-flex;">Medidas de exemplo</span>
-              <table class="tabela-medidas">
-                <thead>
-                  <tr><th>Tamanho</th><th>Busto (cm)</th><th>Cintura (cm)</th><th>Quadril (cm)</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>P</td><td>88</td><td>68</td><td>94</td></tr>
-                  <tr><td>M</td><td>92</td><td>72</td><td>98</td></tr>
-                  <tr><td>G</td><td>96</td><td>76</td><td>102</td></tr>
-                  <tr><td>GG</td><td>100</td><td>80</td><td>106</td></tr>
-                </tbody>
-              </table>
-              <p style="margin-top:var(--espaco-4);">Em caso de dúvida, fale com a nossa equipe pelo WhatsApp.</p>
-            </div>
-          </details>
-
-          <details class="acordeao-item" data-acordeao-trocas>
             <summary class="foco-visivel">Trocas e devoluções</summary>
             <div class="acordeao-item__corpo">
               <p>Trocas grátis em até 30 dias após o recebimento, para produtos sem uso e com etiquetas originais.</p>
@@ -237,34 +155,7 @@
           <details class="acordeao-item">
             <summary class="foco-visivel">Avaliações</summary>
             <div class="acordeao-item__corpo">
-              <span class="tag-exemplo" title="Avaliações de exemplo — serão substituídas por avaliações reais e verificadas de clientes." style="margin-bottom:var(--espaco-3);display:inline-flex;">Avaliações de exemplo</span>
-              <div class="avaliacao-item">
-                <div class="avaliacao-item__topo">
-                  <span class="avaliacao-item__autor">Ana Clara M.</span>
-                  <span class="avaliacao-item__data">12/07/2026</span>
-                </div>
-                <div class="estrelas" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                </div>
-                <p style="margin-top:var(--espaco-2);">Tecido de ótima qualidade, caimento perfeito. Recomendo!</p>
-              </div>
-              <div class="avaliacao-item">
-                <div class="avaliacao-item__topo">
-                  <span class="avaliacao-item__autor">Ricardo T.</span>
-                  <span class="avaliacao-item__data">03/06/2026</span>
-                </div>
-                <div class="estrelas" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                  <svg viewBox="0 0 20 20" width="14"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
-                </div>
-                <p style="margin-top:var(--espaco-2);">Muito bom, só achei que veio um pouco maior que o esperado.</p>
-              </div>
+              <p>Este produto ainda não tem avaliações. Seja o primeiro a avaliar depois da compra!</p>
             </div>
           </details>
         </div>
@@ -478,32 +369,6 @@
           ativarAba(listaAbas[novoIndice]);
         });
       });
-
-      // "Guia de medidas": abre a aba de medidas e move o foco para o painel.
-      const botaoGuiaMedidas = document.querySelector('[data-abrir-guia-medidas]');
-      if (botaoGuiaMedidas) {
-        botaoGuiaMedidas.addEventListener('click', () => {
-          // Abas (desktop) — só existe efeito visível se o bloco estiver visível na tela.
-          const abaMedidas = listaAbas.find((b) => b.dataset.aba === 'medidas');
-          if (abaMedidas) {
-            ativarAba(abaMedidas, { focar: false });
-          }
-
-          // Acordeão (mobile) — abre o <details> correspondente.
-          const acordeaoMedidas = document.querySelector('[data-acordeao-medidas]');
-          if (acordeaoMedidas) acordeaoMedidas.open = true;
-
-          const painelVisivel = [
-            document.querySelector('[data-painel="medidas"]'),
-            acordeaoMedidas,
-          ].find((el) => el && el.offsetParent !== null);
-
-          if (painelVisivel) {
-            painelVisivel.scrollIntoView({ block: 'start' });
-            painelVisivel.focus();
-          }
-        });
-      }
 
       // Relacionados
       const relacionados = PRODUTOS.filter((p) => p.categoria === produto.categoria && p.id !== produto.id).slice(0, 4);
