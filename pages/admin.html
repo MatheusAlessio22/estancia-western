@@ -142,20 +142,21 @@
         </div>
 
         <div class="campo">
-          <span class="admin-form__label-bloco">Foto do Produto</span>
+          <span class="admin-form__label-bloco">Fotos do Produto</span>
           <div class="admin-upload">
-            <img class="admin-upload__preview" data-admin-upload-preview alt="Pré-visualização da foto do produto" hidden>
+            <div class="admin-upload__galeria" data-admin-upload-galeria></div>
             <div class="admin-upload__vazio" data-admin-upload-vazio>
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-              <span>Nenhuma foto selecionada</span>
+              <span>Nenhuma foto adicionada ainda</span>
             </div>
             <div class="admin-upload__acoes">
               <label class="btn btn--secundario btn--pequeno admin-upload__botao">
-                Escolher do Dispositivo
-                <input type="file" accept="image/*" data-admin-campo-arquivo hidden>
+                Adicionar do Dispositivo
+                <input type="file" accept="image/*" multiple data-admin-campo-arquivo hidden>
               </label>
-              <input type="url" placeholder="ou cole a URL de uma imagem externa" data-admin-campo-imagem-url class="admin-upload__url">
+              <input type="url" placeholder="ou cole a URL de uma imagem externa e tecle Enter" data-admin-campo-imagem-url class="admin-upload__url">
             </div>
+            <p class="admin-upload__dica">A primeira foto da lista é usada como capa nas vitrines. Arraste para reordenar.</p>
           </div>
         </div>
 

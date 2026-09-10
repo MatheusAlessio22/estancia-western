@@ -97,6 +97,7 @@ async function criarTabelas() {
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS desconto REAL NOT NULL DEFAULT 0");
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS codigo_rastreio TEXT");
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagem TEXT");
+  await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagens JSONB NOT NULL DEFAULT '[]'");
 }
 
 function extrairProdutosDoArquivo() {

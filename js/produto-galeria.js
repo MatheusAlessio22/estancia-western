@@ -33,6 +33,9 @@ function renderizarGaleria(produto) {
 
   let indiceAtual = 0;
 
+  imagemPrincipal.src = imagens[0];
+  imagemPrincipal.alt = `${produto.nome} — foto 1 de ${imagens.length}`;
+
   thumbsContainer.innerHTML = imagens
     .map(
       (_, i) => `

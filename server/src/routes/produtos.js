@@ -4,6 +4,8 @@ const { db } = require("../database/db");
 const router = express.Router();
 
 function formatarProduto(linha) {
+  const imagens = linha.imagens && linha.imagens.length > 0 ? linha.imagens : linha.imagem ? [linha.imagem] : [];
+
   return {
     id: linha.id,
     nome: linha.nome,
@@ -14,7 +16,8 @@ function formatarProduto(linha) {
     cores: linha.cores || [],
     tamanhos: linha.tamanhos || [],
     selo: linha.selo,
-    imagem: linha.imagem,
+    imagem: imagens[0] || linha.imagem || null,
+    imagens,
     estoque: linha.estoque,
   };
 }

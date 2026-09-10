@@ -259,7 +259,7 @@ function produtosFiltrados() {
 }
 
 function linhaProdutoHTML(produto) {
-  const imagem = produto.imagem || "/assets/images/produtos/placeholder-produto.svg";
+  const imagem = produto.imagem || (produto.imagens && produto.imagens[0]) || "/assets/images/produtos/placeholder-produto.svg";
   const precoDe = produto.precoDe
     ? `<span class="admin-preco-de">${formatarPrecoAdmin(produto.precoDe)}</span>`
     : "";
@@ -330,7 +330,57 @@ function renderizarTabelaProdutos() {
 
 /* ---- Modal de Produto ---- */
 
-let arquivoImagemBase64 = "";
+let imagensProdutoAtual = [];
+let indiceArrastoImagem = null;
+
+function renderizarGaleriaUpload() {
+  const galeria = document.querySelector("[data-admin-upload-galeria]");
+  const previewVazio = document.querySelector("[data-admin-upload-vazio]");
+  if (!galeria) return;
+
+  previewVazio.hidden = imagensProdutoAtual.length > 0;
+
+  galeria.innerHTML = imagensProdutoAtual
+    .map(
+      (url, indice) => `
+        <div class="admin-upload__item" draggable="true" data-admin-upload-item="${indice}">
+          ${indice === 0 ? '<span class="admin-upload__capa">Capa</span>' : ""}
+          <img src="${url}" alt="Foto ${indice + 1} do produto">
+          <button type="button" class="admin-upload__remover" data-admin-upload-remover="${indice}" aria-label="Remover esta foto">&times;</button>
+        </div>
+      `,
+    )
+    .join("");
+
+  galeria.querySelectorAll("[data-admin-upload-remover]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      imagensProdutoAtual.splice(Number(botao.dataset.adminUploadRemover), 1);
+      renderizarGaleriaUpload();
+    });
+  });
+
+  galeria.querySelectorAll("[data-admin-upload-item]").forEach((item) => {
+    item.addEventListener("dragstart", () => {
+      indiceArrastoImagem = Number(item.dataset.adminUploadItem);
+    });
+    item.addEventListener("dragover", (evento) => evento.preventDefault());
+    item.addEventListener("drop", (evento) => {
+      evento.preventDefault();
+      const destino = Number(item.dataset.adminUploadItem);
+      if (indiceArrastoImagem === null || indiceArrastoImagem === destino) return;
+      const [movida] = imagensProdutoAtual.splice(indiceArrastoImagem, 1);
+      imagensProdutoAtual.splice(destino, 0, movida);
+      indiceArrastoImagem = null;
+      renderizarGaleriaUpload();
+    });
+  });
+}
+
+function adicionarImagemAoProduto(url) {
+  if (!url) return;
+  imagensProdutoAtual.push(url);
+  renderizarGaleriaUpload();
+}
 
 function inicializarModalProduto() {
   const modal = document.querySelector("[data-admin-modal]");
@@ -338,8 +388,6 @@ function inicializarModalProduto() {
   const aviso = document.querySelector("[data-admin-form-aviso]");
   const inputArquivo = form.querySelector("[data-admin-campo-arquivo]");
   const inputUrl = form.querySelector("[data-admin-campo-imagem-url]");
-  const preview = form.querySelector("[data-admin-upload-preview]");
-  const previewVazio = form.querySelector("[data-admin-upload-vazio]");
 
   document.querySelectorAll("[data-admin-modal-fechar]").forEach((el) => {
     el.addEventListener("click", fecharModalProduto);
@@ -350,27 +398,21 @@ function inicializarModalProduto() {
   });
 
   inputArquivo.addEventListener("change", () => {
-    const arquivo = inputArquivo.files[0];
-    if (!arquivo) return;
-
-    const leitor = new FileReader();
-    leitor.onload = () => {
-      arquivoImagemBase64 = leitor.result;
-      inputUrl.value = "";
-      preview.src = arquivoImagemBase64;
-      preview.hidden = false;
-      previewVazio.hidden = true;
-    };
-    leitor.readAsDataURL(arquivo);
+    Array.from(inputArquivo.files || []).forEach((arquivo) => {
+      const leitor = new FileReader();
+      leitor.onload = () => adicionarImagemAoProduto(leitor.result);
+      leitor.readAsDataURL(arquivo);
+    });
+    inputArquivo.value = "";
   });
 
-  inputUrl.addEventListener("input", () => {
-    if (!inputUrl.value.trim()) return;
-    arquivoImagemBase64 = "";
-    inputArquivo.value = "";
-    preview.src = inputUrl.value.trim();
-    preview.hidden = false;
-    previewVazio.hidden = true;
+  inputUrl.addEventListener("keydown", (evento) => {
+    if (evento.key !== "Enter") return;
+    evento.preventDefault();
+    const url = inputUrl.value.trim();
+    if (!url) return;
+    adicionarImagemAoProduto(url);
+    inputUrl.value = "";
   });
 
   form.addEventListener("submit", async (evento) => {
@@ -383,8 +425,6 @@ function inicializarModalProduto() {
     const selo = form.querySelector("[data-admin-campo-selo]").value;
     const ativo = form.querySelector("[data-admin-campo-ativo]").checked;
     const idExistente = form.querySelector("[data-admin-produto-id]").value;
-    const imagemUrl = inputUrl.value.trim();
-    const imagem = arquivoImagemBase64 || imagemUrl || (preview.hidden ? "" : preview.src);
 
     const tamanhos = Array.from(form.querySelectorAll('[data-admin-tamanhos] input:checked')).map(
       (input) => input.value,
@@ -403,7 +443,8 @@ function inicializarModalProduto() {
       preco: Number(preco),
       precoDe: precoDe ? Number(precoDe) : null,
       selo: selo || null,
-      imagem: imagem || null,
+      imagem: imagensProdutoAtual[0] || null,
+      imagens: imagensProdutoAtual,
       tamanhos,
       cores: [],
       ativo,
@@ -428,14 +469,9 @@ function abrirModalProduto(produto) {
   const form = document.querySelector("[data-admin-form]");
   const titulo = document.querySelector("[data-admin-modal-titulo]");
   const aviso = document.querySelector("[data-admin-form-aviso]");
-  const preview = form.querySelector("[data-admin-upload-preview]");
-  const previewVazio = form.querySelector("[data-admin-upload-vazio]");
 
   form.reset();
   aviso.hidden = true;
-  arquivoImagemBase64 = "";
-  preview.hidden = true;
-  previewVazio.hidden = false;
   form.querySelectorAll('[data-admin-tamanhos] input').forEach((input) => {
     input.checked = false;
   });
@@ -455,16 +491,19 @@ function abrirModalProduto(produto) {
       if (input) input.checked = true;
     });
 
-    if (produto.imagem) {
-      preview.src = produto.imagem;
-      preview.hidden = false;
-      previewVazio.hidden = true;
-    }
+    imagensProdutoAtual = Array.isArray(produto.imagens) && produto.imagens.length > 0
+      ? [...produto.imagens]
+      : produto.imagem
+        ? [produto.imagem]
+        : [];
   } else {
     titulo.textContent = "Adicionar Novo Produto";
     form.querySelector("[data-admin-produto-id]").value = "";
     form.querySelector("[data-admin-campo-ativo]").checked = true;
+    imagensProdutoAtual = [];
   }
+
+  renderizarGaleriaUpload();
 
   modal.hidden = false;
   requestAnimationFrame(() => modal.classList.add("is-aberto"));

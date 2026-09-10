@@ -8,6 +8,8 @@ const router = express.Router();
 router.use(verificarAdmin);
 
 function formatarProduto(linha) {
+  const imagens = linha.imagens && linha.imagens.length > 0 ? linha.imagens : linha.imagem ? [linha.imagem] : [];
+
   return {
     id: linha.id,
     nome: linha.nome,
@@ -18,10 +20,23 @@ function formatarProduto(linha) {
     cores: linha.cores || [],
     tamanhos: linha.tamanhos || [],
     selo: linha.selo,
-    imagem: linha.imagem,
+    imagem: imagens[0] || linha.imagem || null,
+    imagens,
     estoque: linha.estoque,
     ativo: !!linha.ativo,
   };
+}
+
+function normalizarImagens(dados) {
+  const imagens = Array.isArray(dados.imagens)
+    ? dados.imagens.map((url) => String(url || "").trim()).filter(Boolean)
+    : [];
+
+  if (imagens.length === 0 && dados.imagem) {
+    imagens.push(String(dados.imagem).trim());
+  }
+
+  return imagens;
 }
 
 function validarDadosProduto(dados) {
@@ -50,10 +65,11 @@ router.post("/produtos", async (req, res) => {
     }
 
     const id = dados.id || `p-${crypto.randomBytes(5).toString("hex")}`;
+    const imagens = normalizarImagens(dados);
 
     const { rows } = await db.query(
-      `INSERT INTO produtos (id, nome, categoria, preco, preco_de, parcelas, cores, tamanhos, selo, imagem, estoque, ativo)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO produtos (id, nome, categoria, preco, preco_de, parcelas, cores, tamanhos, selo, imagem, imagens, estoque, ativo)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         id,
@@ -65,7 +81,8 @@ router.post("/produtos", async (req, res) => {
         JSON.stringify(dados.cores || []),
         JSON.stringify(dados.tamanhos || []),
         dados.selo || null,
-        dados.imagem || null,
+        imagens[0] || null,
+        JSON.stringify(imagens),
         Number.isFinite(Number(dados.estoque)) ? Number(dados.estoque) : 100,
         dados.ativo !== false,
       ],
@@ -94,6 +111,7 @@ router.put("/produtos/:id", async (req, res) => {
     const estoque = Number.isFinite(Number(dados.estoque))
       ? Number(dados.estoque)
       : existente.rows[0].estoque;
+    const imagens = normalizarImagens(dados);
 
     const { rows } = await db.query(
       `UPDATE produtos SET
@@ -106,9 +124,10 @@ router.put("/produtos/:id", async (req, res) => {
         tamanhos = $7,
         selo = $8,
         imagem = $9,
-        estoque = $10,
-        ativo = $11
-      WHERE id = $12
+        imagens = $10,
+        estoque = $11,
+        ativo = $12
+      WHERE id = $13
       RETURNING *`,
       [
         String(dados.nome).trim(),
@@ -119,7 +138,8 @@ router.put("/produtos/:id", async (req, res) => {
         JSON.stringify(dados.cores || []),
         JSON.stringify(dados.tamanhos || []),
         dados.selo || null,
-        dados.imagem || null,
+        imagens[0] || null,
+        JSON.stringify(imagens),
         estoque,
         dados.ativo !== false,
         req.params.id,
