@@ -18,8 +18,14 @@ const CORES = {
   verdeSucessoFundo: "#EBF3EC",
 };
 
-const FONTE_TITULO = "'Plus Jakarta Sans','Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
-const FONTE_CORPO = "Arial,Helvetica,sans-serif";
+// Mesmas famílias do site (css/variables.css: --fonte-titulo / --fonte-corpo).
+// Clientes de e-mail não confiam em @font-face de forma consistente
+// (Outlook desktop ignora completamente), então a fonte web é carregada
+// como enhancement progressivo — quem suporta (Gmail, Apple Mail) exibe
+// Barlow Condensed / Plus Jakarta Sans; quem não suporta cai no fallback
+// de sistema já listado na pilha.
+const FONTE_TITULO = "'Barlow Condensed',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+const FONTE_CORPO = "'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif";
 
 function formatarPreco(valor) {
   return `R$ ${Number(valor || 0).toFixed(2).replace(".", ",")}`;
@@ -56,6 +62,10 @@ function shellEmail({ corTopo = CORES.marromCouro, tituloTopo, subtituloTopo, co
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 <title>Estância Western</title>
+<!--[if !mso]><!-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!--<![endif]-->
 </head>
 <body style="margin:0;padding:0;background-color:${CORES.fundo};font-family:${FONTE_CORPO};-webkit-text-size-adjust:none;text-size-adjust:none;">
   ${preheader ? `<div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;mso-hide:all;font-size:1px;line-height:1px;color:${CORES.fundo};">${escaparHtml(preheader)}</div>` : ""}
@@ -67,7 +77,7 @@ function shellEmail({ corTopo = CORES.marromCouro, tituloTopo, subtituloTopo, co
           <tr>
             <td align="center" style="background-color:${corTopo};padding:36px 24px;">
               ${iconeTopo}
-              <img src="${LOGO_EMAIL_URL}" width="220" alt="Estância Western — Moda Country" style="display:block;width:220px;max-width:70%;height:auto;margin:0 auto;">
+              <img src="${LOGO_EMAIL_URL}" width="200" height="78" alt="Estância Western" style="display:block;width:200px;height:78px;margin:0 auto;border:0;outline:none;">
               <div style="font-family:${FONTE_TITULO};font-size:11px;letter-spacing:3px;color:${CORES.bege};margin-top:10px;">
                 VISTA A ALMA DO CAMPO
               </div>
