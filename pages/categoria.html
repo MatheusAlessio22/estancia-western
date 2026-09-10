@@ -123,8 +123,8 @@
 
       if (titulos[slug]) {
         [tituloCategoria, descricaoCategoria] = titulos[slug];
-        produtos = slug === 'lancamentos' ? catalogo.filter((p) => p.novo)
-          : slug === 'mais-vendidos' ? catalogo.filter((p) => p.maisVendido)
+        produtos = slug === 'lancamentos' ? catalogo.filter((p) => p.selo === 'Lançamento' || p.novo)
+          : slug === 'mais-vendidos' ? catalogo.filter((p) => p.selo === 'Mais Vendido' || p.maisVendido)
           : catalogo.filter((p) => p.precoDe);
       } else if (slug) {
         tituloCategoria = nomeCategoria(slug);

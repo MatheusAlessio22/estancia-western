@@ -311,10 +311,10 @@ function cartaoProdutoHTML(produto) {
 
 async function renderizarVitrines() {
   const grids = [
-    { seletor: "[data-grid-lancamentos]", filtro: (p) => p.novo, limite: 8 },
+    { seletor: "[data-grid-lancamentos]", filtro: (p) => p.selo === "Lançamento" || p.novo, limite: 8 },
     {
       seletor: "[data-grid-mais-vendidos]",
-      filtro: (p) => p.maisVendido,
+      filtro: (p) => p.selo === "Mais Vendido" || p.maisVendido,
       limite: 8,
     },
   ];
