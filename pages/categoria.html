@@ -36,15 +36,9 @@
 
       <div class="layout-categoria">
         <aside class="filtros" aria-label="Filtros de produtos">
-          <div class="filtros__grupo">
+          <div class="filtros__grupo" data-filtros-grupo-tamanho>
             <div class="filtros__titulo">Tamanho</div>
-            <div class="filtros__tamanhos">
-              <button type="button" class="filtros__tamanho">PP</button>
-              <button type="button" class="filtros__tamanho">P</button>
-              <button type="button" class="filtros__tamanho">M</button>
-              <button type="button" class="filtros__tamanho">G</button>
-              <button type="button" class="filtros__tamanho">GG</button>
-            </div>
+            <div class="filtros__tamanhos" data-filtros-tamanhos></div>
           </div>
           <div class="filtros__grupo">
             <div class="filtros__titulo">Cor</div>
@@ -116,6 +110,23 @@
       };
 
       const catalogo = await carregarCatalogoProdutos();
+
+      const tamanhosPorCategoria = {
+        'botas-calcados': ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45'],
+        'chapeus-bones': ['Único'],
+        'cintos-fivelas': ['Único'],
+        'acessorios': ['Único'],
+      };
+      const tamanhosPadrao = ['PP', 'P', 'M', 'G', 'GG'];
+      const grupoTamanho = document.querySelector('[data-filtros-grupo-tamanho]');
+      if (titulos[slug]) {
+        grupoTamanho.hidden = true;
+      } else {
+        const tamanhos = tamanhosPorCategoria[slug] || tamanhosPadrao;
+        document.querySelector('[data-filtros-tamanhos]').innerHTML = tamanhos
+          .map((tamanho) => `<button type="button" class="filtros__tamanho">${tamanho}</button>`)
+          .join('');
+      }
 
       let produtos = [];
       let tituloCategoria = 'Categoria';
