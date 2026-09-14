@@ -218,11 +218,12 @@ function inicializarHeader() {
 function inicializarNewsletter() {
   const forms = document.querySelectorAll("[data-newsletter-form]");
   forms.forEach((form) => {
-    form.addEventListener("submit", (evento) => {
+    form.addEventListener("submit", async (evento) => {
       evento.preventDefault();
       const input = form.querySelector('input[type="email"]');
       const aviso = form.parentElement.querySelector("[data-newsletter-aviso]");
-      const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+      const email = input.value.trim();
+      const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
       if (!aviso) return;
 
@@ -232,10 +233,33 @@ function inicializarNewsletter() {
         return;
       }
 
-      // Integração futura: enviar `input.value` para Mailchimp/RD Station.
-      aviso.textContent = "Cadastro realizado! Fique de olho no seu e-mail. 🤠";
-      aviso.className = "newsletter__aviso sucesso";
-      form.reset();
+      const botao = form.querySelector('button[type="submit"]');
+      if (botao) botao.disabled = true;
+
+      try {
+        const resposta = await fetch("/api/newsletter", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          aviso.textContent = dados.erro || "Não foi possível cadastrar seu e-mail. Tente novamente.";
+          aviso.className = "newsletter__aviso erro";
+          return;
+        }
+
+        aviso.textContent = dados.mensagem || "Cadastro realizado! Fique de olho no seu e-mail. 🤠";
+        aviso.className = "newsletter__aviso sucesso";
+        form.reset();
+      } catch {
+        aviso.textContent = "Não foi possível cadastrar seu e-mail. Tente novamente.";
+        aviso.className = "newsletter__aviso erro";
+      } finally {
+        if (botao) botao.disabled = false;
+      }
     });
   });
 }
@@ -408,6 +432,7 @@ function inicializarPopupNewsletter() {
   const form = popup.querySelector("[data-popup-form]");
   const emailInput = popup.querySelector("#popup-email");
   const emailErro = popup.querySelector("#popup-email-erro");
+  const telefoneInput = popup.querySelector("#popup-telefone");
 
   popup.querySelectorAll("[data-popup-fechar]").forEach((botao) => {
     botao.addEventListener("click", () => fecharPopupNewsletter(popup));
@@ -421,7 +446,7 @@ function inicializarPopupNewsletter() {
     prenderFoco(popup, evento);
   });
 
-  form.addEventListener("submit", (evento) => {
+  form.addEventListener("submit", async (evento) => {
     evento.preventDefault();
     const valido = emailInput.value.trim().length > 0 && emailInput.checkValidity();
 
@@ -433,9 +458,33 @@ function inicializarPopupNewsletter() {
       return;
     }
 
-    // Integração futura: enviar dados do form para Mailchimp/RD Station.
-    emailErro.textContent = "";
-    fecharPopupNewsletter(popup);
+    const botaoSubmit = form.querySelector('button[type="submit"]');
+    if (botaoSubmit) botaoSubmit.disabled = true;
+
+    try {
+      const resposta = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailInput.value.trim(),
+          telefone: telefoneInput ? telefoneInput.value.trim() : "",
+        }),
+      });
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        emailErro.textContent = dados.erro || "Não foi possível cadastrar seu e-mail. Tente novamente.";
+        return;
+      }
+
+      emailErro.textContent = "";
+      fecharPopupNewsletter(popup);
+    } catch {
+      emailErro.textContent = "Não foi possível cadastrar seu e-mail. Tente novamente.";
+    } finally {
+      if (botaoSubmit) botaoSubmit.disabled = false;
+    }
   });
 
   window.setTimeout(() => abrirPopupNewsletter(popup), 2000);

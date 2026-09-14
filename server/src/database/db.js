@@ -92,6 +92,15 @@ async function criarTabelas() {
     )
   `);
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS newsletter_assinantes (
+      id SERIAL PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      telefone TEXT,
+      criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+
   // Idempotente: cobre bancos criados antes destas colunas existirem.
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS cupom_codigo TEXT");
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS desconto REAL NOT NULL DEFAULT 0");
@@ -241,4 +250,20 @@ async function validarCupom(codigo, subtotal) {
   };
 }
 
-module.exports = { db, inicializarBanco, validarCupom };
+/**
+ * Cadastra um e-mail na newsletter. Idempotente: se o e-mail já existir,
+ * não gera erro nem duplica a linha, apenas informa que já era assinante.
+ */
+async function cadastrarNewsletter(email, telefone) {
+  const { rows } = await db.query(
+    `INSERT INTO newsletter_assinantes (email, telefone)
+     VALUES ($1, $2)
+     ON CONFLICT (email) DO NOTHING
+     RETURNING id`,
+    [email, telefone || null],
+  );
+
+  return { novoCadastro: rows.length > 0 };
+}
+
+module.exports = { db, inicializarBanco, validarCupom, cadastrarNewsletter };

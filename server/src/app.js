@@ -14,6 +14,7 @@ const webhooksRouter = require("./routes/webhooks");
 const cuponsRouter = require("./routes/cupons");
 const authRouter = require("./routes/auth");
 const adminRouter = require("./routes/admin");
+const newsletterRouter = require("./routes/newsletter");
 
 // Inicializa o schema/seed uma vez por instância da função (ou processo local).
 // Erros aqui são logados mas não derrubam o processo: em serverless, uma
@@ -78,6 +79,14 @@ const limitadorFrete = rateLimit({
   message: { erro: "Muitas requisições de frete. Aguarde um minuto e tente novamente." },
 });
 
+const limitadorNewsletter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { erro: "Muitas tentativas de cadastro. Aguarde um minuto e tente novamente." },
+});
+
 app.use("/api/produtos", produtosRouter);
 app.use("/api/frete", limitadorFrete, freteRouter);
 app.use("/api/checkout", limitadorCheckout, checkoutRouter);
@@ -86,6 +95,7 @@ app.use("/api/webhooks", webhooksRouter);
 app.use("/api/cupons", cuponsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/newsletter", limitadorNewsletter, newsletterRouter);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

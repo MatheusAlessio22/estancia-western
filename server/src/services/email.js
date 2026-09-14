@@ -1,6 +1,7 @@
 const { Resend } = require("resend");
 const { templatePedidoCriado, assuntoPedidoCriado } = require("../templates/pedidoCriado");
 const { templatePagamentoAprovado, assuntoPagamentoAprovado } = require("../templates/pagamentoAprovado");
+const { templateNewsletterBoasVindas, assuntoNewsletterBoasVindas } = require("../templates/newsletterBoasVindas");
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
 // Enquanto a loja não verificar um domínio próprio no Resend, usa o
@@ -86,4 +87,21 @@ async function enviarEmailPagamentoAprovado({ pedido, itens }) {
   }
 }
 
-module.exports = { enviarEmailPedidoCriado, enviarEmailPagamentoAprovado };
+/**
+ * Dispara o e-mail de boas-vindas ao cadastrar na newsletter.
+ */
+async function enviarEmailNewsletterBoasVindas({ para }) {
+  try {
+    const html = templateNewsletterBoasVindas();
+    return await enviarEmailSeguro({
+      para,
+      assunto: assuntoNewsletterBoasVindas(),
+      html,
+    });
+  } catch (erro) {
+    console.error("Erro ao montar e-mail de boas-vindas da newsletter:", erro.message);
+    return { enviado: false, motivo: erro.message };
+  }
+}
+
+module.exports = { enviarEmailPedidoCriado, enviarEmailPagamentoAprovado, enviarEmailNewsletterBoasVindas };
