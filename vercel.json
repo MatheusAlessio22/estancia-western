@@ -8,7 +8,7 @@
     },
     {
       "source": "/produto/:id",
-      "destination": "/pages/produto.html"
+      "destination": "/api/produto/:id"
     },
     {
       "source": "/categoria/:cat",
