@@ -1,7 +1,7 @@
 const WHATSAPP_LINK = "https://wa.me/5546999244179";
 const CNPJ = "66.510.101/0001-10";
 const ANO_ATUAL = new Date().getFullYear();
-const URL_BASE_SITE = process.env.URL_BASE_SITE || "https://estancia-western.vercel.app";
+const URL_BASE_SITE = process.env.URL_BASE_SITE || "https://www.estanciawestern.com.br";
 const LOGO_EMAIL_URL = `${URL_BASE_SITE.replace(/\/$/, "")}/assets/logos/logo-transparente-bege.png`;
 
 const CORES = {
