@@ -74,7 +74,7 @@ function renderizarResultadosBusca(termo) {
     resultadosEl.innerHTML = `
       <div class="busca-resultados__vazio">
         <p>Não encontramos produtos para esta busca.</p>
-        <a href="/pages/categoria.html?cat=lancamentos" class="btn btn--secundario btn--pequeno">Ver novidades</a>
+        <a href="/categoria/lancamentos" class="btn btn--secundario btn--pequeno">Ver novidades</a>
       </div>
     `;
     return;
@@ -86,7 +86,7 @@ function renderizarResultadosBusca(termo) {
         .map(
           (p) => `
         <li>
-          <a href="/pages/produto.html?id=${p.id}" class="foco-visivel">
+          <a href="/produto/${p.id}" class="foco-visivel">
             <img src="${PLACEHOLDER_IMG}" alt="" width="48" height="56" loading="lazy">
             <span>
               <span class="busca-resultados__nome">${p.nome}</span>
@@ -137,7 +137,7 @@ function alternarDropdownCategorias(abrir) {
       typeof CATEGORIAS !== "undefined"
         ? CATEGORIAS.map(
             (c) =>
-              `<li><a href="/pages/categoria.html?cat=${c.slug}" class="foco-visivel">${c.nome}</a></li>`,
+              `<li><a href="/categoria/${c.slug}" class="foco-visivel">${c.nome}</a></li>`,
           ).join("")
         : "";
   }
@@ -305,7 +305,7 @@ function cartaoProdutoHTML(produto) {
   const parcelas = produto.parcelas
     ? `<span class="card-produto__parcelas">${produto.parcelas}</span>`
     : "";
-  const urlProduto = `/pages/produto.html?id=${produto.id}`;
+  const urlProduto = `/produto/${produto.id}`;
   const imagemCard =
     produto.imagem || (Array.isArray(produto.imagens) && produto.imagens[0]) || PLACEHOLDER_IMG;
 

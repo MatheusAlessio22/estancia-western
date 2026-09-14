@@ -5,6 +5,14 @@
     {
       "source": "/api/:path*",
       "destination": "https://estancia-western.onrender.com/api/:path*"
+    },
+    {
+      "source": "/produto/:id",
+      "destination": "/pages/produto.html"
+    },
+    {
+      "source": "/categoria/:cat",
+      "destination": "/pages/categoria.html"
     }
   ]
 }

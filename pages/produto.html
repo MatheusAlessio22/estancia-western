@@ -186,8 +186,9 @@
   <script>injetarParciais('');</script>
   <script>
     (async function () {
+      const correspondenciaPath = window.location.pathname.match(/^\/produto\/([^/]+)/);
       const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
+      const id = (correspondenciaPath ? decodeURIComponent(correspondenciaPath[1]) : params.get('id')) || null;
       let produto = null;
 
       if (id) {
@@ -223,7 +224,7 @@
 
       const breadcrumbCategoria = document.querySelector('[data-breadcrumb-categoria]');
       breadcrumbCategoria.textContent = categoriaNome;
-      breadcrumbCategoria.href = `/pages/categoria.html?cat=${produto.categoria}`;
+      breadcrumbCategoria.href = `/categoria/${produto.categoria}`;
       document.querySelector('[data-breadcrumb-produto]').textContent = produto.nome;
 
       if (produto.precoDe) {
@@ -391,6 +392,7 @@
         '@type': 'Product',
         name: produto.nome,
         category: categoriaNome,
+        url: `${window.location.origin}/produto/${produto.id}`,
         offers: {
           '@type': 'Offer',
           priceCurrency: 'BRL',

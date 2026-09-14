@@ -26,7 +26,7 @@ function HEADER_HTML(paginaAtiva = "") {
 
         <nav class="header__nav" aria-label="Navegação principal">
           <ul>
-            ${itemNav("/pages/categoria.html?cat=lancamentos", "Lançamentos", "lancamentos")}
+            ${itemNav("/categoria/lancamentos", "Lançamentos", "lancamentos")}
             <li class="header__nav-item-dropdown">
               <button type="button" class="header__nav-dropdown-toggle foco-visivel" data-abrir-categorias aria-expanded="false" aria-haspopup="true" aria-controls="menu-categorias">
                 Categorias
@@ -34,7 +34,7 @@ function HEADER_HTML(paginaAtiva = "") {
               </button>
               <ul class="header__dropdown-categorias" id="menu-categorias" data-menu-categorias hidden></ul>
             </li>
-            ${itemNav("/pages/categoria.html?cat=promocoes", "Promoções", "promocoes")}
+            ${itemNav("/categoria/promocoes", "Promoções", "promocoes")}
           </ul>
         </nav>
 
@@ -60,13 +60,13 @@ function HEADER_HTML(paginaAtiva = "") {
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <ul>
-        <li><a href="/pages/categoria.html?cat=lancamentos" class="foco-visivel">Lançamentos</a></li>
-        <li><a href="/pages/categoria.html?cat=camisas" class="foco-visivel">Camisas</a></li>
-        <li><a href="/pages/categoria.html?cat=calcas-jeans" class="foco-visivel">Jeans</a></li>
-        <li><a href="/pages/categoria.html?cat=botas-calcados" class="foco-visivel">Botas</a></li>
-        <li><a href="/pages/categoria.html?cat=chapeus-bones" class="foco-visivel">Chapéus &amp; Bonés</a></li>
-        <li><a href="/pages/categoria.html?cat=cintos-fivelas" class="foco-visivel">Cintos &amp; Fivelas</a></li>
-        <li><a href="/pages/categoria.html?cat=acessorios" class="foco-visivel">Acessórios</a></li>
+        <li><a href="/categoria/lancamentos" class="foco-visivel">Lançamentos</a></li>
+        <li><a href="/categoria/camisas" class="foco-visivel">Camisas</a></li>
+        <li><a href="/categoria/calcas-jeans" class="foco-visivel">Jeans</a></li>
+        <li><a href="/categoria/botas-calcados" class="foco-visivel">Botas</a></li>
+        <li><a href="/categoria/chapeus-bones" class="foco-visivel">Chapéus &amp; Bonés</a></li>
+        <li><a href="/categoria/cintos-fivelas" class="foco-visivel">Cintos &amp; Fivelas</a></li>
+        <li><a href="/categoria/acessorios" class="foco-visivel">Acessórios</a></li>
         <li><a href="/pages/sobre.html" class="foco-visivel">Sobre Nós</a></li>
         <li><a href="/pages/contato.html" class="foco-visivel">Fale Conosco</a></li>
       </ul>

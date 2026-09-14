@@ -102,8 +102,9 @@
   <script>injetarParciais('');</script>
   <script>
     (async function () {
+      const correspondenciaPath = window.location.pathname.match(/^\/categoria\/([^/]+)/);
       const params = new URLSearchParams(window.location.search);
-      const slug = params.get('cat') || '';
+      const slug = (correspondenciaPath ? decodeURIComponent(correspondenciaPath[1]) : params.get('cat')) || '';
 
       const titulos = {
         'lancamentos': ['Lançamentos', 'As últimas peças que acabaram de chegar.'],

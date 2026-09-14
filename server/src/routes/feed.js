@@ -41,7 +41,7 @@ function montarItemXml(produto) {
 
   if (!imagemPrincipal) return "";
 
-  const link = `${URL_BASE_SITE}/pages/produto.html?id=${encodeURIComponent(produto.id)}`;
+  const link = `${URL_BASE_SITE}/produto/${encodeURIComponent(produto.id)}`;
   const disponibilidade = Number(produto.estoque) > 0 ? "in stock" : "out of stock";
 
   const tagsImagensAdicionais = imagensAdicionais
