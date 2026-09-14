@@ -7,7 +7,7 @@
  */
 
 // ===== Google Analytics 4 =====
-const GA4_MEASUREMENT_ID = "G-XXXXXXX"; // TODO: substituir pelo Measurement ID real do GA4
+const GA4_MEASUREMENT_ID = "G-JP493QLY14";
 
 (function carregarGA4(id) {
   const script = document.createElement("script");
@@ -25,7 +25,7 @@ const GA4_MEASUREMENT_ID = "G-XXXXXXX"; // TODO: substituir pelo Measurement ID 
 })(GA4_MEASUREMENT_ID);
 
 // ===== Meta Pixel (Facebook) =====
-const META_PIXEL_ID = "PIXEL_ID"; // TODO: substituir pelo ID real do Meta Pixel
+const META_PIXEL_ID = "4109947412471082";
 
 !(function (f, b, e, v, n, t, s) {
   if (f.fbq) return;
