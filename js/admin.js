@@ -218,6 +218,7 @@ async function inicializarLoginAdmin() {
 let dashboardJaInicializado = false;
 let produtosCarregados = [];
 let filtroTextoAtual = "";
+let filtroCategoriaAtual = "";
 let idParaExcluir = null;
 
 function inicializarDashboardAdmin() {
@@ -240,6 +241,13 @@ function inicializarDashboardAdmin() {
   document.querySelectorAll("[data-admin-busca-input]").forEach((input) => {
     input.addEventListener("input", (evento) => {
       filtroTextoAtual = evento.target.value.trim().toLowerCase();
+      renderizarTabelaProdutos();
+    });
+  });
+
+  document.querySelectorAll("[data-admin-filtro-categoria]").forEach((select) => {
+    select.addEventListener("change", (evento) => {
+      filtroCategoriaAtual = evento.target.value;
       renderizarTabelaProdutos();
     });
   });
@@ -299,7 +307,11 @@ async function carregarResumoAdmin() {
 
   document.querySelector("[data-admin-resumo-total-pedidos]").textContent = pedidos.length;
 
-  const faturamento = pedidos.reduce((soma, pedido) => soma + Number(pedido.total || 0), 0);
+  // Faturamento só conta pedidos com pagamento confirmado — pedidos cancelados
+  // (ou ainda pendentes) não representam dinheiro que entrou de fato.
+  const faturamento = pedidos
+    .filter((pedido) => pedido.status === "pago")
+    .reduce((soma, pedido) => soma + Number(pedido.total || 0), 0);
   document.querySelector("[data-admin-resumo-faturamento]").textContent = formatarPrecoAdmin(faturamento);
 }
 
@@ -343,19 +355,25 @@ async function carregarEExibirProdutos() {
 }
 
 function produtosFiltrados() {
-  if (!filtroTextoAtual) return produtosCarregados;
   return produtosCarregados.filter((produto) => {
     const nome = String(produto.nome || "").toLowerCase();
     const categoria = nomeCategoriaAdmin(produto.categoria).toLowerCase();
-    return nome.includes(filtroTextoAtual) || categoria.includes(filtroTextoAtual);
+    const passaTexto =
+      !filtroTextoAtual || nome.includes(filtroTextoAtual) || categoria.includes(filtroTextoAtual);
+    const passaCategoria = !filtroCategoriaAtual || produto.categoria === filtroCategoriaAtual;
+    return passaTexto && passaCategoria;
   });
 }
 
 function linhaProdutoHTML(produto) {
   const imagem = produto.imagem || (produto.imagens && produto.imagens[0]) || "/assets/images/produtos/placeholder-produto.svg";
   const precoDe = produto.precoDe
-    ? `<span class="admin-preco-de">${formatarPrecoAdmin(produto.precoDe)}</span>`
-    : "";
+    ? `<span class="admin-tabela__preco-promo">${formatarPrecoAdmin(produto.precoDe)}</span>`
+    : `<span class="admin-tabela__sem-valor">—</span>`;
+
+  const estoque = Number(produto.estoque ?? 0);
+  const estoqueClasse = estoque <= 0 ? "admin-tabela__estoque admin-tabela__estoque--zerado" : "admin-tabela__estoque";
+  const emDestaque = produto.selo === "Lançamento";
 
   return `
     <tr data-admin-linha="${produto.id}">
@@ -366,9 +384,14 @@ function linhaProdutoHTML(produto) {
         </div>
       </td>
       <td><span class="admin-badge">${nomeCategoriaAdmin(produto.categoria)}</span></td>
+      <td><span class="admin-tabela__preco">${formatarPrecoAdmin(produto.preco)}</span></td>
+      <td>${precoDe}</td>
+      <td><span class="${estoqueClasse}">${estoque}</span></td>
       <td>
-        ${precoDe}
-        <span class="admin-tabela__preco">${formatarPrecoAdmin(produto.preco)}</span>
+        <label class="admin-switch admin-switch--tabela">
+          <input type="checkbox" data-admin-toggle-destaque="${produto.id}" ${emDestaque ? "checked" : ""}>
+          <span class="admin-switch__trilho"></span>
+        </label>
       </td>
       <td>
         <label class="admin-switch admin-switch--tabela">
@@ -416,6 +439,20 @@ function renderizarTabelaProdutos() {
       produto.ativo = toggle.checked;
       await salvarProdutoAdmin(produto);
       mostrarToastAdmin(toggle.checked ? "Produto ativado na loja." : "Produto desativado da loja.");
+      renderizarTabelaProdutos();
+    });
+  });
+
+  corpo.querySelectorAll("[data-admin-toggle-destaque]").forEach((toggle) => {
+    toggle.addEventListener("change", async () => {
+      const id = toggle.dataset.adminToggleDestaque;
+      const produto = produtosCarregados.find((item) => item.id === id);
+      if (!produto) return;
+      produto.selo = toggle.checked ? "Lançamento" : null;
+      await salvarProdutoAdmin(produto);
+      mostrarToastAdmin(
+        toggle.checked ? "Produto marcado como destaque na Home." : "Produto removido dos destaques da Home.",
+      );
       renderizarTabelaProdutos();
     });
   });

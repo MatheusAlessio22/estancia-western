@@ -317,6 +317,9 @@
 }
 
 .admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
   margin-bottom: var(--espaco-4);
 }
 
@@ -329,6 +332,8 @@
   border-radius: var(--raio-borda);
   padding: var(--espaco-2) var(--espaco-3);
   max-width: 420px;
+  flex: 1;
+  min-width: 220px;
 }
 
 .admin-busca svg {
@@ -345,6 +350,18 @@
   font-family: var(--fonte-corpo);
   font-size: var(--texto-sm);
   background: transparent;
+}
+
+.admin-filtro-categoria {
+  background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-2) var(--espaco-3);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto);
+  min-width: 200px;
+  cursor: pointer;
 }
 
 .admin-vazio {
@@ -419,16 +436,28 @@
   white-space: nowrap;
 }
 
-.admin-preco-de {
-  display: block;
-  font-size: var(--texto-xs);
+.admin-tabela__preco {
+  font-weight: 700;
+  color: var(--cor-marrom-couro);
+}
+
+.admin-tabela__preco-promo {
+  font-size: var(--texto-sm);
   color: var(--cor-texto-suave);
   text-decoration: line-through;
 }
 
-.admin-tabela__preco {
+.admin-tabela__sem-valor {
+  color: var(--cor-texto-suave);
+}
+
+.admin-tabela__estoque {
+  font-weight: 600;
+}
+
+.admin-tabela__estoque--zerado {
+  color: var(--cor-erro);
   font-weight: 700;
-  color: var(--cor-marrom-couro);
 }
 
 .admin-tabela__acoes {

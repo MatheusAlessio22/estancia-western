@@ -179,6 +179,15 @@
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input type="search" placeholder="Buscar por nome ou categoria..." aria-label="Buscar produtos" data-admin-busca-input>
             </div>
+            <select class="admin-filtro-categoria" aria-label="Filtrar por categoria" data-admin-filtro-categoria>
+              <option value="">Todas as categorias</option>
+              <option value="camisas">Camisas &amp; Camisetas</option>
+              <option value="calcas-jeans">Calças &amp; Jeans</option>
+              <option value="botas-calcados">Botas &amp; Calçados</option>
+              <option value="chapeus-bones">Chapéus &amp; Bonés</option>
+              <option value="cintos-fivelas">Cintos &amp; Fivelas</option>
+              <option value="acessorios">Acessórios</option>
+            </select>
           </div>
 
           <p class="admin-vazio" data-admin-vazio hidden>Nenhum produto encontrado.</p>
@@ -186,18 +195,24 @@
           <div class="admin-tabela-wrap">
             <table class="admin-tabela">
               <colgroup>
-                <col style="width:34%">
-                <col style="width:18%">
-                <col style="width:16%">
-                <col style="width:16%">
-                <col style="width:16%">
+                <col style="width:24%">
+                <col style="width:13%">
+                <col style="width:11%">
+                <col style="width:11%">
+                <col style="width:9%">
+                <col style="width:11%">
+                <col style="width:9%">
+                <col style="width:12%">
               </colgroup>
               <thead>
                 <tr>
                   <th scope="col">Produto</th>
                   <th scope="col">Categoria</th>
                   <th scope="col">Preço</th>
-                  <th scope="col">Ativo na Loja</th>
+                  <th scope="col">Promocional</th>
+                  <th scope="col">Estoque</th>
+                  <th scope="col">Destaque</th>
+                  <th scope="col">Ativo</th>
                   <th scope="col">Ações</th>
                 </tr>
               </thead>
