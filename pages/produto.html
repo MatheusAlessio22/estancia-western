@@ -46,6 +46,11 @@
           <span class="produto-info__categoria" data-produto-categoria></span>
           <h1 data-produto-nome></h1>
 
+          <div class="produto-info__avaliacao" data-avaliacoes-resumo hidden>
+            <span data-avaliacoes-resumo-estrelas></span>
+            <a href="#avaliacoes" data-avaliacoes-resumo-texto></a>
+          </div>
+
           <div class="produto-info__preco">
             <span class="produto-info__preco-de" data-produto-preco-de hidden></span>
             <span class="produto-info__preco-por" data-produto-preco></span>
@@ -133,7 +138,7 @@
           </div>
 
           <div class="aba-painel" id="avaliacoes" data-painel="avaliacoes" role="tabpanel" aria-labelledby="tab-avaliacoes" tabindex="0" hidden>
-            <p>Este produto ainda não tem avaliações. Seja o primeiro a avaliar depois da compra!</p>
+            <div data-avaliacoes-secao></div>
           </div>
         </div>
 
@@ -157,7 +162,7 @@
           <details class="acordeao-item">
             <summary class="foco-visivel">Avaliações</summary>
             <div class="acordeao-item__corpo">
-              <p>Este produto ainda não tem avaliações. Seja o primeiro a avaliar depois da compra!</p>
+              <div data-avaliacoes-secao></div>
             </div>
           </details>
         </div>
@@ -182,6 +187,7 @@
   <script src="/js/main.js"></script>
   <script src="/js/produto-variacoes.js"></script>
   <script src="/js/produto-galeria.js"></script>
+  <script src="/js/produto-avaliacoes.js"></script>
   <script src="/js/produto.js"></script>
   <script>injetarParciais('');</script>
   <script>
@@ -387,7 +393,7 @@
       }
 
       // Schema.org
-      document.querySelector('[data-schema-produto]').textContent = JSON.stringify({
+      const schemaProduto = {
         '@context': 'https://schema.org',
         '@type': 'Product',
         name: produto.nome,
@@ -399,7 +405,22 @@
           price: produto.preco,
           availability: 'https://schema.org/InStock',
         },
+      };
+
+      // Avaliações (componente em js/produto-avaliacoes.js)
+      inicializarAvaliacoes(produto.id, {
+        aoCarregarResumo: ({ total, media }) => {
+          if (total === 0) return;
+          schemaProduto.aggregateRating = {
+            '@type': 'AggregateRating',
+            ratingValue: media.toFixed(1),
+            reviewCount: total,
+          };
+          document.querySelector('[data-schema-produto]').textContent = JSON.stringify(schemaProduto);
+        },
       });
+
+      document.querySelector('[data-schema-produto]').textContent = JSON.stringify(schemaProduto);
     })();
   </script>
 </body>

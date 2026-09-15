@@ -101,6 +101,17 @@ async function criarTabelas() {
     )
   `);
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS avaliacoes (
+      id SERIAL PRIMARY KEY,
+      produto_id TEXT NOT NULL REFERENCES produtos(id),
+      nome_cliente TEXT NOT NULL,
+      nota_estrelas INTEGER NOT NULL CHECK (nota_estrelas BETWEEN 1 AND 5),
+      comentario TEXT,
+      criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+
   // Idempotente: cobre bancos criados antes destas colunas existirem.
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS cupom_codigo TEXT");
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS desconto REAL NOT NULL DEFAULT 0");
@@ -266,4 +277,55 @@ async function cadastrarNewsletter(email, telefone) {
   return { novoCadastro: rows.length > 0 };
 }
 
-module.exports = { db, inicializarBanco, validarCupom, cadastrarNewsletter };
+/**
+ * Lista as avaliações de um produto (mais recentes primeiro) junto com a
+ * média de estrelas e o total de avaliações — tudo em duas consultas
+ * simples para manter a rota fácil de ler.
+ */
+async function listarAvaliacoes(produtoId) {
+  const [{ rows: avaliacoes }, { rows: resumoRows }] = await Promise.all([
+    db.query(
+      "SELECT id, nome_cliente, nota_estrelas, comentario, criado_em FROM avaliacoes WHERE produto_id = $1 ORDER BY criado_em DESC",
+      [produtoId],
+    ),
+    db.query(
+      "SELECT COUNT(*) AS total, AVG(nota_estrelas) AS media FROM avaliacoes WHERE produto_id = $1",
+      [produtoId],
+    ),
+  ]);
+
+  const resumo = resumoRows[0];
+
+  return {
+    avaliacoes,
+    total: Number(resumo.total),
+    media: resumo.total > 0 ? Number(resumo.media) : 0,
+  };
+}
+
+/**
+ * Cria uma avaliação para um produto existente. Retorna null quando o
+ * produto não existe, para a rota decidir o status HTTP apropriado.
+ */
+async function criarAvaliacao({ produtoId, nomeCliente, notaEstrelas, comentario }) {
+  const { rows: produtoRows } = await db.query("SELECT id FROM produtos WHERE id = $1", [produtoId]);
+  if (!produtoRows[0]) return null;
+
+  const { rows } = await db.query(
+    `INSERT INTO avaliacoes (produto_id, nome_cliente, nota_estrelas, comentario)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, nome_cliente, nota_estrelas, comentario, criado_em`,
+    [produtoId, nomeCliente, notaEstrelas, comentario || null],
+  );
+
+  return rows[0];
+}
+
+module.exports = {
+  db,
+  inicializarBanco,
+  validarCupom,
+  cadastrarNewsletter,
+  listarAvaliacoes,
+  criarAvaliacao,
+};

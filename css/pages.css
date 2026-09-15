@@ -1290,6 +1290,11 @@
     var(--motion-entrada);
 }
 
+.estrelas--grande svg {
+  width: 22px;
+  height: 22px;
+}
+
 .produto-info__avaliacao .estrelas svg {
   width: 16px;
   height: 16px;
@@ -1347,4 +1352,115 @@
   font-size: var(--texto-sm);
   font-weight: 600;
   color: var(--cor-marrom-couro);
+}
+
+/* ---- Avaliações de produto (js/produto-avaliacoes.js) ---- */
+.avaliacoes-resumo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-4);
+  padding-block: var(--espaco-4);
+  border-bottom: 1px solid var(--cor-borda);
+  margin-bottom: var(--espaco-5);
+}
+
+.avaliacoes-resumo__nota {
+  font-family: var(--fonte-destaque);
+  font-size: var(--texto-xl);
+  font-weight: 700;
+  color: var(--cor-primaria);
+}
+
+.avaliacoes-resumo__total {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  margin-top: var(--espaco-1);
+}
+
+.avaliacoes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+  margin-bottom: var(--espaco-6);
+}
+
+.avaliacao-item__estrelas {
+  margin-bottom: var(--espaco-1);
+}
+
+.avaliacao-item__estrelas .estrelas svg {
+  width: 14px;
+  height: 14px;
+  fill: currentcolor;
+  color: var(--cor-laranja-queimado);
+}
+
+.avaliacao-item__comentario {
+  margin-top: var(--espaco-2);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
+.avaliacoes-vazio {
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-sm);
+  margin-bottom: var(--espaco-6);
+}
+
+.avaliacao-form {
+  border-top: 1px solid var(--cor-borda);
+  padding-top: var(--espaco-6);
+}
+
+.avaliacao-form h3 {
+  font-size: var(--texto-lg);
+  margin-bottom: var(--espaco-4);
+}
+
+.avaliacao-form__campo {
+  margin-bottom: var(--espaco-4);
+}
+
+.avaliacao-form__campo label,
+.avaliacao-form__label {
+  display: block;
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  margin-bottom: var(--espaco-2);
+}
+
+.avaliacao-form__input {
+  width: 100%;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  font: inherit;
+}
+
+.avaliacao-form__estrelas {
+  display: flex;
+  gap: var(--espaco-1);
+}
+
+.avaliacao-form__estrela {
+  font-size: var(--texto-xl);
+  line-height: 1;
+  color: var(--cor-borda);
+}
+
+.avaliacao-form__estrela.is-selecionada {
+  color: var(--cor-laranja-queimado);
+}
+
+.avaliacao-form__aviso {
+  font-size: var(--texto-sm);
+  margin-block: var(--espaco-3);
+}
+
+.avaliacao-form__aviso.sucesso {
+  color: var(--cor-sucesso);
+}
+
+.avaliacao-form__aviso.erro {
+  color: var(--cor-erro);
 }

@@ -16,6 +16,7 @@ const authRouter = require("./routes/auth");
 const adminRouter = require("./routes/admin");
 const newsletterRouter = require("./routes/newsletter");
 const feedRouter = require("./routes/feed");
+const avaliacoesRouter = require("./routes/avaliacoes");
 
 // Inicializa o schema/seed uma vez por instância da função (ou processo local).
 // Erros aqui são logados mas não derrubam o processo: em serverless, uma
@@ -97,6 +98,7 @@ app.use("/api/cupons", cuponsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", limitadorNewsletter, newsletterRouter);
+app.use("/api/avaliacoes", avaliacoesRouter);
 app.use("/api", feedRouter);
 
 app.get("/api/health", (req, res) => {
