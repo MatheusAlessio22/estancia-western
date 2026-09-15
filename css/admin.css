@@ -76,6 +76,28 @@
   gap: var(--espaco-3);
 }
 
+.admin-topo__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--cor-marrom-couro);
+  cursor: pointer;
+  border-radius: var(--raio-borda);
+}
+
+.admin-topo__menu-btn:hover {
+  background-color: var(--cor-fundo-alt);
+}
+
+.admin-topo__menu-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
 .admin-topo__logo {
   height: 36px;
   width: auto;
@@ -93,11 +115,175 @@
   gap: var(--espaco-2);
 }
 
-/* ---- Conteúdo ---- */
+/* ---- Layout com sidebar ---- */
+.admin-layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+.admin-sidebar {
+  flex-shrink: 0;
+  width: 240px;
+  background-color: var(--cor-branco);
+  border-right: 1px solid var(--cor-borda);
+  min-height: calc(100vh - 65px);
+  position: sticky;
+  top: 65px;
+  padding: var(--espaco-5) var(--espaco-3);
+}
+
+.admin-sidebar__lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.admin-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: var(--espaco-3) var(--espaco-3);
+  border-radius: var(--raio-borda);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--transicao-rapida), color var(--transicao-rapida);
+}
+
+.admin-sidebar__item svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.admin-sidebar__item:hover {
+  background-color: var(--cor-fundo-alt);
+  color: var(--cor-texto);
+}
+
+.admin-sidebar__item.is-ativo {
+  background-color: var(--cor-marrom-couro);
+  color: var(--cor-branco);
+}
+
+.admin-sidebar-overlay {
+  display: none;
+}
+
 .admin-conteudo {
+  flex: 1;
+  min-width: 0;
   max-width: 1200px;
   margin-inline: auto;
   padding: var(--espaco-6) var(--espaco-5) var(--espaco-10);
+}
+
+.secao-cabecalho--admin {
+  text-align: left;
+  margin-bottom: var(--espaco-5);
+}
+
+.secao-cabecalho--admin h1 {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-xl);
+  color: var(--cor-marrom-couro);
+}
+
+.admin-pagina {
+  display: none;
+}
+
+.admin-pagina.is-ativa {
+  display: block;
+}
+
+.admin-cards-resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--espaco-4);
+  margin-bottom: var(--espaco-5);
+}
+
+.admin-card-resumo {
+  background-color: var(--cor-branco);
+  border-radius: var(--raio-borda-lg);
+  box-shadow: var(--sombra-card);
+  padding: var(--espaco-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.admin-card-resumo__numero {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-2xl);
+  color: var(--cor-marrom-couro);
+  line-height: 1;
+}
+
+.admin-card-resumo__label {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
+.admin-em-breve {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  background-color: var(--cor-branco);
+  border-radius: var(--raio-borda-lg);
+  box-shadow: var(--sombra-card);
+  padding: var(--espaco-10) var(--espaco-5);
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.admin-em-breve svg {
+  width: 48px;
+  height: 48px;
+  color: var(--cor-marrom-couro);
+}
+
+@media (width <= 900px) {
+  .admin-topo__menu-btn {
+    display: flex;
+  }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: var(--z-modal);
+    transform: translateX(-100%);
+    transition: transform var(--transicao-padrao);
+    box-shadow: var(--sombra-elevada);
+  }
+
+  .admin-sidebar.is-aberta {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgb(28 28 28 / 40%);
+    z-index: calc(var(--z-modal) - 1);
+  }
+
+  .admin-sidebar-overlay[hidden] {
+    display: none;
+  }
 }
 
 .admin-resumo {
@@ -178,7 +364,8 @@
 .admin-tabela {
   width: 100%;
   border-collapse: collapse;
-  min-width: 640px;
+  min-width: 760px;
+  table-layout: fixed;
 }
 
 .admin-tabela th {

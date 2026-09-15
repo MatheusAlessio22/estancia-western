@@ -44,6 +44,9 @@
   <div class="admin-dashboard" data-admin-dashboard hidden>
     <header class="admin-topo">
       <div class="admin-topo__marca">
+        <button type="button" class="admin-topo__menu-btn" data-admin-sidebar-abrir aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
         <img src="/assets/logos/logo-transparente-marrom.png" alt="Estância Western" class="admin-topo__logo">
         <span class="admin-topo__saudacao">Painel do Lojista</span>
       </div>
@@ -53,39 +56,190 @@
       </div>
     </header>
 
-    <main class="admin-conteudo">
-      <div class="admin-resumo">
-        <div class="admin-resumo__info">
-          <span class="admin-resumo__numero" data-admin-contador-ativos>0</span>
-          <span class="admin-resumo__label">produtos ativos na loja</span>
-        </div>
-        <button type="button" class="btn btn--primario admin-resumo__btn" data-admin-novo-produto>+ Adicionar Novo Produto</button>
-      </div>
+    <div class="admin-layout">
+      <div class="admin-sidebar-overlay" data-admin-sidebar-overlay hidden></div>
+      <nav class="admin-sidebar" data-admin-sidebar aria-label="Navegação do painel">
+        <ul class="admin-sidebar__lista">
+          <li>
+            <button type="button" class="admin-sidebar__item is-ativo" data-admin-pagina-link="visao-geral">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <span>Visão Geral</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-sidebar__item" data-admin-pagina-link="pedidos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 7l-8-4-8 4v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg>
+              <span>Pedidos</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-sidebar__item" data-admin-pagina-link="produtos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
+              <span>Produtos</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-sidebar__item" data-admin-pagina-link="clientes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              <span>Clientes</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-sidebar__item" data-admin-pagina-link="cupons">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 5H4a1 1 0 00-1 1v4a2 2 0 010 4v4a1 1 0 001 1h5"/><path d="M15 5h5a1 1 0 011 1v4a2 2 0 000 4v4a1 1 0 01-1 1h-5"/><line x1="9" y1="3" x2="9" y2="21" stroke-dasharray="2 2"/></svg>
+              <span>Cupons</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="admin-sidebar__item" data-admin-pagina-link="configuracoes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+              <span>Configurações</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
 
-      <div class="admin-toolbar">
-        <div class="admin-busca">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="search" placeholder="Buscar por nome ou categoria..." aria-label="Buscar produtos" data-admin-busca-input>
-        </div>
-      </div>
+      <main class="admin-conteudo">
+        <!-- ---- Página: Visão Geral ---- -->
+        <section class="admin-pagina is-ativa" data-admin-pagina="visao-geral">
+          <div class="secao-cabecalho secao-cabecalho--admin">
+            <h1>Visão Geral</h1>
+          </div>
 
-      <p class="admin-vazio" data-admin-vazio hidden>Nenhum produto encontrado.</p>
+          <div class="admin-cards-resumo">
+            <div class="admin-card-resumo">
+              <span class="admin-card-resumo__numero" data-admin-resumo-produtos-ativos>0</span>
+              <span class="admin-card-resumo__label">Produtos ativos na loja</span>
+            </div>
+            <div class="admin-card-resumo">
+              <span class="admin-card-resumo__numero" data-admin-resumo-total-pedidos>0</span>
+              <span class="admin-card-resumo__label">Pedidos recebidos</span>
+            </div>
+            <div class="admin-card-resumo">
+              <span class="admin-card-resumo__numero" data-admin-resumo-faturamento>R$ 0,00</span>
+              <span class="admin-card-resumo__label">Faturamento total</span>
+            </div>
+          </div>
 
-      <div class="admin-tabela-wrap">
-        <table class="admin-tabela">
-          <thead>
-            <tr>
-              <th scope="col">Produto</th>
-              <th scope="col">Categoria</th>
-              <th scope="col">Preço</th>
-              <th scope="col">Ativo na Loja</th>
-              <th scope="col">Ações</th>
-            </tr>
-          </thead>
-          <tbody data-admin-tabela-corpo></tbody>
-        </table>
-      </div>
-    </main>
+          <div class="admin-resumo">
+            <div class="admin-resumo__info">
+              <span class="admin-resumo__label">Gerencie rapidamente o catálogo da loja</span>
+            </div>
+            <button type="button" class="btn btn--primario admin-resumo__btn" data-admin-novo-produto>+ Adicionar Novo Produto</button>
+          </div>
+        </section>
+
+        <!-- ---- Página: Pedidos ---- -->
+        <section class="admin-pagina" data-admin-pagina="pedidos">
+          <div class="secao-cabecalho secao-cabecalho--admin">
+            <h1>Pedidos</h1>
+          </div>
+
+          <p class="admin-vazio" data-admin-pedidos-vazio hidden>Nenhum pedido recebido ainda.</p>
+
+          <div class="admin-tabela-wrap">
+            <table class="admin-tabela">
+              <colgroup>
+                <col style="width:16%">
+                <col style="width:28%">
+                <col style="width:16%">
+                <col style="width:16%">
+                <col style="width:24%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">Pedido</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Data</th>
+                </tr>
+              </thead>
+              <tbody data-admin-pedidos-corpo></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ---- Página: Produtos ---- -->
+        <section class="admin-pagina" data-admin-pagina="produtos">
+          <div class="secao-cabecalho secao-cabecalho--admin">
+            <h1>Produtos</h1>
+          </div>
+
+          <div class="admin-resumo">
+            <div class="admin-resumo__info">
+              <span class="admin-resumo__numero" data-admin-contador-ativos>0</span>
+              <span class="admin-resumo__label">produtos ativos na loja</span>
+            </div>
+            <button type="button" class="btn btn--primario admin-resumo__btn" data-admin-novo-produto>+ Adicionar Novo Produto</button>
+          </div>
+
+          <div class="admin-toolbar">
+            <div class="admin-busca">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" placeholder="Buscar por nome ou categoria..." aria-label="Buscar produtos" data-admin-busca-input>
+            </div>
+          </div>
+
+          <p class="admin-vazio" data-admin-vazio hidden>Nenhum produto encontrado.</p>
+
+          <div class="admin-tabela-wrap">
+            <table class="admin-tabela">
+              <colgroup>
+                <col style="width:34%">
+                <col style="width:18%">
+                <col style="width:16%">
+                <col style="width:16%">
+                <col style="width:16%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">Produto</th>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Preço</th>
+                  <th scope="col">Ativo na Loja</th>
+                  <th scope="col">Ações</th>
+                </tr>
+              </thead>
+              <tbody data-admin-tabela-corpo></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ---- Página: Clientes (em breve) ---- -->
+        <section class="admin-pagina" data-admin-pagina="clientes">
+          <div class="secao-cabecalho secao-cabecalho--admin">
+            <h1>Clientes</h1>
+          </div>
+          <div class="admin-em-breve">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <p>A gestão de clientes ainda está em desenvolvimento e chegará em breve.</p>
+          </div>
+        </section>
+
+        <!-- ---- Página: Cupons (em breve) ---- -->
+        <section class="admin-pagina" data-admin-pagina="cupons">
+          <div class="secao-cabecalho secao-cabecalho--admin">
+            <h1>Cupons</h1>
+          </div>
+          <div class="admin-em-breve">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 5H4a1 1 0 00-1 1v4a2 2 0 010 4v4a1 1 0 001 1h5"/><path d="M15 5h5a1 1 0 011 1v4a2 2 0 000 4v4a1 1 0 01-1 1h-5"/><line x1="9" y1="3" x2="9" y2="21" stroke-dasharray="2 2"/></svg>
+            <p>O gerenciamento de cupons pelo painel ainda está em desenvolvimento e chegará em breve.</p>
+          </div>
+        </section>
+
+        <!-- ---- Página: Configurações (em breve) ---- -->
+        <section class="admin-pagina" data-admin-pagina="configuracoes">
+          <div class="secao-cabecalho secao-cabecalho--admin">
+            <h1>Configurações</h1>
+          </div>
+          <div class="admin-em-breve">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <p>As configurações da loja ainda estão em desenvolvimento e chegarão em breve.</p>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <!-- ---- Modal de Cadastro/Edição de Produto ---- -->

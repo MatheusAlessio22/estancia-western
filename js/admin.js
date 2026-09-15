@@ -231,17 +231,110 @@ function inicializarDashboardAdmin() {
     window.location.reload();
   });
 
-  document.querySelector("[data-admin-novo-produto]").addEventListener("click", () => {
-    abrirModalProduto(null);
+  document.querySelectorAll("[data-admin-novo-produto]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      abrirModalProduto(null);
+    });
   });
 
-  document.querySelector("[data-admin-busca-input]").addEventListener("input", (evento) => {
-    filtroTextoAtual = evento.target.value.trim().toLowerCase();
-    renderizarTabelaProdutos();
+  document.querySelectorAll("[data-admin-busca-input]").forEach((input) => {
+    input.addEventListener("input", (evento) => {
+      filtroTextoAtual = evento.target.value.trim().toLowerCase();
+      renderizarTabelaProdutos();
+    });
   });
 
   inicializarModalProduto();
   inicializarConfirmacaoExclusao();
+  inicializarSidebarAdmin();
+}
+
+/* ---- Sidebar / navegação entre páginas ---- */
+
+function irParaPaginaAdmin(paginaId) {
+  document.querySelectorAll("[data-admin-pagina]").forEach((secao) => {
+    secao.classList.toggle("is-ativa", secao.dataset.adminPagina === paginaId);
+  });
+
+  document.querySelectorAll("[data-admin-pagina-link]").forEach((item) => {
+    item.classList.toggle("is-ativo", item.dataset.adminPaginaLink === paginaId);
+  });
+
+  fecharSidebarAdmin();
+
+  if (paginaId === "visao-geral") carregarResumoAdmin();
+  if (paginaId === "pedidos") carregarEExibirPedidosAdmin();
+}
+
+function abrirSidebarAdmin() {
+  document.querySelector("[data-admin-sidebar]").classList.add("is-aberta");
+  document.querySelector("[data-admin-sidebar-overlay]").hidden = false;
+}
+
+function fecharSidebarAdmin() {
+  document.querySelector("[data-admin-sidebar]").classList.remove("is-aberta");
+  document.querySelector("[data-admin-sidebar-overlay]").hidden = true;
+}
+
+function inicializarSidebarAdmin() {
+  document.querySelectorAll("[data-admin-pagina-link]").forEach((item) => {
+    item.addEventListener("click", () => irParaPaginaAdmin(item.dataset.adminPaginaLink));
+  });
+
+  document.querySelector("[data-admin-sidebar-abrir]").addEventListener("click", abrirSidebarAdmin);
+  document.querySelector("[data-admin-sidebar-overlay]").addEventListener("click", fecharSidebarAdmin);
+
+  carregarResumoAdmin();
+}
+
+/* ---- Visão Geral ---- */
+
+async function carregarResumoAdmin() {
+  const produtos = await listarProdutosAdmin();
+  const ativos = produtos.filter((produto) => produto.ativo !== false).length;
+  document.querySelector("[data-admin-resumo-produtos-ativos]").textContent = ativos;
+
+  const pedidos = await chamarApiAdmin("/api/admin/pedidos");
+  if (!pedidos) return;
+
+  document.querySelector("[data-admin-resumo-total-pedidos]").textContent = pedidos.length;
+
+  const faturamento = pedidos.reduce((soma, pedido) => soma + Number(pedido.total || 0), 0);
+  document.querySelector("[data-admin-resumo-faturamento]").textContent = formatarPrecoAdmin(faturamento);
+}
+
+/* ---- Pedidos ---- */
+
+function formatarDataAdmin(dataIso) {
+  if (!dataIso) return "";
+  try {
+    return new Date(dataIso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
+function linhaPedidoHTML(pedido) {
+  return `
+    <tr>
+      <td>#${pedido.id}</td>
+      <td>${pedido.cliente_nome || "—"}</td>
+      <td class="admin-tabela__preco">${formatarPrecoAdmin(pedido.total)}</td>
+      <td><span class="admin-badge">${pedido.status || "—"}</span></td>
+      <td>${formatarDataAdmin(pedido.criado_em)}</td>
+    </tr>
+  `;
+}
+
+async function carregarEExibirPedidosAdmin() {
+  const corpo = document.querySelector("[data-admin-pedidos-corpo]");
+  const vazio = document.querySelector("[data-admin-pedidos-vazio]");
+
+  const pedidos = await chamarApiAdmin("/api/admin/pedidos");
+  const lista = pedidos || [];
+
+  corpo.innerHTML = lista.map(linhaPedidoHTML).join("");
+  vazio.hidden = lista.length > 0;
 }
 
 async function carregarEExibirProdutos() {

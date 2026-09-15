@@ -162,6 +162,14 @@ router.delete("/produtos/:id", async (req, res) => {
 
     res.json({ sucesso: true });
   } catch (erro) {
+    // 23503 = violação de chave estrangeira: produto tem pedidos ou
+    // avaliações vinculadas e não pode ser apagado sem perder esse histórico.
+    if (erro.code === "23503") {
+      return res.status(409).json({
+        erro: "Este produto não pode ser excluído porque já possui pedidos ou avaliações vinculados. Desative-o em vez de excluir.",
+      });
+    }
+
     console.error("Erro ao excluir produto (admin):", erro.message);
     res.status(500).json({ erro: "Erro ao excluir produto." });
   }
