@@ -142,7 +142,15 @@
           <h2>Chegou na Estância</h2>
           <p>Novidades para viver o seu estilo country.</p>
         </div>
-        <div class="grid grid-produtos" data-grid-lancamentos></div>
+        <div class="carrossel-wrapper" data-carrossel>
+          <div class="grid grid-produtos" data-grid-lancamentos data-carrossel-trilha></div>
+          <button type="button" class="carrossel-seta carrossel-seta--esquerda" data-carrossel-anterior aria-label="Ver produtos anteriores" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button type="button" class="carrossel-seta carrossel-seta--direita" data-carrossel-proximo aria-label="Ver mais produtos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
         <div class="flex-center" style="margin-top:var(--espaco-8);">
           <a href="/categoria/lancamentos" class="btn btn--secundario">Ver todos</a>
         </div>
@@ -157,7 +165,15 @@
           <h2>Escolhas de quem vive o country</h2>
           <p>As peças mais desejadas por quem entende de moda country.</p>
         </div>
-        <div class="grid grid-produtos" data-grid-mais-vendidos></div>
+        <div class="carrossel-wrapper" data-carrossel>
+          <div class="grid grid-produtos" data-grid-mais-vendidos data-carrossel-trilha></div>
+          <button type="button" class="carrossel-seta carrossel-seta--esquerda" data-carrossel-anterior aria-label="Ver produtos anteriores" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button type="button" class="carrossel-seta carrossel-seta--direita" data-carrossel-proximo aria-label="Ver mais produtos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
         <div class="flex-center" style="margin-top:var(--espaco-8);">
           <a href="/categoria/mais-vendidos" class="btn btn--secundario">Ver todos</a>
         </div>

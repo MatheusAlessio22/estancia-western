@@ -490,10 +490,57 @@ function inicializarPopupNewsletter() {
   window.setTimeout(() => abrirPopupNewsletter(popup), 2000);
 }
 
+/**
+ * Ativa as setas de navegação dos carrosséis de produto (vitrines da Home
+ * e sugestões do Blog). Funciona em qualquer `[data-carrossel]` que tenha
+ * uma trilha `[data-carrossel-trilha]` com scroll horizontal — chame de
+ * novo depois de preencher a trilha dinamicamente (ex: após um fetch).
+ */
+function inicializarCarrossel(wrapper) {
+  const trilha = wrapper.querySelector("[data-carrossel-trilha]");
+  const btnAnterior = wrapper.querySelector("[data-carrossel-anterior]");
+  const btnProximo = wrapper.querySelector("[data-carrossel-proximo]");
+  if (!trilha || !btnAnterior || !btnProximo || wrapper.dataset.carrosselPronto) return;
+
+  wrapper.dataset.carrosselPronto = "true";
+
+  function distanciaScroll() {
+    const card = trilha.querySelector(".card-produto");
+    const largura = card ? card.getBoundingClientRect().width : trilha.clientWidth;
+    const gap = parseFloat(getComputedStyle(trilha).columnGap || getComputedStyle(trilha).gap || "0");
+    return (largura + gap) * 2;
+  }
+
+  function atualizarSetas() {
+    const inicio = trilha.scrollLeft <= 4;
+    const fim = trilha.scrollLeft + trilha.clientWidth >= trilha.scrollWidth - 4;
+    btnAnterior.hidden = inicio;
+    btnProximo.hidden = fim;
+  }
+
+  btnAnterior.addEventListener("click", () => {
+    trilha.scrollBy({ left: -distanciaScroll(), behavior: "smooth" });
+  });
+  btnProximo.addEventListener("click", () => {
+    trilha.scrollBy({ left: distanciaScroll(), behavior: "smooth" });
+  });
+
+  trilha.addEventListener("scroll", atualizarSetas, { passive: true });
+  window.addEventListener("resize", atualizarSetas);
+
+  atualizarSetas();
+}
+
+function inicializarCarrosseis() {
+  document.querySelectorAll("[data-carrossel]").forEach((wrapper) => {
+    inicializarCarrossel(wrapper);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   inicializarHeader();
   inicializarNewsletter();
-  renderizarVitrines();
+  renderizarVitrines().then(inicializarCarrosseis);
   inicializarAnoRodape();
   inicializarPopupNewsletter();
   inicializarFormularioContato();

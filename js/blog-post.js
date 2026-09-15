@@ -68,6 +68,9 @@ async function montarCarrosselSugestoes(categoria) {
       mostrarToast('Produto adicionado ao carrinho!');
     });
   });
+
+  const wrapper = carrossel.closest('[data-carrossel]');
+  if (wrapper) inicializarCarrossel(wrapper);
 }
 
 async function inicializarBlogPost() {

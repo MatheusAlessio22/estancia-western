@@ -158,28 +158,14 @@
   font-style: italic;
 }
 
-/* ---- Carrossel de produtos sugeridos ---- */
+/* ---- Carrossel de produtos sugeridos ----
+   Estilos do trilho/cards/setas ficam centralizados em components.css
+   (compartilhados com as vitrines da Home). Aqui só o espaçamento da seção. */
 .blog-post__sugestoes {
   background-color: var(--cor-fundo-alt);
   padding-block: var(--espaco-8) var(--espaco-10);
 }
 
 .carrossel-produtos {
-  display: flex;
-  gap: var(--espaco-5);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: var(--espaco-3);
   margin-top: var(--espaco-6);
-}
-
-.carrossel-produtos .card-produto {
-  flex: 0 0 260px;
-  scroll-snap-align: start;
-}
-
-@media (width <= 600px) {
-  .carrossel-produtos .card-produto {
-    flex-basis: 200px;
-  }
 }

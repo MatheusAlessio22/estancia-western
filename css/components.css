@@ -2001,3 +2001,100 @@ body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
   color: #b3261e;
   margin-block-end: var(--espaco-4);
 }
+
+/* ---- Carrossel de produtos (vitrines da Home e sugestões do Blog) ---- */
+.carrossel-wrapper {
+  position: relative;
+}
+
+.carrossel-wrapper .grid-produtos,
+.carrossel-produtos {
+  display: flex;
+  grid-template-columns: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: var(--espaco-5);
+  padding-bottom: var(--espaco-2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carrossel-wrapper .grid-produtos::-webkit-scrollbar,
+.carrossel-produtos::-webkit-scrollbar {
+  display: none;
+}
+
+.carrossel-wrapper .grid-produtos .card-produto,
+.carrossel-produtos .card-produto {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+}
+
+@media (width <= 600px) {
+  .carrossel-wrapper .grid-produtos .card-produto,
+  .carrossel-produtos .card-produto {
+    flex-basis: 200px;
+  }
+}
+
+.carrossel-seta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 50%;
+  background-color: var(--cor-branco);
+  color: var(--cor-texto);
+  box-shadow: var(--sombra-elevada);
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color var(--transicao-rapida), opacity var(--transicao-rapida);
+}
+
+.carrossel-seta:hover {
+  background-color: var(--cor-fundo-alt);
+}
+
+.carrossel-seta svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.carrossel-seta--esquerda {
+  left: -18px;
+}
+
+.carrossel-seta--direita {
+  right: -18px;
+}
+
+.carrossel-seta[hidden] {
+  display: none;
+}
+
+@media (width <= 600px) {
+  .carrossel-seta {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carrossel-seta--esquerda {
+    left: -10px;
+  }
+
+  .carrossel-seta--direita {
+    right: -10px;
+  }
+}

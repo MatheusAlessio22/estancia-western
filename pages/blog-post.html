@@ -62,7 +62,15 @@
           <span class="eyebrow">Combine com o look</span>
           <h2>Produtos Para Você</h2>
         </div>
-        <div class="carrossel-produtos" data-carrossel-produtos></div>
+        <div class="carrossel-wrapper" data-carrossel>
+          <div class="carrossel-produtos" data-carrossel-produtos data-carrossel-trilha></div>
+          <button type="button" class="carrossel-seta carrossel-seta--esquerda" data-carrossel-anterior aria-label="Ver produtos anteriores" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button type="button" class="carrossel-seta carrossel-seta--direita" data-carrossel-proximo aria-label="Ver mais produtos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
       </div>
     </section>
   </main>
