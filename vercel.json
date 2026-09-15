@@ -13,6 +13,14 @@
     {
       "source": "/categoria/:cat",
       "destination": "/pages/categoria.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/pages/blog.html"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/ssr/blog/:slug"
     }
   ]
 }

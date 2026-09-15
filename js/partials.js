@@ -35,6 +35,7 @@ function HEADER_HTML(paginaAtiva = "") {
               <ul class="header__dropdown-categorias" id="menu-categorias" data-menu-categorias hidden></ul>
             </li>
             ${itemNav("/categoria/promocoes", "Promoções", "promocoes")}
+            ${itemNav("/blog", "Blog", "blog")}
           </ul>
         </nav>
 
@@ -67,6 +68,7 @@ function HEADER_HTML(paginaAtiva = "") {
         <li><a href="/categoria/chapeus-bones" class="foco-visivel">Chapéus &amp; Bonés</a></li>
         <li><a href="/categoria/cintos-fivelas" class="foco-visivel">Cintos &amp; Fivelas</a></li>
         <li><a href="/categoria/acessorios" class="foco-visivel">Acessórios</a></li>
+        <li><a href="/blog" class="foco-visivel">Blog</a></li>
         <li><a href="/pages/sobre.html" class="foco-visivel">Sobre Nós</a></li>
         <li><a href="/pages/contato.html" class="foco-visivel">Fale Conosco</a></li>
       </ul>
@@ -121,7 +123,49 @@ function FOOTER_HTML() {
           <div class="footer__coluna">
             <h4>Formas de Pagamento</h4>
             <div class="footer__pagamentos">
-              <span>Visa</span><span>Mastercard</span><span>Elo</span><span>Pix</span><span>Boleto</span>
+              <span class="footer__pagamento-logo" aria-label="Visa">
+                <svg viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.6 15.7h-3.9l2.4-15.3h3.9l-2.4 15.3z" fill="#1A1F71"/>
+                  <path d="M35.9.7c-.8-.3-2-.6-3.5-.6-3.9 0-6.6 2.1-6.6 5 0 2.2 1.9 3.4 3.4 4.1 1.5.7 2 1.2 2 1.9 0 1-1.2 1.5-2.3 1.5-1.6 0-2.4-.2-3.7-.8l-.5-.2-.6 3.4c.9.4 2.6.8 4.4.8 4.1 0 6.8-2.1 6.8-5.2 0-1.7-1-3-3.3-4.1-1.4-.7-2.2-1.2-2.2-1.9 0-.6.7-1.3 2.2-1.3 1.3 0 2.2.3 2.9.6l.4.2.5-3.4z" fill="#1A1F71"/>
+                  <path d="M41.6.4h-3c-.9 0-1.6.3-2 1.2l-5.7 13.7h4.1l.8-2.3h5l.5 2.3h3.6L41.6.4zm-4.8 9.9 1.5-4.1c0 .1.3-.8.5-1.4l.3 1.2 .9 4.3h-3.2z" fill="#1A1F71"/>
+                  <path d="M14 .4l-3.8 10.4-.4-2.1C9.1 6 6.9 3.2 4.4 1.8l3.5 13.9h4.1L18.1.4H14z" fill="#1A1F71"/>
+                  <path d="M6.9.4H.5L.4.8c4.9 1.3 8.2 4.4 9.5 8.1L8.6 1.6C8.4.7 7.7.4 6.9.4z" fill="#F9A51A"/>
+                </svg>
+              </span>
+              <span class="footer__pagamento-logo" aria-label="Mastercard">
+                <svg viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="10" r="8" fill="#EB001B"/>
+                  <circle cx="20" cy="10" r="8" fill="#F79E1B"/>
+                  <path d="M16 3.9a8 8 0 0 1 0 12.2 8 8 0 0 1 0-12.2z" fill="#FF5F00"/>
+                </svg>
+              </span>
+              <span class="footer__pagamento-logo" aria-label="Elo">
+                <svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg">
+                  <text x="30" y="18" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="18" font-style="italic">
+                    <tspan fill="#FFCB05">e</tspan><tspan fill="#00A4E0">l</tspan><tspan fill="#EF4123">o</tspan>
+                  </text>
+                </svg>
+              </span>
+              <span class="footer__pagamento-logo" aria-label="Pix">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.3 3.1a2.6 2.6 0 0 1 1.8.8l2.5 2.5a1 1 0 0 0 .7.3h.5L14.4 3.3a4.6 4.6 0 0 0-3.3-1.4H10a4.6 4.6 0 0 0-3.3 1.4L3.3 6.7a1 1 0 0 0 .7.3h.5l2.5-2.5a2.6 2.6 0 0 1 1.8-.8h3.5z" fill="#32BCAD"/>
+                  <path d="M7.6 16.9a2.6 2.6 0 0 1-1.8-.8l-2.5-2.5a1 1 0 0 0-.7-.3h-.5l3.4 3.4a4.6 4.6 0 0 0 3.3 1.4H10a4.6 4.6 0 0 0 3.3-1.4l3.4-3.4h-.5a1 1 0 0 0-.7.3l-2.5 2.5a2.6 2.6 0 0 1-1.8.8H7.6z" fill="#32BCAD"/>
+                  <path d="M17.7 8.9 15.9 7a.4.4 0 0 1-.2 0h-1a2 2 0 0 1-1.4-.6l-2.5-2.5a1.6 1.6 0 0 0-1.1-.5H8.3a1.6 1.6 0 0 0-1.1.5L4.7 6.4a2 2 0 0 1-1.4.6h-1a.4.4 0 0 1-.2 0L.3 8.9a1.6 1.6 0 0 0 0 2.2l1.8 1.8a.4.4 0 0 1 .2 0h1a2 2 0 0 1 1.4.6l2.5 2.5c.3.3.7.5 1.1.5h1.4c.4 0 .8-.2 1.1-.5l2.5-2.5a2 2 0 0 1 1.4-.6h1a.4.4 0 0 1 .2 0l1.8-1.8a1.6 1.6 0 0 0 0-2.2zm-6.4 3-1 1a.4.4 0 0 1-.6 0l-1-1a.4.4 0 0 1-.1-.3v-3.2c0-.1 0-.2.1-.3l1-1a.4.4 0 0 1 .6 0l1 1c.1.1.1.2.1.3v3.2c0 .1 0 .2-.1.3z" fill="#32BCAD"/>
+                </svg>
+              </span>
+              <span class="footer__pagamento-logo" aria-label="Boleto">
+                <svg viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1" y="2" width="2" height="16" fill="#1C1C1C"/>
+                  <rect x="4" y="2" width="1" height="16" fill="#1C1C1C"/>
+                  <rect x="6.5" y="2" width="2" height="16" fill="#1C1C1C"/>
+                  <rect x="9.5" y="2" width="1" height="16" fill="#1C1C1C"/>
+                  <rect x="11.5" y="2" width="2" height="16" fill="#1C1C1C"/>
+                  <rect x="15" y="2" width="1" height="16" fill="#1C1C1C"/>
+                  <rect x="17" y="2" width="2" height="16" fill="#1C1C1C"/>
+                  <rect x="20" y="2" width="1" height="16" fill="#1C1C1C"/>
+                  <rect x="22" y="2" width="1" height="16" fill="#1C1C1C"/>
+                </svg>
+              </span>
             </div>
             <h4 style="margin-top:var(--espaco-5);">Compra 100% Segura</h4>
           </div>

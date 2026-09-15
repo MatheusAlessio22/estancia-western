@@ -1,0 +1,185 @@
+/* ==========================================================================
+   Estância Western — Blog (listagem + artigo)
+   ========================================================================== */
+
+/* ---- Listagem (pages/blog.html) ---- */
+.blog-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--espaco-6);
+  padding-block: var(--espaco-6) var(--espaco-10);
+}
+
+.card-artigo {
+  display: block;
+  background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transicao-padrao);
+}
+
+.card-artigo:hover {
+  box-shadow: var(--sombra-elevada);
+}
+
+.card-artigo img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.card-artigo__corpo {
+  padding: var(--espaco-5);
+}
+
+.card-artigo__data {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-artigo__titulo {
+  font-size: var(--texto-lg);
+  margin-block: var(--espaco-2);
+}
+
+.card-artigo__descricao {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+}
+
+/* ---- Artigo (pages/blog-post.html) ---- */
+.blog-post__capa {
+  width: 100%;
+  max-height: 420px;
+  overflow: hidden;
+}
+
+.blog-post__capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-post__container {
+  max-width: 720px;
+}
+
+.blog-post__cabecalho {
+  padding-block: var(--espaco-8) var(--espaco-5);
+  text-align: center;
+}
+
+.blog-post__cabecalho h1 {
+  margin-top: var(--espaco-3);
+  font-size: var(--texto-2xl);
+}
+
+.blog-post__meta {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-suave);
+  margin-top: var(--espaco-3);
+}
+
+/* Conteúdo vindo do Markdown: tipografia otimizada para leitura longa —
+   sem os estilos de uppercase/letter-spacing dos headings de seção do
+   site, que ficam cansativos em blocos de texto corrido. */
+.blog-post__corpo {
+  font-size: var(--texto-md);
+  line-height: 1.75;
+  color: var(--cor-texto);
+  padding-bottom: var(--espaco-10);
+}
+
+.blog-post__corpo h1,
+.blog-post__corpo h2,
+.blog-post__corpo h3 {
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--fonte-destaque);
+  color: var(--cor-primaria);
+  line-height: 1.3;
+}
+
+.blog-post__corpo h1 {
+  font-size: var(--texto-xl);
+  margin-top: var(--espaco-8);
+  margin-bottom: var(--espaco-4);
+}
+
+.blog-post__corpo h2 {
+  font-size: var(--texto-lg);
+  margin-top: var(--espaco-8);
+  margin-bottom: var(--espaco-3);
+}
+
+.blog-post__corpo h3 {
+  font-size: var(--texto-md);
+  margin-top: var(--espaco-6);
+  margin-bottom: var(--espaco-2);
+}
+
+.blog-post__corpo p {
+  margin-bottom: var(--espaco-4);
+}
+
+.blog-post__corpo ul,
+.blog-post__corpo ol {
+  margin-bottom: var(--espaco-4);
+  padding-left: var(--espaco-6);
+  color: var(--cor-texto-suave);
+}
+
+.blog-post__corpo li {
+  margin-bottom: var(--espaco-2);
+}
+
+.blog-post__corpo a {
+  color: var(--cor-primaria);
+  text-decoration: underline;
+}
+
+.blog-post__corpo strong {
+  color: var(--cor-texto);
+}
+
+.blog-post__corpo img {
+  border-radius: var(--raio-borda-lg);
+  margin-block: var(--espaco-5);
+}
+
+.blog-post__corpo blockquote {
+  border-left: 3px solid var(--cor-primaria);
+  padding-left: var(--espaco-4);
+  margin-block: var(--espaco-5);
+  color: var(--cor-texto-suave);
+  font-style: italic;
+}
+
+/* ---- Carrossel de produtos sugeridos ---- */
+.blog-post__sugestoes {
+  background-color: var(--cor-fundo-alt);
+  padding-block: var(--espaco-8) var(--espaco-10);
+}
+
+.carrossel-produtos {
+  display: flex;
+  gap: var(--espaco-5);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--espaco-3);
+  margin-top: var(--espaco-6);
+}
+
+.carrossel-produtos .card-produto {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+}
+
+@media (width <= 600px) {
+  .carrossel-produtos .card-produto {
+    flex-basis: 200px;
+  }
+}

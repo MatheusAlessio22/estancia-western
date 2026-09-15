@@ -11,6 +11,12 @@ app.get("/produto/:id", (req, res) => {
 app.get("/categoria/:cat", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "..", "pages", "categoria.html"));
 });
+app.get("/blog", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "..", "pages", "blog.html"));
+});
+app.get("/blog/:slug", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "..", "pages", "blog-post.html"));
+});
 
 // Servir os arquivos estáticos do site só faz sentido rodando localmente
 // (node server/src/index.js); na Vercel, os estáticos já são servidos
