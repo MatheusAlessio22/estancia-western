@@ -534,11 +534,17 @@ function inicializarConfirmacaoExclusao() {
 
   document.querySelector("[data-admin-confirmar-ok]").addEventListener("click", async () => {
     if (!idParaExcluir) return;
-    await excluirProdutoAdmin(idParaExcluir);
-    modal.hidden = true;
-    mostrarToastAdmin("Produto excluído com sucesso.");
-    idParaExcluir = null;
-    await carregarEExibirProdutos();
+
+    try {
+      await excluirProdutoAdmin(idParaExcluir);
+      mostrarToastAdmin("Produto excluído com sucesso.");
+      await carregarEExibirProdutos();
+    } catch (erro) {
+      mostrarToastAdmin(erro?.mensagem || "Não foi possível excluir o produto.");
+    } finally {
+      modal.hidden = true;
+      idParaExcluir = null;
+    }
   });
 }
 
