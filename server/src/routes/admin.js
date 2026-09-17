@@ -48,7 +48,7 @@ function validarDadosProduto(dados) {
 
 router.get("/produtos", async (req, res) => {
   try {
-    const { rows } = await db.query("SELECT * FROM produtos ORDER BY nome ASC");
+    const { rows } = await db.query("SELECT * FROM produtos WHERE excluido = false ORDER BY nome ASC");
     res.json(rows.map(formatarProduto));
   } catch (erro) {
     console.error("Erro ao listar produtos (admin):", erro.message);
@@ -155,21 +155,20 @@ router.put("/produtos/:id", async (req, res) => {
 
 router.delete("/produtos/:id", async (req, res) => {
   try {
-    const resultado = await db.query("DELETE FROM produtos WHERE id = $1", [req.params.id]);
+    // Soft delete: produtos podem estar atrelados a pedidos/avaliações
+    // (FK sem cascade), então nunca apagamos a linha de fato — apenas
+    // marcamos como excluído e inativo, e as buscas passam a ignorá-lo.
+    const resultado = await db.query(
+      "UPDATE produtos SET excluido = true, ativo = false WHERE id = $1 RETURNING id",
+      [req.params.id],
+    );
+
     if (resultado.rowCount === 0) {
       return res.status(404).json({ erro: "Produto não encontrado." });
     }
 
-    res.json({ sucesso: true });
+    res.status(200).json({ sucesso: true });
   } catch (erro) {
-    // 23503 = violação de chave estrangeira: produto tem pedidos ou
-    // avaliações vinculadas e não pode ser apagado sem perder esse histórico.
-    if (erro.code === "23503") {
-      return res.status(409).json({
-        erro: "Este produto não pode ser excluído porque já possui pedidos ou avaliações vinculados. Desative-o em vez de excluir.",
-      });
-    }
-
     console.error("Erro ao excluir produto (admin):", erro.message);
     res.status(500).json({ erro: "Erro ao excluir produto." });
   }

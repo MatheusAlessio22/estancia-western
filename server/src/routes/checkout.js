@@ -45,7 +45,7 @@ router.post("/pix", async (req, res) => {
 
     for (const item of itens) {
       const { rows } = await db.query(
-        "SELECT * FROM produtos WHERE id = $1 AND ativo = true",
+        "SELECT * FROM produtos WHERE id = $1 AND ativo = true AND excluido = false",
         [item.produtoId],
       );
       const produto = rows[0];

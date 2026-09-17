@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   try {
     const { categoria, busca } = req.query;
 
-    let sql = "SELECT * FROM produtos WHERE ativo = true";
+    let sql = "SELECT * FROM produtos WHERE ativo = true AND excluido = false";
     const params = [];
 
     if (categoria) {
@@ -52,7 +52,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const { rows } = await db.query(
-      "SELECT * FROM produtos WHERE id = $1 AND ativo = true",
+      "SELECT * FROM produtos WHERE id = $1 AND ativo = true AND excluido = false",
       [req.params.id],
     );
     if (!rows[0]) {

@@ -406,21 +406,24 @@
 .admin-tabela {
   width: 100%;
   border-collapse: collapse;
-  min-width: 760px;
+  min-width: 860px;
   table-layout: fixed;
 }
 
 .admin-tabela th {
   text-align: left;
+  vertical-align: middle;
   font-size: var(--texto-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--cor-texto-suave);
-  padding: var(--espaco-4);
+  padding: var(--espaco-4) var(--espaco-3);
   background-color: var(--cor-fundo-alt);
   border-bottom: 1px solid var(--cor-borda);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .admin-tabela th:first-child {
@@ -432,7 +435,7 @@
 }
 
 .admin-tabela td {
-  padding: var(--espaco-4);
+  padding: var(--espaco-4) var(--espaco-3);
   border-bottom: 1px solid var(--cor-borda);
   vertical-align: middle;
   font-size: var(--texto-sm);
@@ -477,7 +480,15 @@
   flex-shrink: 0;
 }
 
+.admin-tabela__produto > div {
+  min-width: 0;
+}
+
 .admin-tabela__nome {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-weight: 600;
   font-size: var(--texto-sm);
 }
@@ -545,12 +556,46 @@
 .admin-tabela__acoes {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--espaco-2);
   white-space: nowrap;
 }
 
 .admin-btn-perigo-texto {
+  color: var(--cor-erro);
+  border-color: var(--cor-erro);
+}
+
+/* Botões de ação compactos (ícone) para colunas estreitas de tabela,
+   evitando que texto tipo "Editar"/"Excluir" seja cortado. */
+.admin-btn-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  background-color: var(--cor-branco);
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  transition: background-color var(--transicao-rapida), color var(--transicao-rapida), border-color var(--transicao-rapida);
+}
+
+.admin-btn-icone svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-btn-icone:hover {
+  background-color: var(--cor-fundo-alt);
+  color: var(--cor-marrom-couro);
+  border-color: var(--cor-marrom-couro);
+}
+
+.admin-btn-icone--perigo:hover {
+  background-color: #f7dedd;
   color: var(--cor-erro);
   border-color: var(--cor-erro);
 }

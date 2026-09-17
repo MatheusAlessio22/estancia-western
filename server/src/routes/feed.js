@@ -64,7 +64,9 @@ ${tagsImagensAdicionais ? `${tagsImagensAdicionais}\n` : ""}      <g:availabilit
 
 router.get("/feed.xml", async (req, res) => {
   try {
-    const { rows } = await db.query("SELECT * FROM produtos WHERE ativo = true ORDER BY nome ASC");
+    const { rows } = await db.query(
+      "SELECT * FROM produtos WHERE ativo = true AND excluido = false ORDER BY nome ASC",
+    );
 
     const itensXml = rows
       .map(montarItemXml)

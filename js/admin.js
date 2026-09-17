@@ -738,8 +738,12 @@ function linhaProdutoHTML(produto) {
         </label>
       </td>
       <td class="admin-tabela__acoes">
-        <button type="button" class="btn btn--secundario btn--pequeno" data-admin-editar="${produto.id}">Editar</button>
-        <button type="button" class="btn btn--secundario btn--pequeno admin-btn-perigo-texto" data-admin-excluir="${produto.id}">Excluir</button>
+        <button type="button" class="admin-btn-icone" data-admin-editar="${produto.id}" aria-label="Editar produto" title="Editar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+        <button type="button" class="admin-btn-icone admin-btn-icone--perigo" data-admin-excluir="${produto.id}" aria-label="Excluir produto" title="Excluir">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </button>
       </td>
     </tr>
   `;
@@ -890,6 +894,7 @@ function inicializarModalProduto() {
     const categoria = form.querySelector("[data-admin-campo-categoria]").value;
     const preco = form.querySelector("[data-admin-campo-preco]").value;
     const precoDe = form.querySelector("[data-admin-campo-preco-de]").value;
+    const estoque = form.querySelector("[data-admin-campo-estoque]").value;
     const selo = form.querySelector("[data-admin-campo-selo]").value;
     const ativo = form.querySelector("[data-admin-campo-ativo]").checked;
     const idExistente = form.querySelector("[data-admin-produto-id]").value;
@@ -910,6 +915,7 @@ function inicializarModalProduto() {
       categoria,
       preco: Number(preco),
       precoDe: precoDe ? Number(precoDe) : null,
+      estoque: estoque !== "" ? Number(estoque) : undefined,
       selo: selo || null,
       imagem: imagensProdutoAtual[0] || null,
       imagens: imagensProdutoAtual,
@@ -951,6 +957,7 @@ function abrirModalProduto(produto) {
     form.querySelector("[data-admin-campo-categoria]").value = produto.categoria || "";
     form.querySelector("[data-admin-campo-preco]").value = produto.preco ?? "";
     form.querySelector("[data-admin-campo-preco-de]").value = produto.precoDe ?? "";
+    form.querySelector("[data-admin-campo-estoque]").value = produto.estoque ?? "";
     form.querySelector("[data-admin-campo-selo]").value = produto.selo || "";
     form.querySelector("[data-admin-campo-ativo]").checked = produto.ativo !== false;
 
@@ -967,6 +974,7 @@ function abrirModalProduto(produto) {
   } else {
     titulo.textContent = "Adicionar Novo Produto";
     form.querySelector("[data-admin-produto-id]").value = "";
+    form.querySelector("[data-admin-campo-estoque]").value = "";
     form.querySelector("[data-admin-campo-ativo]").checked = true;
     imagensProdutoAtual = [];
   }
@@ -1021,8 +1029,8 @@ function abrirConfirmacaoExclusao(id) {
   const produto = produtosCarregados.find((item) => item.id === id);
   const mensagem = document.querySelector("[data-admin-confirmar-mensagem]");
   mensagem.textContent = produto
-    ? `Tem certeza que deseja excluir "${produto.nome}"? Essa ação não pode ser desfeita.`
-    : "Tem certeza que deseja excluir este produto? Essa ação não pode ser desfeita.";
+    ? `Tem certeza que deseja remover "${produto.nome}" da loja?`
+    : "Tem certeza que deseja remover este produto da loja?";
   document.querySelector("[data-admin-confirmar-exclusao]").hidden = false;
 }
 

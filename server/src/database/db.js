@@ -120,6 +120,7 @@ async function criarTabelas() {
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagem TEXT");
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagens JSONB NOT NULL DEFAULT '[]'");
   await db.query("ALTER TABLE cupons ADD COLUMN IF NOT EXISTS validade DATE");
+  await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS excluido BOOLEAN NOT NULL DEFAULT false");
 }
 
 function extrairProdutosDoArquivo() {
