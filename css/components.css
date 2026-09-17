@@ -1172,12 +1172,15 @@
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda);
   background-color: var(--cor-branco);
+  transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
 }
 
 .campo input:focus,
 .campo select:focus,
 .campo textarea:focus {
+  outline: none;
   border-color: var(--cor-primaria);
+  box-shadow: var(--sombra-foco);
 }
 
 .campo select {
@@ -1199,12 +1202,6 @@
   background-size: 14px;
   cursor: pointer;
   transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
-}
-
-.campo select:focus {
-  outline: none;
-  border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 3px rgba(95, 58, 42, 0.12);
 }
 
 .campo select:disabled {
