@@ -436,6 +436,28 @@
   white-space: nowrap;
 }
 
+.admin-badge--pendente,
+.admin-badge--preparando {
+  color: #8a6d1a;
+  background-color: #fdf1cf;
+}
+
+.admin-badge--aprovado,
+.admin-badge--entregue {
+  color: var(--cor-sucesso);
+  background-color: #e1efe1;
+}
+
+.admin-badge--recusado {
+  color: var(--cor-erro);
+  background-color: #f7dedd;
+}
+
+.admin-badge--enviado {
+  color: #1a5f8a;
+  background-color: #d9edf7;
+}
+
 .admin-tabela__preco {
   font-weight: 700;
   color: var(--cor-marrom-couro);
@@ -565,6 +587,10 @@
   text-align: center;
 }
 
+.admin-modal__caixa--pedido {
+  max-width: 640px;
+}
+
 .admin-modal__fechar {
   position: absolute;
   top: var(--espaco-4);
@@ -629,6 +655,73 @@
 .campo--switch {
   flex-direction: row;
   align-items: center;
+}
+
+/* ---- Modal de Detalhes do Pedido ---- */
+.admin-pedido-carregando {
+  text-align: center;
+  color: var(--cor-texto-suave);
+  padding: var(--espaco-8) 0;
+}
+
+.admin-pedido-secao {
+  margin-bottom: var(--espaco-5);
+}
+
+.admin-pedido-secao h3 {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-md);
+  color: var(--cor-marrom-couro);
+  margin-bottom: var(--espaco-3);
+}
+
+.admin-pedido-itens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.admin-pedido-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  background-color: var(--cor-fundo-alt);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-2) var(--espaco-3);
+}
+
+.admin-pedido-item img {
+  width: 48px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--raio-borda);
+  background-color: var(--cor-branco);
+  flex-shrink: 0;
+}
+
+.admin-pedido-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-pedido-item__nome {
+  font-weight: 600;
+  font-size: var(--texto-sm);
+}
+
+.admin-pedido-item__variacao,
+.admin-pedido-item__qtd {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+}
+
+.admin-pedido-endereco {
+  font-size: var(--texto-sm);
+  line-height: 1.6;
+  background-color: var(--cor-fundo-alt);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-3);
 }
 
 /* ---- Upload de imagem ---- */

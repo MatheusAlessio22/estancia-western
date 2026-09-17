@@ -254,6 +254,7 @@ function inicializarDashboardAdmin() {
 
   inicializarModalProduto();
   inicializarConfirmacaoExclusao();
+  inicializarModalPedido();
   inicializarSidebarAdmin();
 }
 
@@ -317,6 +318,18 @@ async function carregarResumoAdmin() {
 
 /* ---- Pedidos ---- */
 
+const STATUS_PAGAMENTO_LABEL = {
+  pendente: "Pendente",
+  pago: "Aprovado",
+  cancelado: "Recusado",
+};
+
+const STATUS_ENVIO_LABEL = {
+  preparando: "Preparando",
+  enviado: "Enviado",
+  entregue: "Entregue",
+};
+
 function formatarDataAdmin(dataIso) {
   if (!dataIso) return "";
   try {
@@ -326,14 +339,38 @@ function formatarDataAdmin(dataIso) {
   }
 }
 
+function badgeStatusPagamentoHTML(status) {
+  const classes = {
+    pendente: "admin-badge admin-badge--pendente",
+    pago: "admin-badge admin-badge--aprovado",
+    cancelado: "admin-badge admin-badge--recusado",
+  };
+  const rotulo = STATUS_PAGAMENTO_LABEL[status] || status || "—";
+  return `<span class="${classes[status] || "admin-badge"}">${rotulo}</span>`;
+}
+
+function badgeStatusEnvioHTML(statusEnvio) {
+  const classes = {
+    preparando: "admin-badge admin-badge--preparando",
+    enviado: "admin-badge admin-badge--enviado",
+    entregue: "admin-badge admin-badge--entregue",
+  };
+  const rotulo = STATUS_ENVIO_LABEL[statusEnvio] || "Preparando";
+  return `<span class="${classes[statusEnvio] || "admin-badge"}">${rotulo}</span>`;
+}
+
 function linhaPedidoHTML(pedido) {
   return `
     <tr>
       <td>#${pedido.id}</td>
+      <td>${formatarDataAdmin(pedido.criado_em)}</td>
       <td>${pedido.cliente_nome || "—"}</td>
       <td class="admin-tabela__preco">${formatarPrecoAdmin(pedido.total)}</td>
-      <td><span class="admin-badge">${pedido.status || "—"}</span></td>
-      <td>${formatarDataAdmin(pedido.criado_em)}</td>
+      <td>${badgeStatusPagamentoHTML(pedido.status)}</td>
+      <td>${badgeStatusEnvioHTML(pedido.status_envio)}</td>
+      <td class="admin-tabela__acoes">
+        <button type="button" class="btn btn--secundario btn--pequeno" data-admin-pedido-detalhes="${pedido.id}">Ver Detalhes</button>
+      </td>
     </tr>
   `;
 }
@@ -347,6 +384,107 @@ async function carregarEExibirPedidosAdmin() {
 
   corpo.innerHTML = lista.map(linhaPedidoHTML).join("");
   vazio.hidden = lista.length > 0;
+
+  corpo.querySelectorAll("[data-admin-pedido-detalhes]").forEach((btn) => {
+    btn.addEventListener("click", () => abrirModalPedido(btn.dataset.adminPedidoDetalhes));
+  });
+}
+
+/* ---- Modal de Detalhes do Pedido ---- */
+
+let pedidoAtualId = null;
+
+function itemPedidoHTML(item) {
+  const imagem = item.produto_imagem || "/assets/images/produtos/placeholder-produto.svg";
+  const variacao = [item.tamanho, item.cor].filter(Boolean).join(" · ");
+
+  return `
+    <div class="admin-pedido-item">
+      <img src="${imagem}" alt="" width="48" height="56" loading="lazy">
+      <div class="admin-pedido-item__info">
+        <span class="admin-pedido-item__nome">${item.produto_nome || item.produto_id}</span>
+        ${variacao ? `<span class="admin-pedido-item__variacao">${variacao}</span>` : ""}
+        <span class="admin-pedido-item__qtd">Qtd: ${item.quantidade} × ${formatarPrecoAdmin(item.preco_unitario)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function enderecoPedidoTexto(pedido) {
+  const linha1 = `${pedido.endereco}, ${pedido.numero}${pedido.complemento ? ` — ${pedido.complemento}` : ""}`;
+  const linha2 = [pedido.bairro, pedido.cidade, pedido.estado].filter(Boolean).join(", ");
+  return `${linha1}<br>${linha2}<br>CEP: ${pedido.cep}`;
+}
+
+async function abrirModalPedido(id) {
+  pedidoAtualId = id;
+  const modal = document.querySelector("[data-admin-pedido-modal]");
+  const carregando = document.querySelector("[data-admin-pedido-carregando]");
+  const conteudo = document.querySelector("[data-admin-pedido-conteudo]");
+  const aviso = document.querySelector("[data-admin-pedido-aviso]");
+
+  document.querySelector("[data-admin-pedido-titulo]").textContent = `Pedido #${id}`;
+  aviso.hidden = true;
+  conteudo.hidden = true;
+  carregando.hidden = false;
+  modal.hidden = false;
+
+  const pedido = await chamarApiAdmin(`/api/admin/pedidos/${id}`);
+
+  carregando.hidden = true;
+
+  if (!pedido) {
+    carregando.hidden = false;
+    carregando.textContent = "Não foi possível carregar os detalhes deste pedido.";
+    return;
+  }
+
+  document.querySelector("[data-admin-pedido-itens]").innerHTML = pedido.itens.map(itemPedidoHTML).join("");
+  document.querySelector("[data-admin-pedido-endereco]").innerHTML = enderecoPedidoTexto(pedido);
+  document.querySelector("[data-admin-pedido-status-pagamento]").value =
+    STATUS_PAGAMENTO_LABEL[pedido.status] || pedido.status;
+  document.querySelector("[data-admin-pedido-campo-status-envio]").value = pedido.status_envio || "preparando";
+  document.querySelector("[data-admin-pedido-campo-rastreio]").value = pedido.codigo_rastreio || "";
+
+  conteudo.hidden = false;
+}
+
+function fecharModalPedido() {
+  document.querySelector("[data-admin-pedido-modal]").hidden = true;
+  pedidoAtualId = null;
+}
+
+function inicializarModalPedido() {
+  document.querySelectorAll("[data-admin-pedido-modal-fechar]").forEach((el) => {
+    el.addEventListener("click", fecharModalPedido);
+  });
+
+  document.addEventListener("keydown", (evento) => {
+    const modal = document.querySelector("[data-admin-pedido-modal]");
+    if (evento.key === "Escape" && !modal.hidden) fecharModalPedido();
+  });
+
+  document.querySelector("[data-admin-pedido-salvar]").addEventListener("click", async () => {
+    if (!pedidoAtualId) return;
+    const aviso = document.querySelector("[data-admin-pedido-aviso]");
+    const codigoRastreio = document.querySelector("[data-admin-pedido-campo-rastreio]").value.trim();
+    const statusEnvio = document.querySelector("[data-admin-pedido-campo-status-envio]").value;
+
+    try {
+      await chamarApiAdmin(`/api/admin/pedidos/${pedidoAtualId}`, {
+        method: "PUT",
+        body: JSON.stringify({ codigoRastreio, statusEnvio }),
+      });
+      aviso.hidden = true;
+      mostrarToastAdmin("Pedido atualizado com sucesso.");
+      fecharModalPedido();
+      await carregarEExibirPedidosAdmin();
+    } catch (erro) {
+      if (erro && erro.deslogado) return;
+      aviso.textContent = (erro && erro.mensagem) || "Erro ao salvar as alterações do pedido.";
+      aviso.hidden = false;
+    }
+  });
 }
 
 async function carregarEExibirProdutos() {

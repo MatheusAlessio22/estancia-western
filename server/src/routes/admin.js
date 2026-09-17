@@ -175,10 +175,12 @@ router.delete("/produtos/:id", async (req, res) => {
   }
 });
 
+const STATUS_ENVIO_VALIDOS = ["preparando", "enviado", "entregue"];
+
 router.get("/pedidos", async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT id, cliente_nome, cliente_email, status, total, frete, desconto,
+      `SELECT id, cliente_nome, cliente_email, status, status_envio, total, frete, desconto,
               cupom_codigo, codigo_rastreio, metodo_pagamento, criado_em
        FROM pedidos ORDER BY criado_em DESC`,
     );
@@ -187,6 +189,68 @@ router.get("/pedidos", async (req, res) => {
   } catch (erro) {
     console.error("Erro ao listar pedidos (admin):", erro.message);
     res.status(500).json({ erro: "Erro ao listar pedidos." });
+  }
+});
+
+router.get("/pedidos/:id", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT id, cliente_nome, cliente_email, cliente_telefone, cep, endereco, numero,
+              complemento, bairro, cidade, estado, total, frete, desconto, status, status_envio,
+              metodo_pagamento, cupom_codigo, codigo_rastreio, criado_em
+       FROM pedidos WHERE id = $1`,
+      [req.params.id],
+    );
+    const pedido = rows[0];
+
+    if (!pedido) {
+      return res.status(404).json({ erro: "Pedido não encontrado." });
+    }
+
+    const itensResultado = await db.query(
+      `SELECT pi.produto_id, pi.quantidade, pi.preco_unitario, pi.tamanho, pi.cor,
+              p.nome AS produto_nome, p.imagem AS produto_imagem
+       FROM pedido_itens pi
+       LEFT JOIN produtos p ON p.id = pi.produto_id
+       WHERE pi.pedido_id = $1`,
+      [req.params.id],
+    );
+
+    res.json({ ...pedido, itens: itensResultado.rows });
+  } catch (erro) {
+    console.error("Erro ao buscar pedido (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao buscar pedido." });
+  }
+});
+
+router.put("/pedidos/:id", async (req, res) => {
+  try {
+    const { codigoRastreio, statusEnvio } = req.body || {};
+
+    if (statusEnvio && !STATUS_ENVIO_VALIDOS.includes(statusEnvio)) {
+      return res.status(400).json({ erro: "Status de envio inválido." });
+    }
+
+    const existente = await db.query("SELECT id, status_envio, codigo_rastreio FROM pedidos WHERE id = $1", [
+      req.params.id,
+    ]);
+    if (!existente.rows[0]) {
+      return res.status(404).json({ erro: "Pedido não encontrado." });
+    }
+
+    const novoCodigoRastreio =
+      codigoRastreio !== undefined ? String(codigoRastreio).trim() || null : existente.rows[0].codigo_rastreio;
+    const novoStatusEnvio = statusEnvio || existente.rows[0].status_envio;
+
+    const { rows } = await db.query(
+      `UPDATE pedidos SET codigo_rastreio = $1, status_envio = $2 WHERE id = $3 RETURNING *`,
+      [novoCodigoRastreio, novoStatusEnvio, req.params.id],
+    );
+
+    res.json(rows[0]);
+  } catch (erro) {
+    console.error("Erro ao atualizar pedido (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao atualizar pedido." });
   }
 });
 
