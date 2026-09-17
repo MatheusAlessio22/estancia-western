@@ -16,6 +16,18 @@ html {
   text-size-adjust: 100%;
 }
 
+/* ---- Scrollbars ocultas (mantendo o scroll por mouse/touch) ---- */
+/* Ocultar scrollbar em todos os elementos para Chrome, Safari e Opera */
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Ocultar scrollbar em todos os elementos para IE, Edge e Firefox */
+* {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

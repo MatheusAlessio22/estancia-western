@@ -119,6 +119,7 @@ async function criarTabelas() {
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS status_envio TEXT NOT NULL DEFAULT 'preparando'");
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagem TEXT");
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagens JSONB NOT NULL DEFAULT '[]'");
+  await db.query("ALTER TABLE cupons ADD COLUMN IF NOT EXISTS validade DATE");
 }
 
 function extrairProdutosDoArquivo() {
@@ -238,6 +239,10 @@ async function validarCupom(codigo, subtotal) {
 
   if (!cupom.ativo) {
     return { valido: false, status: 400, mensagem: "Cupom expirado." };
+  }
+
+  if (cupom.validade && new Date(cupom.validade) < new Date(new Date().toDateString())) {
+    return { valido: false, status: 400, mensagem: "Este cupom expirou." };
   }
 
   const subtotalNumerico = Number(subtotal) || 0;

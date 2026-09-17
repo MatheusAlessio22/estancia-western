@@ -254,4 +254,159 @@ router.put("/pedidos/:id", async (req, res) => {
   }
 });
 
+router.delete("/pedidos/:id", async (req, res) => {
+  const pedidoId = req.params.id;
+  console.log(`[DELETE /admin/pedidos/${pedidoId}] Iniciando exclusão...`);
+
+  const cliente = await db.pool.connect();
+  try {
+    await cliente.query("BEGIN");
+
+    const itensRemovidos = await cliente.query("DELETE FROM pedido_itens WHERE pedido_id = $1", [pedidoId]);
+    console.log(`[DELETE /admin/pedidos/${pedidoId}] ${itensRemovidos.rowCount} item(ns) do pedido removido(s).`);
+
+    const pedidoRemovido = await cliente.query("DELETE FROM pedidos WHERE id = $1", [pedidoId]);
+
+    if (pedidoRemovido.rowCount === 0) {
+      await cliente.query("ROLLBACK");
+      console.warn(`[DELETE /admin/pedidos/${pedidoId}] Pedido não encontrado.`);
+      return res.status(404).json({ erro: "Pedido não encontrado." });
+    }
+
+    await cliente.query("COMMIT");
+    console.log(`[DELETE /admin/pedidos/${pedidoId}] Pedido excluído com sucesso.`);
+    res.status(200).json({ sucesso: true });
+  } catch (erro) {
+    await cliente.query("ROLLBACK");
+    console.error(`[DELETE /admin/pedidos/${pedidoId}] Erro ao excluir pedido:`, erro);
+    res.status(500).json({ erro: "Erro ao excluir pedido. Tente novamente." });
+  } finally {
+    cliente.release();
+  }
+});
+
+/* ---- Clientes ---- */
+
+router.get("/clientes", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT cliente_nome, cliente_email, cliente_telefone,
+              COUNT(*) AS total_pedidos,
+              SUM(total) FILTER (WHERE status = 'pago') AS total_gasto
+       FROM pedidos
+       GROUP BY cliente_nome, cliente_email, cliente_telefone
+       ORDER BY total_gasto DESC NULLS LAST`,
+    );
+
+    res.json(
+      rows.map((linha) => ({
+        nome: linha.cliente_nome,
+        email: linha.cliente_email,
+        telefone: linha.cliente_telefone,
+        totalPedidos: Number(linha.total_pedidos),
+        totalGasto: Number(linha.total_gasto || 0),
+      })),
+    );
+  } catch (erro) {
+    console.error("Erro ao listar clientes (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao listar clientes." });
+  }
+});
+
+/* ---- Cupons ---- */
+
+function formatarCupom(linha) {
+  return {
+    codigo: linha.codigo,
+    tipo: linha.desconto_percentual ? "percentual" : "fixo",
+    valor: linha.desconto_percentual ? Number(linha.desconto_percentual) * 100 : Number(linha.desconto_fixo),
+    valorMinimo: linha.valor_minimo !== null ? Number(linha.valor_minimo) : null,
+    validade: linha.validade,
+    ativo: !!linha.ativo,
+  };
+}
+
+router.get("/cupons", async (req, res) => {
+  try {
+    const { rows } = await db.query("SELECT * FROM cupons ORDER BY codigo ASC");
+    res.json(rows.map(formatarCupom));
+  } catch (erro) {
+    console.error("Erro ao listar cupons (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao listar cupons." });
+  }
+});
+
+router.post("/cupons", async (req, res) => {
+  try {
+    const dados = req.body || {};
+    const codigo = String(dados.codigo || "").trim().toUpperCase();
+    const tipo = dados.tipo === "fixo" ? "fixo" : "percentual";
+    const valor = Number(dados.valor);
+
+    if (!codigo) return res.status(400).json({ erro: "Código do cupom é obrigatório." });
+    if (!(valor > 0)) return res.status(400).json({ erro: "Informe um valor de desconto maior que zero." });
+    if (tipo === "percentual" && valor > 100) {
+      return res.status(400).json({ erro: "O desconto percentual não pode ser maior que 100%." });
+    }
+
+    const { rows } = await db.query(
+      `INSERT INTO cupons (codigo, desconto_percentual, desconto_fixo, valor_minimo, validade, ativo)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (codigo) DO UPDATE SET
+         desconto_percentual = EXCLUDED.desconto_percentual,
+         desconto_fixo = EXCLUDED.desconto_fixo,
+         valor_minimo = EXCLUDED.valor_minimo,
+         validade = EXCLUDED.validade,
+         ativo = EXCLUDED.ativo
+       RETURNING *`,
+      [
+        codigo,
+        tipo === "percentual" ? valor / 100 : null,
+        tipo === "fixo" ? valor : null,
+        dados.valorMinimo ? Number(dados.valorMinimo) : null,
+        dados.validade || null,
+        dados.ativo !== false,
+      ],
+    );
+
+    res.status(201).json(formatarCupom(rows[0]));
+  } catch (erro) {
+    console.error("Erro ao criar cupom (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao criar cupom." });
+  }
+});
+
+router.put("/cupons/:codigo", async (req, res) => {
+  try {
+    const dados = req.body || {};
+    const ativo = dados.ativo !== false;
+
+    const { rows } = await db.query(
+      `UPDATE cupons SET ativo = $1 WHERE codigo = $2 RETURNING *`,
+      [ativo, req.params.codigo.toUpperCase()],
+    );
+
+    if (!rows[0]) return res.status(404).json({ erro: "Cupom não encontrado." });
+
+    res.json(formatarCupom(rows[0]));
+  } catch (erro) {
+    console.error("Erro ao atualizar cupom (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao atualizar cupom." });
+  }
+});
+
+router.delete("/cupons/:codigo", async (req, res) => {
+  try {
+    const resultado = await db.query("DELETE FROM cupons WHERE codigo = $1", [req.params.codigo.toUpperCase()]);
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ erro: "Cupom não encontrado." });
+    }
+
+    res.json({ sucesso: true });
+  } catch (erro) {
+    console.error("Erro ao excluir cupom (admin):", erro.message);
+    res.status(500).json({ erro: "Erro ao excluir cupom." });
+  }
+});
+
 module.exports = router;

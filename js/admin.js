@@ -255,6 +255,7 @@ function inicializarDashboardAdmin() {
   inicializarModalProduto();
   inicializarConfirmacaoExclusao();
   inicializarModalPedido();
+  inicializarModalCupom();
   inicializarSidebarAdmin();
 }
 
@@ -273,6 +274,8 @@ function irParaPaginaAdmin(paginaId) {
 
   if (paginaId === "visao-geral") carregarResumoAdmin();
   if (paginaId === "pedidos") carregarEExibirPedidosAdmin();
+  if (paginaId === "clientes") carregarEExibirClientes();
+  if (paginaId === "cupons") carregarEExibirCupons();
 }
 
 function abrirSidebarAdmin() {
@@ -370,9 +373,22 @@ function linhaPedidoHTML(pedido) {
       <td>${badgeStatusEnvioHTML(pedido.status_envio)}</td>
       <td class="admin-tabela__acoes">
         <button type="button" class="btn btn--secundario btn--pequeno" data-admin-pedido-detalhes="${pedido.id}">Ver Detalhes</button>
+        <button type="button" class="btn btn--secundario btn--pequeno admin-btn-perigo-texto" data-admin-pedido-excluir="${pedido.id}">Excluir</button>
       </td>
     </tr>
   `;
+}
+
+async function excluirPedidoAdmin(id) {
+  try {
+    await chamarApiAdmin(`/api/admin/pedidos/${id}`, { method: "DELETE" });
+    mostrarToastAdmin("Pedido excluído com sucesso.");
+    await carregarEExibirPedidosAdmin();
+  } catch (erro) {
+    console.error("Erro ao excluir pedido:", erro);
+    if (erro && erro.deslogado) return;
+    mostrarToastAdmin((erro && erro.mensagem) || "Erro ao excluir pedido.");
+  }
 }
 
 async function carregarEExibirPedidosAdmin() {
@@ -387,6 +403,14 @@ async function carregarEExibirPedidosAdmin() {
 
   corpo.querySelectorAll("[data-admin-pedido-detalhes]").forEach((btn) => {
     btn.addEventListener("click", () => abrirModalPedido(btn.dataset.adminPedidoDetalhes));
+  });
+
+  corpo.querySelectorAll("[data-admin-pedido-excluir]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.adminPedidoExcluir;
+      if (!window.confirm(`Tem certeza que deseja excluir o pedido #${id}? Essa ação não pode ser desfeita.`)) return;
+      excluirPedidoAdmin(id);
+    });
   });
 }
 
@@ -492,6 +516,182 @@ async function carregarEExibirProdutos() {
   renderizarTabelaProdutos();
 }
 
+/* ---- Clientes ---- */
+
+function linhaClienteHTML(cliente) {
+  return `
+    <tr>
+      <td>${cliente.nome || "—"}</td>
+      <td>${cliente.email || "—"}</td>
+      <td>${cliente.telefone || "—"}</td>
+      <td class="admin-tabela__col-centro">${cliente.totalPedidos}</td>
+      <td class="admin-tabela__preco">${formatarPrecoAdmin(cliente.totalGasto)}</td>
+    </tr>
+  `;
+}
+
+async function carregarEExibirClientes() {
+  const corpo = document.querySelector("[data-admin-clientes-corpo]");
+  const vazio = document.querySelector("[data-admin-clientes-vazio]");
+
+  const clientes = await chamarApiAdmin("/api/admin/clientes");
+  const lista = clientes || [];
+
+  corpo.innerHTML = lista.map(linhaClienteHTML).join("");
+  vazio.hidden = lista.length > 0;
+}
+
+/* ---- Cupons ---- */
+
+let cuponsCarregados = [];
+
+function formatarValorCupom(cupom) {
+  return cupom.tipo === "percentual"
+    ? `${Number(cupom.valor).toLocaleString("pt-BR")}%`
+    : formatarPrecoAdmin(cupom.valor);
+}
+
+function formatarValidadeCupom(validade) {
+  if (!validade) return "Sem validade";
+  const dataIso = String(validade).slice(0, 10);
+  return new Date(`${dataIso}T00:00:00`).toLocaleDateString("pt-BR");
+}
+
+function linhaCupomHTML(cupom) {
+  return `
+    <tr>
+      <td><span class="admin-tabela__nome">${cupom.codigo}</span></td>
+      <td>${cupom.tipo === "percentual" ? "Porcentagem" : "Valor Fixo"}</td>
+      <td class="admin-tabela__preco">${formatarValorCupom(cupom)}</td>
+      <td>${formatarValidadeCupom(cupom.validade)}</td>
+      <td class="admin-tabela__col-centro">
+        <label class="admin-switch admin-switch--tabela">
+          <input type="checkbox" data-admin-toggle-cupom="${cupom.codigo}" ${cupom.ativo ? "checked" : ""}>
+          <span class="admin-switch__trilho"></span>
+        </label>
+      </td>
+      <td class="admin-tabela__acoes">
+        <button type="button" class="btn btn--secundario btn--pequeno admin-btn-perigo-texto" data-admin-excluir-cupom="${cupom.codigo}">Excluir</button>
+      </td>
+    </tr>
+  `;
+}
+
+async function carregarEExibirCupons() {
+  const corpo = document.querySelector("[data-admin-cupons-corpo]");
+  const vazio = document.querySelector("[data-admin-cupons-vazio]");
+
+  const cupons = await chamarApiAdmin("/api/admin/cupons");
+  cuponsCarregados = cupons || [];
+
+  corpo.innerHTML = cuponsCarregados.map(linhaCupomHTML).join("");
+  vazio.hidden = cuponsCarregados.length > 0;
+
+  corpo.querySelectorAll("[data-admin-toggle-cupom]").forEach((toggle) => {
+    toggle.addEventListener("change", async () => {
+      const codigo = toggle.dataset.adminToggleCupom;
+      try {
+        await chamarApiAdmin(`/api/admin/cupons/${codigo}`, {
+          method: "PUT",
+          body: JSON.stringify({ ativo: toggle.checked }),
+        });
+        mostrarToastAdmin(toggle.checked ? "Cupom ativado." : "Cupom desativado.");
+      } catch (erro) {
+        if (erro && erro.deslogado) return;
+        toggle.checked = !toggle.checked;
+        mostrarToastAdmin((erro && erro.mensagem) || "Erro ao atualizar o cupom.");
+      }
+    });
+  });
+
+  corpo.querySelectorAll("[data-admin-excluir-cupom]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const codigo = btn.dataset.adminExcluirCupom;
+      if (!window.confirm(`Tem certeza que deseja excluir o cupom "${codigo}"?`)) return;
+
+      try {
+        await chamarApiAdmin(`/api/admin/cupons/${codigo}`, { method: "DELETE" });
+        mostrarToastAdmin("Cupom excluído com sucesso.");
+        await carregarEExibirCupons();
+      } catch (erro) {
+        if (erro && erro.deslogado) return;
+        mostrarToastAdmin((erro && erro.mensagem) || "Erro ao excluir o cupom.");
+      }
+    });
+  });
+}
+
+function abrirModalCupom() {
+  const modal = document.querySelector("[data-admin-cupom-modal]");
+  const form = document.querySelector("[data-admin-cupom-form]");
+  const aviso = document.querySelector("[data-admin-cupom-aviso]");
+
+  form.reset();
+  aviso.hidden = true;
+  modal.hidden = false;
+  form.querySelector("[data-admin-cupom-campo-codigo]").focus();
+}
+
+function fecharModalCupom() {
+  document.querySelector("[data-admin-cupom-modal]").hidden = true;
+}
+
+function inicializarModalCupom() {
+  const modal = document.querySelector("[data-admin-cupom-modal]");
+  const form = document.querySelector("[data-admin-cupom-form]");
+  const aviso = document.querySelector("[data-admin-cupom-aviso]");
+
+  document.querySelectorAll("[data-admin-novo-cupom]").forEach((btn) => {
+    btn.addEventListener("click", abrirModalCupom);
+  });
+
+  document.querySelectorAll("[data-admin-cupom-modal-fechar]").forEach((el) => {
+    el.addEventListener("click", fecharModalCupom);
+  });
+
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape" && !modal.hidden) fecharModalCupom();
+  });
+
+  form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    const codigo = form.querySelector("[data-admin-cupom-campo-codigo]").value.trim();
+    const tipo = form.querySelector("[data-admin-cupom-campo-tipo]").value;
+    const valor = form.querySelector("[data-admin-cupom-campo-valor]").value;
+    const valorMinimo = form.querySelector("[data-admin-cupom-campo-minimo]").value;
+    const validade = form.querySelector("[data-admin-cupom-campo-validade]").value;
+
+    if (!codigo || !(Number(valor) > 0)) {
+      aviso.textContent = "Preencha o código e um valor de desconto válido.";
+      aviso.hidden = false;
+      return;
+    }
+
+    try {
+      await chamarApiAdmin("/api/admin/cupons", {
+        method: "POST",
+        body: JSON.stringify({
+          codigo,
+          tipo,
+          valor: Number(valor),
+          valorMinimo: valorMinimo ? Number(valorMinimo) : null,
+          validade: validade || null,
+          ativo: true,
+        }),
+      });
+      aviso.hidden = true;
+      fecharModalCupom();
+      mostrarToastAdmin("Cupom criado com sucesso!");
+      await carregarEExibirCupons();
+    } catch (erro) {
+      if (erro && erro.deslogado) return;
+      aviso.textContent = (erro && erro.mensagem) || "Erro ao criar o cupom. Tente novamente.";
+      aviso.hidden = false;
+    }
+  });
+}
+
 function produtosFiltrados() {
   return produtosCarregados.filter((produto) => {
     const nome = String(produto.nome || "").toLowerCase();
@@ -522,16 +722,16 @@ function linhaProdutoHTML(produto) {
         </div>
       </td>
       <td><span class="admin-badge">${nomeCategoriaAdmin(produto.categoria)}</span></td>
-      <td><span class="admin-tabela__preco">${formatarPrecoAdmin(produto.preco)}</span></td>
-      <td>${precoDe}</td>
-      <td><span class="${estoqueClasse}">${estoque}</span></td>
-      <td>
+      <td class="admin-tabela__preco">${formatarPrecoAdmin(produto.preco)}</td>
+      <td class="admin-tabela__preco">${precoDe}</td>
+      <td class="admin-tabela__col-centro"><span class="${estoqueClasse}">${estoque}</span></td>
+      <td class="admin-tabela__col-centro">
         <label class="admin-switch admin-switch--tabela">
           <input type="checkbox" data-admin-toggle-destaque="${produto.id}" ${emDestaque ? "checked" : ""}>
           <span class="admin-switch__trilho"></span>
         </label>
       </td>
-      <td>
+      <td class="admin-tabela__col-centro">
         <label class="admin-switch admin-switch--tabela">
           <input type="checkbox" data-admin-toggle-ativo="${produto.id}" ${produto.ativo === false ? "" : "checked"}>
           <span class="admin-switch__trilho"></span>

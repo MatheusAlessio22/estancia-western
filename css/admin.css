@@ -183,18 +183,24 @@
   min-width: 0;
   max-width: 1200px;
   margin-inline: auto;
-  padding: var(--espaco-6) var(--espaco-5) var(--espaco-10);
+  padding: var(--espaco-8) var(--espaco-6) var(--espaco-10);
 }
 
 .secao-cabecalho--admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-4);
   text-align: left;
-  margin-bottom: var(--espaco-5);
+  margin-bottom: var(--espaco-6);
 }
 
 .secao-cabecalho--admin h1 {
   font-family: var(--fonte-titulo);
   font-size: var(--texto-xl);
   color: var(--cor-marrom-couro);
+  line-height: 1.2;
 }
 
 .admin-pagina {
@@ -209,17 +215,18 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--espaco-4);
-  margin-bottom: var(--espaco-5);
+  margin-bottom: var(--espaco-6);
 }
 
 .admin-card-resumo {
   background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda-lg);
   box-shadow: var(--sombra-card);
   padding: var(--espaco-5);
   display: flex;
   flex-direction: column;
-  gap: var(--espaco-1);
+  gap: var(--espaco-2);
 }
 
 .admin-card-resumo__numero {
@@ -240,6 +247,7 @@
   align-items: center;
   gap: var(--espaco-3);
   background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda-lg);
   box-shadow: var(--sombra-card);
   padding: var(--espaco-10) var(--espaco-5);
@@ -293,10 +301,11 @@
   align-items: center;
   justify-content: space-between;
   background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda-lg);
   box-shadow: var(--sombra-card);
   padding: var(--espaco-5);
-  margin-bottom: var(--espaco-5);
+  margin-bottom: var(--espaco-6);
 }
 
 .admin-resumo__info {
@@ -320,20 +329,26 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--espaco-3);
-  margin-bottom: var(--espaco-4);
+  margin-bottom: var(--espaco-5);
 }
 
 .admin-busca {
   display: flex;
   align-items: center;
   gap: var(--espaco-2);
+  height: 44px;
   background-color: var(--cor-branco);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda);
-  padding: var(--espaco-2) var(--espaco-3);
+  padding-inline: var(--espaco-3);
   max-width: 420px;
   flex: 1;
   min-width: 220px;
+  transition: border-color var(--transicao-rapida);
+}
+
+.admin-busca:focus-within {
+  border-color: var(--cor-primaria);
 }
 
 .admin-busca svg {
@@ -347,32 +362,42 @@
   border: none;
   outline: none;
   flex: 1;
+  height: 100%;
   font-family: var(--fonte-corpo);
   font-size: var(--texto-sm);
   background: transparent;
 }
 
 .admin-filtro-categoria {
+  height: 44px;
   background-color: var(--cor-branco);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda);
-  padding: var(--espaco-2) var(--espaco-3);
+  padding-inline: var(--espaco-3);
   font-family: var(--fonte-corpo);
   font-size: var(--texto-sm);
   color: var(--cor-texto);
   min-width: 200px;
   cursor: pointer;
+  transition: border-color var(--transicao-rapida);
+}
+
+.admin-filtro-categoria:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
 }
 
 .admin-vazio {
   text-align: center;
   color: var(--cor-texto-suave);
-  padding: var(--espaco-8) 0;
+  padding: var(--espaco-10) 0;
+  font-size: var(--texto-sm);
 }
 
 /* ---- Tabela ---- */
 .admin-tabela-wrap {
   background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-borda-lg);
   box-shadow: var(--sombra-card);
   overflow-x: auto;
@@ -388,21 +413,53 @@
 .admin-tabela th {
   text-align: left;
   font-size: var(--texto-xs);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--cor-texto-suave);
-  padding: var(--espaco-3) var(--espaco-4);
+  padding: var(--espaco-4);
+  background-color: var(--cor-fundo-alt);
   border-bottom: 1px solid var(--cor-borda);
+  white-space: nowrap;
+}
+
+.admin-tabela th:first-child {
+  border-top-left-radius: var(--raio-borda-lg);
+}
+
+.admin-tabela th:last-child {
+  border-top-right-radius: var(--raio-borda-lg);
 }
 
 .admin-tabela td {
-  padding: var(--espaco-3) var(--espaco-4);
+  padding: var(--espaco-4);
   border-bottom: 1px solid var(--cor-borda);
   vertical-align: middle;
+  font-size: var(--texto-sm);
 }
 
 .admin-tabela tr:last-child td {
   border-bottom: none;
+}
+
+.admin-tabela tbody tr {
+  transition: background-color var(--transicao-rapida);
+}
+
+.admin-tabela tbody tr:hover {
+  background-color: var(--cor-fundo-alt);
+}
+
+/* Alinhamento por tipo de coluna: texto à esquerda (padrão), valores
+   monetários à direita, células de ação/estado centralizadas. */
+.admin-tabela th.admin-tabela__col-preco,
+.admin-tabela td.admin-tabela__preco {
+  text-align: right;
+}
+
+.admin-tabela th.admin-tabela__col-centro,
+.admin-tabela td.admin-tabela__col-centro {
+  text-align: center;
 }
 
 .admin-tabela__produto {
@@ -461,12 +518,14 @@
 .admin-tabela__preco {
   font-weight: 700;
   color: var(--cor-marrom-couro);
+  font-variant-numeric: tabular-nums;
 }
 
 .admin-tabela__preco-promo {
   font-size: var(--texto-sm);
   color: var(--cor-texto-suave);
   text-decoration: line-through;
+  font-variant-numeric: tabular-nums;
 }
 
 .admin-tabela__sem-valor {
@@ -475,6 +534,7 @@
 
 .admin-tabela__estoque {
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .admin-tabela__estoque--zerado {
@@ -484,6 +544,8 @@
 
 .admin-tabela__acoes {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: var(--espaco-2);
   white-space: nowrap;
 }
@@ -580,6 +642,14 @@
   max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+.admin-modal__caixa .campo {
+  margin-bottom: var(--espaco-4);
+}
+
+.admin-modal__caixa .campo:last-child {
+  margin-bottom: 0;
 }
 
 .admin-modal--pequeno .admin-modal__caixa {
