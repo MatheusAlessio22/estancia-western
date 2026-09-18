@@ -287,26 +287,90 @@
   transition: transform var(--motion-duracao-rapida) var(--motion-estado);
 }
 
-.header__dropdown-categorias {
-  position: absolute;
-  top: calc(100% + var(--espaco-3));
-  left: 50%;
-  transform: translateX(-50%) translateY(-6px);
-  background-color: var(--cor-fundo);
-  border-radius: var(--raio-borda-lg);
-  box-shadow: var(--sombra-elevada);
-  padding: var(--espaco-2);
-  min-width: 220px;
-  z-index: var(--z-overlay);
-  opacity: 0;
-  animation: dropdown-categorias-entrada var(--motion-duracao-padrao) var(--motion-entrada) forwards;
+/* ---- Mega Menu (painel de departamento: Cowboys / Cowgirls) ---- */
+.mega-menu-item {
+  position: static;
 }
 
-@keyframes dropdown-categorias-entrada {
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
+.mega-menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--cor-branco);
+  border-top: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-elevada);
+  z-index: var(--z-overlay);
+  opacity: 0;
+  animation: mega-menu-entrada var(--motion-duracao-padrao) var(--motion-entrada) forwards;
+}
+
+@keyframes mega-menu-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mega-menu-panel__grid {
+  max-width: var(--largura-container);
+  margin-inline: auto;
+  padding: var(--espaco-6) var(--espaco-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--espaco-6);
+}
+
+.mega-menu-coluna h3 {
+  font-family: var(--fonte-destaque);
+  font-size: var(--texto-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cor-marrom-couro);
+  margin: 0 0 var(--espaco-3);
+  padding-bottom: var(--espaco-2);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.mega-menu-coluna h3 a {
+  color: inherit;
+}
+
+.mega-menu-coluna ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.mega-menu-coluna li a {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-1) 0;
+  font-size: var(--texto-sm);
+  color: var(--cor-texto);
+  transition: color var(--transicao-rapida), padding-left var(--transicao-rapida);
+}
+
+.mega-menu-coluna li a::before {
+  content: "›";
+  color: var(--cor-texto-suave);
+  font-weight: 700;
+  transition: color var(--transicao-rapida);
+}
+
+.mega-menu-coluna li a:hover {
+  color: var(--cor-primaria);
+  padding-left: var(--espaco-1);
+}
+
+.mega-menu-coluna li a:hover::before {
+  color: var(--cor-primaria);
 }
 
 .header__acoes {
@@ -1285,13 +1349,6 @@
   justify-content: center;
 }
 
-.header__dropdown-categorias li a {
-  display: block;
-  padding: var(--espaco-2) var(--espaco-3);
-  border-radius: var(--raio-borda);
-  font-size: var(--texto-sm);
-  white-space: nowrap;
-}
 
 .footer__coluna a:hover {
   color: var(--cor-texto-claro);
@@ -1408,9 +1465,6 @@ body:has(.carrinho-drawer.is-aberto) .whatsapp-flutuante {
   background-color: var(--cor-fundo-alt);
 }
 
-.header__dropdown-categorias li a:hover {
-  background-color: var(--cor-fundo-alt);
-}
 
 /* ---- Toast (carrinho) ---- */
 .toast {

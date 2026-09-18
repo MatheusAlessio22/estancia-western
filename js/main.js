@@ -124,23 +124,99 @@ function alternarBusca(abrir) {
   }
 }
 
-function alternarDropdownCategorias(abrir) {
-  const toggle = document.querySelector("[data-abrir-categorias]");
-  const menu = document.querySelector("[data-menu-categorias]");
-  if (!toggle || !menu) return;
+/* ---- Mega Menu (departamentos > categorias > subcategorias) ----
+   A árvore vem de GET /api/categorias (server/src/routes/categorias.js) e é
+   renderizada como um painel largo por departamento, inserido antes do item
+   "Lançamentos" na nav principal. */
 
-  menu.hidden = !abrir;
-  toggle.setAttribute("aria-expanded", abrir ? "true" : "false");
+function colunaMegaMenuHTML(categoria) {
+  const itens = categoria.filhos
+    .map(
+      (sub) =>
+        `<li><a href="/categoria/${sub.slug}" class="foco-visivel">${sub.nome}</a></li>`,
+    )
+    .join("");
 
-  if (abrir) {
-    menu.innerHTML =
-      typeof CATEGORIAS !== "undefined"
-        ? CATEGORIAS.map(
-            (c) =>
-              `<li><a href="/categoria/${c.slug}" class="foco-visivel">${c.nome}</a></li>`,
-          ).join("")
-        : "";
+  return `
+    <div class="mega-menu-coluna">
+      <h3><a href="/categoria/${categoria.slug}" class="foco-visivel">${categoria.nome}</a></h3>
+      <ul>${itens}</ul>
+    </div>
+  `;
+}
+
+function itemMegaMenuHTML(departamento) {
+  const colunas = departamento.filhos.map(colunaMegaMenuHTML).join("");
+  const idPainel = `mega-menu-${departamento.slug}`;
+
+  return `
+    <li class="header__nav-item-dropdown mega-menu-item">
+      <button type="button" class="header__nav-dropdown-toggle foco-visivel" data-mega-menu-toggle="${departamento.slug}" aria-expanded="false" aria-haspopup="true" aria-controls="${idPainel}">
+        ${departamento.nome}
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><polyline points="6,9 12,15 18,9"/></svg>
+      </button>
+      <div class="mega-menu-panel" id="${idPainel}" data-mega-menu-panel="${departamento.slug}" hidden>
+        <div class="mega-menu-panel__grid">${colunas}</div>
+      </div>
+    </li>
+  `;
+}
+
+function fecharTodosMegaMenus() {
+  document.querySelectorAll("[data-mega-menu-panel]").forEach((painel) => {
+    painel.hidden = true;
+  });
+  document.querySelectorAll("[data-mega-menu-toggle]").forEach((toggle) => {
+    toggle.setAttribute("aria-expanded", "false");
+  });
+}
+
+function abrirMegaMenu(slug) {
+  fecharTodosMegaMenus();
+  const painel = document.querySelector(`[data-mega-menu-panel="${slug}"]`);
+  const toggle = document.querySelector(`[data-mega-menu-toggle="${slug}"]`);
+  if (!painel || !toggle) return;
+  painel.hidden = false;
+  toggle.setAttribute("aria-expanded", "true");
+}
+
+async function inicializarMegaMenu() {
+  const lista = document.querySelector("[data-mega-menu-lista]");
+  if (!lista) return;
+
+  let departamentos = [];
+  try {
+    const resposta = await fetch("/api/categorias");
+    if (resposta.ok) departamentos = await resposta.json();
+  } catch (erro) {
+    console.error("Não foi possível carregar as categorias do Mega Menu:", erro);
   }
+
+  if (!Array.isArray(departamentos) || departamentos.length === 0) return;
+
+  lista.insertAdjacentHTML("afterbegin", departamentos.map(itemMegaMenuHTML).join(""));
+
+  departamentos.forEach((departamento) => {
+    const item = lista.querySelector(`[data-mega-menu-toggle="${departamento.slug}"]`)?.closest("li");
+    const toggle = document.querySelector(`[data-mega-menu-toggle="${departamento.slug}"]`);
+    if (!item || !toggle) return;
+
+    item.addEventListener("mouseenter", () => abrirMegaMenu(departamento.slug));
+    item.addEventListener("mouseleave", () => fecharTodosMegaMenus());
+
+    toggle.addEventListener("click", () => {
+      const abertoAgora = toggle.getAttribute("aria-expanded") === "true";
+      abertoAgora ? fecharTodosMegaMenus() : abrirMegaMenu(departamento.slug);
+    });
+  });
+
+  document.addEventListener("click", (evento) => {
+    if (!evento.target.closest(".mega-menu-item")) fecharTodosMegaMenus();
+  });
+
+  document.addEventListener("focusin", (evento) => {
+    if (!evento.target.closest(".mega-menu-item")) fecharTodosMegaMenus();
+  });
 }
 
 function inicializarHeader() {
@@ -184,34 +260,13 @@ function inicializarHeader() {
     });
   }
 
-  // Dropdown de categorias (desktop) — clique para abrir/fechar, Esc e clique fora fecham.
-  const toggleCategorias = document.querySelector("[data-abrir-categorias]");
-  const menuCategorias = document.querySelector("[data-menu-categorias]");
-  if (toggleCategorias && menuCategorias) {
-    toggleCategorias.addEventListener("click", () => {
-      alternarDropdownCategorias(menuCategorias.hidden);
-    });
-
-    document.addEventListener("click", (evento) => {
-      if (menuCategorias.hidden) return;
-      const dentro =
-        toggleCategorias.contains(evento.target) || menuCategorias.contains(evento.target);
-      if (!dentro) alternarDropdownCategorias(false);
-    });
-
-    document.addEventListener("focusin", (evento) => {
-      if (menuCategorias.hidden) return;
-      const dentro =
-        toggleCategorias.contains(evento.target) || menuCategorias.contains(evento.target);
-      if (!dentro) alternarDropdownCategorias(false);
-    });
-  }
+  inicializarMegaMenu();
 
   document.addEventListener("keydown", (evento) => {
     if (evento.key !== "Escape") return;
     alternarMenuMobile(false);
     alternarBusca(false);
-    alternarDropdownCategorias(false);
+    fecharTodosMegaMenus();
   });
 }
 

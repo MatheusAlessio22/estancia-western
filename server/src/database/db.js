@@ -112,6 +112,25 @@ async function criarTabelas() {
     )
   `);
 
+  // Hierarquia de navegação do Mega Menu: Departamento (parent_id nulo) >
+  // Categoria (parent_id = departamento) > Subcategoria (parent_id = categoria).
+  // `slug` não é globalmente único (ex: "camisas" pode existir sob Cowboys E
+  // Cowgirls), então a unicidade é por (parent_id, slug).
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS categorias (
+      id SERIAL PRIMARY KEY,
+      nome TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      parent_id INTEGER REFERENCES categorias(id) ON DELETE CASCADE,
+      ordem INTEGER NOT NULL DEFAULT 0
+    )
+  `);
+
+  await db.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS categorias_parent_slug_idx
+    ON categorias (COALESCE(parent_id, 0), slug)
+  `);
+
   // Idempotente: cobre bancos criados antes destas colunas existirem.
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS cupom_codigo TEXT");
   await db.query("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS desconto REAL NOT NULL DEFAULT 0");
@@ -121,6 +140,7 @@ async function criarTabelas() {
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS imagens JSONB NOT NULL DEFAULT '[]'");
   await db.query("ALTER TABLE cupons ADD COLUMN IF NOT EXISTS validade DATE");
   await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS excluido BOOLEAN NOT NULL DEFAULT false");
+  await db.query("ALTER TABLE produtos ADD COLUMN IF NOT EXISTS categoria_id INTEGER REFERENCES categorias(id)");
 }
 
 function extrairProdutosDoArquivo() {
@@ -200,6 +220,100 @@ async function seedCupons() {
   console.log(`Seed: ${cuponsIniciais.length} cupons cadastrados.`);
 }
 
+/**
+ * Árvore de navegação do Mega Menu: Departamento > Categoria > Subcategoria.
+ * Os slugs de subcategoria (nível folha) espelham os slugs já usados em
+ * `produtos.categoria` (js/products.js) para permitir, no futuro, ligar
+ * produtos existentes à hierarquia sem precisar renomear nada.
+ */
+const ARVORE_CATEGORIAS = [
+  {
+    nome: "Cowgirls",
+    slug: "cowgirls",
+    categorias: [
+      {
+        nome: "Vestuário",
+        slug: "vestuario",
+        subcategorias: [
+          { nome: "Camisas & Camisetas", slug: "camisas" },
+        ],
+      },
+      {
+        nome: "Calçados",
+        slug: "calcados",
+        subcategorias: [
+          { nome: "Botas & Calçados", slug: "botas-calcados" },
+        ],
+      },
+      {
+        nome: "Chapéus & Bonés",
+        slug: "chapeus-bones",
+        subcategorias: [
+          { nome: "Chapéus & Bonés", slug: "chapeus-bones" },
+        ],
+      },
+      {
+        nome: "Cintos & Fivelas",
+        slug: "cintos-fivelas",
+        subcategorias: [
+          { nome: "Cintos & Fivelas", slug: "cintos-fivelas" },
+        ],
+      },
+      {
+        nome: "Acessórios",
+        slug: "acessorios",
+        subcategorias: [
+          { nome: "Acessórios", slug: "acessorios" },
+        ],
+      },
+    ],
+  },
+  {
+    nome: "Cowboys",
+    slug: "cowboys",
+    categorias: [
+      { nome: "Vestuário", slug: "vestuario", subcategorias: [{ nome: "Camisas & Camisetas", slug: "camisas" }] },
+      { nome: "Calçados", slug: "calcados", subcategorias: [{ nome: "Botas & Calçados", slug: "botas-calcados" }] },
+      { nome: "Chapéus & Bonés", slug: "chapeus-bones", subcategorias: [{ nome: "Chapéus & Bonés", slug: "chapeus-bones" }] },
+      { nome: "Cintos & Fivelas", slug: "cintos-fivelas", subcategorias: [{ nome: "Cintos & Fivelas", slug: "cintos-fivelas" }] },
+      { nome: "Acessórios", slug: "acessorios", subcategorias: [{ nome: "Acessórios", slug: "acessorios" }] },
+    ],
+  },
+];
+
+async function seedCategorias() {
+  const { rows } = await db.query("SELECT COUNT(*) AS count FROM categorias");
+  if (Number(rows[0].count) > 0) return;
+
+  for (let i = 0; i < ARVORE_CATEGORIAS.length; i++) {
+    const departamento = ARVORE_CATEGORIAS[i];
+    const { rows: depRows } = await db.query(
+      "INSERT INTO categorias (nome, slug, parent_id, ordem) VALUES ($1, $2, NULL, $3) RETURNING id",
+      [departamento.nome, departamento.slug, i],
+    );
+    const departamentoId = depRows[0].id;
+
+    for (let j = 0; j < departamento.categorias.length; j++) {
+      const categoria = departamento.categorias[j];
+      const { rows: catRows } = await db.query(
+        "INSERT INTO categorias (nome, slug, parent_id, ordem) VALUES ($1, $2, $3, $4) RETURNING id",
+        [categoria.nome, categoria.slug, departamentoId, j],
+      );
+      const categoriaId = catRows[0].id;
+
+      for (let k = 0; k < categoria.subcategorias.length; k++) {
+        const sub = categoria.subcategorias[k];
+        await db.query(
+          "INSERT INTO categorias (nome, slug, parent_id, ordem) VALUES ($1, $2, $3, $4)",
+          [sub.nome, sub.slug, categoriaId, k],
+        );
+      }
+    }
+  }
+
+  console.log("Seed: árvore de categorias do Mega Menu criada (Cowboys/Cowgirls).");
+}
+
 async function seedAdministradores() {
   const { rows } = await db.query("SELECT COUNT(*) AS count FROM administradores");
   if (Number(rows[0].count) > 0) return;
@@ -221,7 +335,33 @@ async function inicializarBanco() {
   await criarTabelas();
   await seedProdutos();
   await seedCupons();
+  await seedCategorias();
   await seedAdministradores();
+}
+
+/**
+ * Monta a árvore completa de categorias (Departamento > Categoria >
+ * Subcategoria) em uma única consulta, agrupando em memória. Usada pela
+ * rota pública que alimenta o Mega Menu da vitrine.
+ */
+async function buscarArvoreCategorias() {
+  const { rows } = await db.query(
+    "SELECT id, nome, slug, parent_id, ordem FROM categorias ORDER BY parent_id NULLS FIRST, ordem ASC, nome ASC",
+  );
+
+  const porId = new Map(rows.map((linha) => [linha.id, { ...linha, filhos: [] }]));
+  const raizes = [];
+
+  for (const linha of rows) {
+    const no = porId.get(linha.id);
+    if (linha.parent_id && porId.has(linha.parent_id)) {
+      porId.get(linha.parent_id).filhos.push(no);
+    } else if (!linha.parent_id) {
+      raizes.push(no);
+    }
+  }
+
+  return raizes;
 }
 
 async function validarCupom(codigo, subtotal) {
@@ -335,4 +475,5 @@ module.exports = {
   cadastrarNewsletter,
   listarAvaliacoes,
   criarAvaliacao,
+  buscarArvoreCategorias,
 };

@@ -25,15 +25,8 @@ function HEADER_HTML(paginaAtiva = "") {
         </a>
 
         <nav class="header__nav" aria-label="Navegação principal">
-          <ul>
+          <ul data-mega-menu-lista>
             ${itemNav("/categoria/lancamentos", "Lançamentos", "lancamentos")}
-            <li class="header__nav-item-dropdown">
-              <button type="button" class="header__nav-dropdown-toggle foco-visivel" data-abrir-categorias aria-expanded="false" aria-haspopup="true" aria-controls="menu-categorias">
-                Categorias
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><polyline points="6,9 12,15 18,9"/></svg>
-              </button>
-              <ul class="header__dropdown-categorias" id="menu-categorias" data-menu-categorias hidden></ul>
-            </li>
             ${itemNav("/categoria/promocoes", "Promoções", "promocoes")}
             ${itemNav("/blog", "Blog", "blog")}
           </ul>
