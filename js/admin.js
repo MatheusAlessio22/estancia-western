@@ -1034,6 +1034,147 @@ function abrirConfirmacaoExclusao(id) {
   document.querySelector("[data-admin-confirmar-exclusao]").hidden = false;
 }
 
+/* ---- Custom Select (substitui o <select> nativo pelo visual do design system) ----
+   O <select> original é mantido no DOM (oculto) e continua sendo a fonte da
+   verdade: todo o resto do admin.js lê/escreve nele via `.value` normalmente.
+   Interceptamos esse `.value` com um property descriptor para manter o
+   dropdown customizado sincronizado mesmo quando o valor é setado por fora
+   (ex: form.reset(), pré-preenchimento ao editar um produto/pedido). */
+
+function sincronizarTextoCustomSelect(select) {
+  const wrapper = select.customSelectWrapper;
+  if (!wrapper) return;
+
+  const gatilho = wrapper.querySelector(".admin-select__valor");
+  const opcaoSelecionada = select.options[select.selectedIndex];
+  gatilho.textContent = opcaoSelecionada ? opcaoSelecionada.textContent : "";
+
+  wrapper.querySelectorAll(".admin-select__opcao").forEach((li) => {
+    li.classList.toggle("is-selecionada", li.dataset.valor === select.value);
+    li.setAttribute("aria-selected", li.dataset.valor === select.value ? "true" : "false");
+  });
+}
+
+function fecharTodosCustomSelects(excetoWrapper) {
+  document.querySelectorAll(".admin-select.is-aberto").forEach((wrapper) => {
+    if (wrapper !== excetoWrapper) fecharCustomSelect(wrapper);
+  });
+}
+
+function abrirCustomSelect(wrapper) {
+  fecharTodosCustomSelects(wrapper);
+  wrapper.classList.add("is-aberto");
+  wrapper.querySelector(".admin-select__gatilho").setAttribute("aria-expanded", "true");
+}
+
+function fecharCustomSelect(wrapper) {
+  wrapper.classList.remove("is-aberto");
+  wrapper.querySelector(".admin-select__gatilho").setAttribute("aria-expanded", "false");
+}
+
+function criarCustomSelect(select) {
+  if (select.customSelectWrapper) return;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "admin-select";
+  if (select.disabled) wrapper.classList.add("is-desabilitado");
+
+  const gatilho = document.createElement("button");
+  gatilho.type = "button";
+  gatilho.className = "admin-select__gatilho";
+  gatilho.setAttribute("aria-haspopup", "listbox");
+  gatilho.setAttribute("aria-expanded", "false");
+  if (select.disabled) gatilho.disabled = true;
+  gatilho.innerHTML = `
+    <span class="admin-select__valor"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+  `;
+
+  const lista = document.createElement("ul");
+  lista.className = "admin-select__lista";
+  lista.setAttribute("role", "listbox");
+  lista.hidden = false;
+
+  Array.from(select.options).forEach((option) => {
+    const item = document.createElement("li");
+    item.className = "admin-select__opcao";
+    item.setAttribute("role", "option");
+    item.dataset.valor = option.value;
+    item.textContent = option.textContent;
+    item.addEventListener("click", () => {
+      select.value = option.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      fecharCustomSelect(wrapper);
+      gatilho.focus();
+    });
+    lista.appendChild(item);
+  });
+
+  gatilho.addEventListener("click", () => {
+    if (select.disabled) return;
+    wrapper.classList.contains("is-aberto") ? fecharCustomSelect(wrapper) : abrirCustomSelect(wrapper);
+  });
+
+  gatilho.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+      fecharCustomSelect(wrapper);
+    } else if (evento.key === "ArrowDown" || evento.key === "ArrowUp") {
+      evento.preventDefault();
+      const opcoes = Array.from(select.options);
+      const indiceAtual = opcoes.findIndex((o) => o.value === select.value);
+      const proximo = evento.key === "ArrowDown"
+        ? Math.min(indiceAtual + 1, opcoes.length - 1)
+        : Math.max(indiceAtual - 1, 0);
+      select.value = opcoes[proximo].value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+
+  wrapper.appendChild(gatilho);
+  wrapper.appendChild(lista);
+  select.insertAdjacentElement("afterend", wrapper);
+  select.hidden = true;
+  select.setAttribute("aria-hidden", "true");
+  select.tabIndex = -1;
+
+  select.customSelectWrapper = wrapper;
+
+  const valorDescritor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value");
+  Object.defineProperty(select, "value", {
+    configurable: true,
+    get() {
+      return valorDescritor.get.call(select);
+    },
+    set(novoValor) {
+      valorDescritor.set.call(select, novoValor);
+      sincronizarTextoCustomSelect(select);
+    },
+  });
+
+  select.addEventListener("change", () => sincronizarTextoCustomSelect(select));
+  if (select.form) {
+    select.form.addEventListener("reset", () => {
+      setTimeout(() => sincronizarTextoCustomSelect(select), 0);
+    });
+  }
+
+  sincronizarTextoCustomSelect(select);
+}
+
+function inicializarCustomSelects() {
+  document.querySelectorAll(".admin-dashboard select, .admin-login select").forEach(criarCustomSelect);
+
+  if (inicializarCustomSelects.jaOuvindoCliqueFora) return;
+  inicializarCustomSelects.jaOuvindoCliqueFora = true;
+
+  document.addEventListener("click", (evento) => {
+    if (!evento.target.closest(".admin-select")) {
+      fecharTodosCustomSelects();
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   inicializarLoginAdmin();
+  inicializarCustomSelects();
 });

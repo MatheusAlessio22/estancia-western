@@ -425,6 +425,119 @@
   box-shadow: var(--sombra-foco);
 }
 
+/* ---- Custom Select (substitui o visual nativo do <select>, incl. o menu
+   de opções azul do sistema operacional, por um dropdown do design system) ---- */
+.admin-select {
+  position: relative;
+}
+
+.admin-select__gatilho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+  width: 100%;
+  height: 44px;
+  background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding-inline: var(--espaco-3);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
+}
+
+.admin-select__gatilho:hover {
+  border-color: var(--cor-marrom-couro);
+}
+
+.admin-select__gatilho:focus-visible,
+.admin-select.is-aberto .admin-select__gatilho {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: var(--sombra-foco);
+}
+
+.admin-select__gatilho svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--cor-texto-suave);
+  flex-shrink: 0;
+  transition: transform var(--transicao-rapida);
+}
+
+.admin-select.is-aberto .admin-select__gatilho svg {
+  transform: rotate(180deg);
+}
+
+.admin-select__valor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-select.is-desabilitado .admin-select__gatilho {
+  background-color: var(--cor-fundo-alt);
+  color: var(--cor-texto-suave);
+  cursor: not-allowed;
+}
+
+.admin-select__lista {
+  position: absolute;
+  top: calc(100% + var(--espaco-1));
+  left: 0;
+  right: 0;
+  z-index: var(--z-overlay);
+  list-style: none;
+  margin: 0;
+  padding: var(--espaco-1);
+  max-height: 240px;
+  overflow-y: auto;
+  background-color: var(--cor-branco);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda-lg);
+  box-shadow: var(--sombra-elevada);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity var(--transicao-rapida), transform var(--transicao-rapida), visibility var(--transicao-rapida);
+}
+
+.admin-select.is-aberto .admin-select__lista {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.admin-select__opcao {
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-borda);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-select__opcao:hover {
+  background-color: var(--cor-fundo-alt);
+}
+
+.admin-select__opcao.is-selecionada {
+  background-color: var(--cor-bege-areia);
+  color: var(--cor-marrom-couro);
+  font-weight: 600;
+}
+
+/* Formulários de modal (.campo select) usam altura 48px, igual ao input nativo que substituem */
+.campo .admin-select__gatilho {
+  height: 48px;
+}
+
 .admin-vazio {
   text-align: center;
   color: var(--cor-texto-suave);
